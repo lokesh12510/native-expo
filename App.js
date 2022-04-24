@@ -1,21 +1,25 @@
 import { StatusBar } from "expo-status-bar";
 import { Provider } from "react-redux";
-import Navigation from "./routes/Navigation";
-import { Store } from "./app/Store";
+import RootNavigation from "./navigations/index";
+import { persistor, store } from "./app/Store";
 import { SafeAreaView } from "react-native";
 import styled from "styled-components";
+import { useEffect } from "react";
+import { PersistGate } from "redux-persist/integration/react";
 
 export default function App() {
   return (
     <>
       {/* Redux data provider from "Store" data */}
-      <Provider store={Store}>
-        <SafeAreaStyle>
-          <Navigation />
-        </SafeAreaStyle>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <SafeAreaStyle>
+            <RootNavigation />
+          </SafeAreaStyle>
 
-        {/* Mobile StatusBar config */}
-        <StatusBar style="auto" />
+          {/* Mobile StatusBar config */}
+          <StatusBar style="auto" />
+        </PersistGate>
       </Provider>
     </>
   );

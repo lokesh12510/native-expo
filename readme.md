@@ -42,4 +42,8 @@
   - $ expo install react-native-screens react-native-safe-area-context react-native-gesture-handler react-native-reanimated
 
 - Redux Toolkit for State Management : $ npm i react-redux @reduxjs/toolkit
-"# native-expo" 
+
+- Formik for input validation : $ npm i formik
+
+- Axios for service call : $ npm i axios
+  "# native-expo"
