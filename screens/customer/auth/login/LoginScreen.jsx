@@ -1,106 +1,111 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import {
   InnerContainer,
-  LeftIcon,
   PageLogo,
-  PageTitle,
   StyledContainer,
   StyledFormArea,
   SubTitle,
-  Colors,
-  StyledInputLabel,
-  StyledInput,
-  RightIcon,
-  StyledButton,
-  ButtonText,
-  MsgBox,
-  Line,
   ExtraView,
   ExtraText,
-  TextLink,
-  TextLinkContent,
 } from "../../../../theme/Styles";
 import { StatusBar } from "expo-status-bar";
 import { Formik } from "formik";
-import { ActivityIndicator, View } from "react-native";
-import { useDispatch } from "react-redux";
+import { ScrollView, Text, View } from "react-native";
+import { TextInput } from "react-native-paper";
 
-// icons
-import { Octicons, Ionicons } from "@expo/vector-icons";
-import axios from "axios";
-import KeyboardAvoidWrapper from "../../../../utils/KeyboardAvoidWrapper";
 import { useAuthLoginMutation } from "../../../../app/authSlice/authApi";
-import appTheme from "../../../../theme/AppTheme";
 import AppImages from "../../../../constants/Images";
 import { Routes } from "../../../../constants/routes";
-
+import theme from "../../../../theme/AppTheme";
+import StyledTextField from "../../../../theme/uiSinppets/StyledTextField";
+import { Button } from "react-native-paper";
+import StyledButton from "../../../../theme/uiSinppets/StyledButton";
+import { useDispatch } from "react-redux";
+import { roleSwitch } from "../../../../app/authSlice/authSlice";
 // Colors
-const { primary, darkLight } = appTheme.COLORS;
+const { primary, darkLight, darkgray, black } = theme.colors;
 
-const CustomerLogin = ({ navigation }) => {
+const CustomerLogin = ({ navigation, route }) => {
   const [hidePass, setHidePass] = useState(true);
-  const [message, setMessage] = useState();
-  const [messageType, setMessageType] = useState();
+  const dispatch = useDispatch();
 
   // authLogin RTK Query
   const [authLogin, { data, isLoading, isError, error, isSuccess }] =
     useAuthLoginMutation();
 
-  const dispatch = useDispatch();
-
-  const handleLogin = (credential, setSubmitting) => {
-    handleMsg(null);
-    const url = `https://first-native-app.herokuapp.com/user/register`;
-
-    axios
-      .post(url, credential)
-      .then((response) => {
-        const result = response.data;
-        const { message, status, data } = result;
-
-        if (status !== "SUCCESS") {
-          handleMsg(message, status);
-        } else {
-          navigation.navigate("Welcome", { ...data[0] });
-        }
-        setSubmitting(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setSubmitting(false);
-        handleMsg("An error occurred!");
-      });
-  };
-
   const handleLocalLogin = (credential, setSubmitting) => {
-    handleMsg(null);
     // dispatch(login(credential));
     authLogin({ ...credential, attempts: 1 });
-    if (isSuccess) {
-      handleMsg(data, "SUCCESS");
-    }
+
     console.log(data, "Query");
     setSubmitting(false);
   };
 
-  const handleMsg = (msg, type = "FAILED") => {
-    setMessage(msg);
-    setMessageType(type);
+  const handleRoleChange = () => {
+    dispatch(roleSwitch({ role: "ROLE_COOK" }));
+    navigation.navigate(Routes.auth.cookLogin, { animate: "slide_from_right" });
   };
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      animation: route.params?.animate,
+      title: "Customer Login",
+    });
+  }, []);
 
   return (
-    <KeyboardAvoidWrapper>
+    <ScrollView>
       <StyledContainer>
         <StatusBar style="dark" />
         <InnerContainer>
           <PageLogo resizeMode="cover" source={AppImages.LogoDark} />
-          <SubTitle>Customer Login</SubTitle>
+          <SubTitle>Login As</SubTitle>
+          {isError && error?.data.error && (
+            <Text
+              style={{
+                color: primary,
+                padding: 10,
+                backgroundColor: `${primary}15`,
+                marginBottom: 10,
+              }}
+            >
+              Username or Password does't Exist!
+            </Text>
+          )}
+          <View
+            style={{
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "center",
+            }}
+          >
+            <Button
+              mode="outlined"
+              onPress={() => console.log("Pressed")}
+              style={{
+                borderBottomColor: theme.colors.primary,
+                borderWidth: 0,
+                borderBottomWidth: 3,
+                alignItems: "center",
+                justifyContent: "center",
+                width: theme.SIZES.width / 2.5,
+              }}
+            >
+              Customer
+            </Button>
+            <Button
+              style={{ width: theme.SIZES.width / 2.5 }}
+              mode="text"
+              color={black}
+              onPress={handleRoleChange}
+            >
+              Cook
+            </Button>
+          </View>
 
           <Formik
             initialValues={{ email: "", password: "" }}
             onSubmit={(values, { setSubmitting }) => {
               if (values.email == "" || values.password == "") {
-                handleMsg("Please fill all fields");
                 setSubmitting(false);
               } else {
                 handleLocalLogin(values, setSubmitting);
@@ -115,85 +120,75 @@ const CustomerLogin = ({ navigation }) => {
               isSubmitting,
             }) => (
               <StyledFormArea>
-                <TextInput
-                  label={"Email"}
-                  icon="mail"
+                <StyledTextField
+                  label="Email"
+                  icon="mail-outline"
                   placeholder="Enter Email Address"
-                  placeholderTextColor={darkLight}
+                  keyboardType="email-address"
+                  mode="outlined"
                   onChangeText={handleChange("email")}
                   onBlur={handleBlur("email")}
                   value={values.email}
-                  keyboardType="email-address"
                 />
-                <TextInput
+                <StyledTextField
                   label={"Password"}
-                  icon="lock"
+                  icon="lock-closed-outline"
                   placeholder="* * * * * * * *"
-                  placeholderTextColor={darkLight}
                   onChangeText={handleChange("password")}
                   onBlur={handleBlur("password")}
                   value={values.password}
-                  secureTextEntry={hidePass}
                   isPassword={true}
-                  hidePass={hidePass}
+                  secureTextEntry={hidePass}
                   setHidePass={setHidePass}
+                  mode="outlined"
+                  right={
+                    <TextInput.Icon
+                      name="eye"
+                      color={darkgray}
+                      onPress={() => setHidePass((hidePass) => !hidePass)}
+                    />
+                  }
                 />
-                <MsgBox type={messageType}>{message}</MsgBox>
-                {!isSubmitting && (
-                  <StyledButton onPress={handleSubmit}>
-                    <ButtonText>Login</ButtonText>
-                  </StyledButton>
-                )}
-                {isSubmitting && (
-                  <StyledButton disabled={true}>
-                    <ActivityIndicator size={"large"} color="primary" />
-                  </StyledButton>
-                )}
-                <Line></Line>
+
+                <StyledButton
+                  isLoading={isSubmitting}
+                  mode="contained"
+                  onPress={handleSubmit}
+                  title="Login"
+                >
+                  Login
+                </StyledButton>
+
                 <ExtraView>
                   <ExtraText>Don't have an account already?</ExtraText>
-                  <TextLink
+                  <Button
+                    mode="text"
                     onPress={() =>
-                      navigation.navigate(Routes.auth.customerRegister)
+                      navigation.navigate(Routes.auth.customerRegister, {
+                        animate: "pop",
+                      })
                     }
                   >
-                    <TextLinkContent>Register</TextLinkContent>
-                  </TextLink>
+                    Register
+                  </Button>
                 </ExtraView>
+                <Button
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                  color={"#000"}
+                  mode="text"
+                  onPress={() => navigation.navigate("Welcome")}
+                >
+                  Forgot Password?
+                </Button>
               </StyledFormArea>
             )}
           </Formik>
         </InnerContainer>
       </StyledContainer>
-    </KeyboardAvoidWrapper>
-  );
-};
-
-const TextInput = ({
-  label,
-  icon,
-  setHidePass,
-  hidePass,
-  isPassword,
-  ...props
-}) => {
-  return (
-    <View>
-      <LeftIcon>
-        <Octicons name={icon} size={20} color={primary} />
-      </LeftIcon>
-      <StyledInputLabel>{label}</StyledInputLabel>
-      <StyledInput {...props} />
-      {isPassword && (
-        <RightIcon onPress={() => setHidePass((hidePass) => !hidePass)}>
-          <Ionicons
-            name={hidePass ? "md-eye-off" : "md-eye"}
-            size={30}
-            color={darkLight}
-          />
-        </RightIcon>
-      )}
-    </View>
+    </ScrollView>
   );
 };
 

@@ -16,9 +16,17 @@ const persistConfig = {
   whitelist: ["auth"],
 };
 
-const _persistedReducer = persistReducer(persistConfig, reducers);
+const RootReducer = (state, action) => {
+  if (action.type === "auth/logout") {
+    state = undefined;
+  }
+  return reducers(state, action);
+};
+
+const _persistedReducer = persistReducer(persistConfig, RootReducer);
 
 export const store = configureStore({
+  devTools: __DEV__,
   reducer: _persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }).concat(

@@ -6,6 +6,8 @@ import { SafeAreaView } from "react-native";
 import styled from "styled-components";
 import { useEffect } from "react";
 import { PersistGate } from "redux-persist/integration/react";
+import { Provider as PaperProvider } from "react-native-paper";
+import theme from "./theme/AppTheme";
 
 export default function App() {
   return (
@@ -13,10 +15,11 @@ export default function App() {
       {/* Redux data provider from "Store" data */}
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <SafeAreaStyle>
-            <RootNavigation />
-          </SafeAreaStyle>
-
+          <PaperProvider theme={theme}>
+            <SafeAreaStyle>
+              <RootNavigation />
+            </SafeAreaStyle>
+          </PaperProvider>
           {/* Mobile StatusBar config */}
           <StatusBar style="auto" />
         </PersistGate>

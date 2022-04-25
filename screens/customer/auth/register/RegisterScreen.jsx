@@ -1,136 +1,204 @@
 import React, { useState } from "react";
 import {
   InnerContainer,
-  LeftIcon,
   PageLogo,
-  PageTitle,
   StyledContainer,
   StyledFormArea,
   SubTitle,
-  Colors,
-  StyledInputLabel,
-  StyledInput,
-  RightIcon,
-  StyledButton,
-  ButtonText,
-  MsgBox,
-  Line,
   ExtraView,
   ExtraText,
-  TextLink,
-  TextLinkContent,
 } from "../../../../theme/Styles";
 import { StatusBar } from "expo-status-bar";
 import { Formik } from "formik";
-import { View } from "react-native";
+import { ActivityIndicator, ScrollView, View } from "react-native";
+import { TextInput } from "react-native-paper";
 
-// icons
-import { Octicons, Ionicons } from "@expo/vector-icons";
-import KeyboardAvoidWrapper from "../../../../utils/KeyboardAvoidWrapper";
-import Images from "../../../../constants/Images";
-import appTheme from "../../../../theme/AppTheme";
+import {
+  useAuthLoginMutation,
+  useAuthRegisterMutation,
+} from "../../../../app/authSlice/authApi";
 import AppImages from "../../../../constants/Images";
-
+import { Routes } from "../../../../constants/routes";
+import theme from "../../../../theme/AppTheme";
+import StyledTextField from "../../../../theme/uiSinppets/StyledTextField";
+import { Button } from "react-native-paper";
+import StyledButton from "../../../../theme/uiSinppets/StyledButton";
+import { roleSwitch } from "../../../../app/authSlice/authSlice";
+import { useDispatch } from "react-redux";
+import { useLayoutEffect } from "react";
 // Colors
-const { primary, darkLight } = appTheme.COLORS;
+const { primary, darkLight, darkgray, black } = theme.colors;
 
-const CustomerRegister = ({ navigation }) => {
+const CustomerRegister = ({ navigation, route }) => {
   const [hidePass, setHidePass] = useState(true);
+  const dispatch = useDispatch();
+
+  // authLogin RTK Query
+  const [authRegister, { data, isLoading, isError, error, isSuccess }] =
+    useAuthRegisterMutation();
+
+  if (!isLoading && isSuccess) {
+    navigation.navigate(Routes.auth.customerLogin);
+  }
+
+  const handleLocalLogin = (credential, setSubmitting) => {
+    // dispatch(login(credential));
+    authRegister(credential);
+    setSubmitting(false);
+  };
+
+  const handleRoleChange = () => {
+    dispatch(roleSwitch({ role: "ROLE_COOK" }));
+    navigation.navigate(Routes.auth.cookRegister, {
+      animate: "slide_from_right",
+    });
+  };
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      animation: route.params?.animate,
+    });
+  }, []);
 
   return (
-    <KeyboardAvoidWrapper>
+    <ScrollView>
       <StyledContainer>
         <StatusBar style="dark" />
         <InnerContainer>
+          {isLoading && <ActivityIndicator size={"large"} color="primary" />}
           <PageLogo resizeMode="cover" source={AppImages.LogoDark} />
-          <SubTitle>Customer Register</SubTitle>
-
-          <Formik
-            initialValues={{ username: "", email: "", password: "" }}
-            onSubmit={(values) => {
-              console.log(values);
-              navigation.navigate("Welcome");
+          <SubTitle>Register As</SubTitle>
+          <View
+            style={{
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "center",
             }}
           >
-            {({ handleChange, handleBlur, handleSubmit, values }) => (
+            <Button
+              mode="outlined"
+              onPress={() => console.log("Pressed")}
+              style={{
+                borderBottomColor: theme.colors.primary,
+                borderWidth: 0,
+                borderBottomWidth: 3,
+                alignItems: "center",
+                justifyContent: "center",
+                width: theme.SIZES.width / 2.5,
+              }}
+            >
+              Customer
+            </Button>
+            <Button
+              style={{ width: theme.SIZES.width / 2.5 }}
+              mode="text"
+              color={black}
+              onPress={handleRoleChange}
+            >
+              Cook
+            </Button>
+          </View>
+
+          <Formik
+            initialValues={{ name: "", phone: "", email: "", password: "" }}
+            onSubmit={(values, { setSubmitting }) => {
+              if (
+                values.email == "" ||
+                values.password == "" ||
+                values.name == "" ||
+                values.phone == ""
+              ) {
+                setSubmitting(false);
+              } else {
+                handleLocalLogin(values, setSubmitting);
+              }
+            }}
+          >
+            {({
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              values,
+              isSubmitting,
+            }) => (
               <StyledFormArea>
-                <TextInput
-                  label={"Name"}
+                <StyledTextField
+                  label="Name"
                   icon="person"
                   placeholder="Enter Name"
-                  placeholderTextColor={darkLight}
-                  onChangeText={handleChange("username")}
-                  onBlur={handleBlur("username")}
-                  value={values.username}
+                  mode="outlined"
+                  onChangeText={handleChange("name")}
+                  onBlur={handleBlur("name")}
+                  value={values.name}
                 />
-                <TextInput
-                  label={"Email"}
-                  icon="mail"
+                <StyledTextField
+                  label="Mobile Number"
+                  icon="contact"
+                  placeholder="Enter Mobile Number"
+                  keyboardType="keypad"
+                  mode="outlined"
+                  onChangeText={handleChange("phone")}
+                  onBlur={handleBlur("phone")}
+                  value={values.phone}
+                />
+                <StyledTextField
+                  label="Email"
+                  icon="mail-outline"
                   placeholder="Enter Email Address"
-                  placeholderTextColor={darkLight}
+                  keyboardType="email-address"
+                  mode="outlined"
                   onChangeText={handleChange("email")}
                   onBlur={handleBlur("email")}
                   value={values.email}
-                  keyboardType="email-address"
                 />
-                <TextInput
+                <StyledTextField
                   label={"Password"}
-                  icon="lock"
+                  icon="lock-closed-outline"
                   placeholder="* * * * * * * *"
-                  placeholderTextColor={darkLight}
                   onChangeText={handleChange("password")}
                   onBlur={handleBlur("password")}
                   value={values.password}
-                  secureTextEntry={hidePass}
                   isPassword={true}
-                  hidePass={hidePass}
+                  secureTextEntry={hidePass}
                   setHidePass={setHidePass}
+                  mode="outlined"
+                  right={
+                    <TextInput.Icon
+                      name="eye"
+                      color={darkgray}
+                      onPress={() => setHidePass((hidePass) => !hidePass)}
+                    />
+                  }
                 />
-                <MsgBox>...</MsgBox>
-                <StyledButton>
-                  <ButtonText>Register</ButtonText>
+
+                <StyledButton
+                  isLoading={isSubmitting}
+                  mode="contained"
+                  onPress={handleSubmit}
+                  title="Register"
+                >
+                  Register
                 </StyledButton>
-                <Line></Line>
+
                 <ExtraView>
                   <ExtraText>Already have an account?</ExtraText>
-                  <TextLink onPress={() => navigation.navigate("Login")}>
-                    <TextLinkContent>Login</TextLinkContent>
-                  </TextLink>
+                  <Button
+                    mode="text"
+                    onPress={() =>
+                      navigation.navigate(Routes.auth.customerLogin, {
+                        animate: "pop",
+                      })
+                    }
+                  >
+                    Login
+                  </Button>
                 </ExtraView>
               </StyledFormArea>
             )}
           </Formik>
         </InnerContainer>
       </StyledContainer>
-    </KeyboardAvoidWrapper>
-  );
-};
-
-const TextInput = ({
-  label,
-  icon,
-  setHidePass,
-  hidePass,
-  isPassword,
-  ...props
-}) => {
-  return (
-    <View>
-      <LeftIcon>
-        <Octicons name={icon} size={20} color={primary} />
-      </LeftIcon>
-      <StyledInputLabel>{label}</StyledInputLabel>
-      <StyledInput {...props} />
-      {isPassword && (
-        <RightIcon onPress={() => setHidePass((hidePass) => !hidePass)}>
-          <Ionicons
-            name={hidePass ? "md-eye-off" : "md-eye"}
-            size={30}
-            color={darkLight}
-          />
-        </RightIcon>
-      )}
-    </View>
+    </ScrollView>
   );
 };
 

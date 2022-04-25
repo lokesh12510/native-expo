@@ -9,16 +9,6 @@ const AuthSlice = createSlice({
     role: "ROLE_GUEST",
   },
   reducers: {
-    login: (state, { payload }) => {
-      console.log(state);
-      return {
-        ...state,
-        authToken: "asdf123",
-      };
-    },
-    register: (state, action) => {
-      return { ...state };
-    },
     logout: (state) => {
       return {
         authToken: null,
@@ -34,9 +24,6 @@ const AuthSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(REHYDRATE, (state) => {
-      console.log("Rehydrate");
-    });
     builder.addMatcher(
       authApi.endpoints.authLogin.matchFulfilled,
       (state, { payload }) => {

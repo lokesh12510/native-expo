@@ -7,10 +7,16 @@ import CustomerRegister from "../screens/customer/auth/register/RegisterScreen";
 import CookLogin from "../screens/cook/auth/login/LoginScreen";
 import CookRegister from "../screens/cook/auth/register/RegisterScreen";
 import { Routes } from "../constants/routes";
+import OnboardScreen from "../screens/welcome/Onboard";
 
 const AuthStack = createNativeStackNavigator();
 const AuthStackScreen = () => (
-  <AuthStack.Navigator screenOptions={{ headerShown: false }}>
+  <AuthStack.Navigator initialRouteName="Welcome">
+    <AuthStack.Screen
+      name={"Welcome"}
+      component={OnboardScreen}
+      options={{ headerShown: false }}
+    />
     {/* Customer auth*/}
     <AuthStack.Screen
       name={Routes.auth.customerLogin}

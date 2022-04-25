@@ -8,12 +8,10 @@ import {
 
 const KeyboardAvoidWrapper = ({ children }) => {
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }}>
-      <ScrollView>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          {children}
-        </TouchableWithoutFeedback>
-      </ScrollView>
+    <KeyboardAvoidingView>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        {children}
+      </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 };

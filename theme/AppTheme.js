@@ -1,7 +1,8 @@
 import { Dimensions } from "react-native";
 const { width, height } = Dimensions.get("window");
+import { DefaultTheme, configureFonts } from "react-native-paper";
 
-export const COLORS = {
+export const colors = {
   // base colors
   primary: "#E70000", // red
 
@@ -86,6 +87,34 @@ export const FONTS = {
   },
 };
 
-const appTheme = { COLORS, SIZES, FONTS };
+const theme = {
+  ...DefaultTheme,
+  roundness: 2,
+  colors: {
+    ...DefaultTheme.colors,
+    // base colors
+    primary: "#E70000", // red
 
-export default appTheme;
+    secondary: "#E5E7EB",
+    tertiary: "#1F2937",
+    darkLight: "#9CA3AF",
+    brand: "#6D28D9",
+    green: "#6D28D9",
+    red: "#6D28D9",
+
+    // colors
+    black: "#1E1F20",
+    white: "#FFFFFF",
+
+    lightGray: "#F5F5F6",
+    lightGray2: "#F6F6F7",
+    lightGray3: "#EFEFF1",
+    lightGray4: "#F8F8F9",
+    transparent: "transparent",
+    darkgray: "#898C95",
+  },
+  fonts: configureFonts(FONTS),
+  SIZES,
+};
+
+export default theme;

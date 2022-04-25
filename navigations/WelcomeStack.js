@@ -7,7 +7,7 @@ import UserRoleScreen from "../screens/welcome/UserRole";
 const WelcomeStack = createNativeStackNavigator();
 const WelcomeStackScreen = () => (
   <WelcomeStack.Navigator screenOption={{ headerShown: "none" }}>
-    <WelcomeStack.Screen name="Welcome" component={OnboardScreen} />
+    {/* <WelcomeStack.Screen name="Welcome" component={OnboardScreen} /> */}
     <WelcomeStack.Screen name="UserRole" component={UserRoleScreen} />
   </WelcomeStack.Navigator>
 );

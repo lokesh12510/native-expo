@@ -28,8 +28,6 @@ const RootStack = () => {
     <Container>
       <ActivityIndicator size={"large"} color="#E70000" />
     </Container>
-  ) : role === "ROLE_GUEST" && authToken === null ? (
-    <WelcomeStackScreen />
   ) : authToken && role === "ROLE_CUSTOMER" ? (
     <CustomerTabsScreen />
   ) : authToken && role === "ROLE_COOK" ? (

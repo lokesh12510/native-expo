@@ -1,5 +1,5 @@
 import React from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { Ionicons } from "@expo/vector-icons";
 import Home from "../screens/customer/home/Home";
@@ -8,7 +8,9 @@ import Settings from "../screens/customer/settings/Settings";
 import Orders from "../screens/customer/orders/Orders";
 import Cart from "../screens/customer/cart/Cart";
 import { Routes } from "../constants/routes";
-import appTheme from "../theme/AppTheme";
+import theme from "../theme/AppTheme";
+
+const { primary, darkgray } = theme.colors;
 
 // Side Drawer Navigation
 const customerDrawer = createDrawerNavigator();
@@ -28,13 +30,13 @@ export const CustomerDrawerScreen = () => (
 
 // Bottom Tabs Navigation
 
-const customerTabs = createBottomTabNavigator();
+const customerTabs = createMaterialBottomTabNavigator();
 export const CustomerTabsScreen = () => {
   return (
     <customerTabs.Navigator
-      screenOptions={{
-        tabBarActiveTintColor: appTheme.COLORS.primary,
-      }}
+      activeColor={primary}
+      inactiveColor={darkgray}
+      barStyle={{ backgroundColor: "#fff" }}
     >
       <customerTabs.Screen
         name={Routes.customer.home}
