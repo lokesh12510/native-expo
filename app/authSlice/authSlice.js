@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { REHYDRATE } from "redux-persist";
 import { authApi } from "./authApi";
 
 const AuthSlice = createSlice({
@@ -7,36 +6,43 @@ const AuthSlice = createSlice({
   initialState: {
     authToken: null,
     role: "ROLE_GUEST",
+    loading: false,
   },
   reducers: {
-    logout: (state) => {
+    authReset: (state) => {
       return {
         authToken: null,
         role: "ROLE_GUEST",
       };
     },
-    roleSwitch: (state, { payload }) => {
-      console.log(state);
+    loading: (state) => {
       return {
         ...state,
-        role: payload.role,
+        loading: !state.loading,
       };
     },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
-      authApi.endpoints.authLogin.matchFulfilled,
+      authApi.endpoints.authCustomerLogin.matchFulfilled,
       (state, { payload }) => {
         state.authToken = payload.token;
         state.role = payload.user.role;
+        state.loading = false;
+      }
+    );
+    builder.addMatcher(
+      authApi.endpoints.authCookLogin.matchFulfilled,
+      (state, { payload }) => {
+        state.authToken = payload.token;
+        state.role = payload.user.role;
+        state.loading = false;
       }
     );
   },
 });
 
-export const login = AuthSlice.actions.login;
-export const register = AuthSlice.actions.register;
-export const logout = AuthSlice.actions.logout;
-export const roleSwitch = AuthSlice.actions.roleSwitch;
+export const authReset = AuthSlice.actions.authReset;
+export const loading = AuthSlice.actions.loading;
 
 export default AuthSlice.reducer;

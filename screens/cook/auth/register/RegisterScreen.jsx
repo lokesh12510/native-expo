@@ -23,9 +23,9 @@ import theme from "../../../../theme/AppTheme";
 import StyledTextField from "../../../../theme/uiSinppets/StyledTextField";
 import { Button } from "react-native-paper";
 import StyledButton from "../../../../theme/uiSinppets/StyledButton";
-import { roleSwitch } from "../../../../app/authSlice/authSlice";
 import { useDispatch } from "react-redux";
 import { useLayoutEffect } from "react";
+import { loading } from "../../../../app/authSlice/authSlice";
 // Colors
 const { primary, darkLight, darkgray, black } = theme.colors;
 
@@ -42,19 +42,19 @@ const CookRegister = ({ navigation, route }) => {
   }
 
   const handleLocalLogin = (credential, setSubmitting) => {
-    // dispatch(login(credential));
+    dispatch(loading());
     authRegister(credential);
     setSubmitting(false);
   };
 
   const handleRoleChange = () => {
-    dispatch(roleSwitch({ role: "ROLE_CUSTOMER" }));
     navigation.navigate(Routes.auth.customerRegister, {
       animate: "slide_from_left",
     });
   };
   useLayoutEffect(() => {
     navigation.setOptions({
+      title: "Cook Registration",
       animation: route.params?.animate,
     });
   }, []);

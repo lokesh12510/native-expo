@@ -9,6 +9,7 @@ import Orders from "../screens/customer/orders/Orders";
 import Cart from "../screens/customer/cart/Cart";
 import { Routes } from "../constants/routes";
 import theme from "../theme/AppTheme";
+import { AntDesign } from "react-native-vector-icons";
 
 const { primary, darkgray } = theme.colors;
 
@@ -43,7 +44,7 @@ export const CustomerTabsScreen = () => {
         component={Home}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={20} color={color} />
+            <AntDesign name="home" size={20} color={color} />
           ),
         }}
       />
@@ -53,7 +54,7 @@ export const CustomerTabsScreen = () => {
         component={Profile}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="cart" size={20} color={color} />
+            <AntDesign name="shoppingcart" size={20} color={color} />
           ),
         }}
       />
@@ -62,7 +63,7 @@ export const CustomerTabsScreen = () => {
         component={Profile}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="heart" size={20} color={color} />
+            <AntDesign name="hearto" size={20} color={color} />
           ),
         }}
       />
@@ -71,7 +72,7 @@ export const CustomerTabsScreen = () => {
         component={Profile}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={20} color={color} />
+            <AntDesign name="user" size={20} color={color} />
           ),
         }}
       />

@@ -12,22 +12,18 @@ import theme from "./theme/AppTheme";
 export default function App() {
   return (
     <>
+      <StatusBar style="auto" />
       {/* Redux data provider from "Store" data */}
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <PaperProvider theme={theme}>
-            <SafeAreaStyle>
+            <SafeAreaView style={{ flex: 1 }}>
               <RootNavigation />
-            </SafeAreaStyle>
+            </SafeAreaView>
           </PaperProvider>
           {/* Mobile StatusBar config */}
-          <StatusBar style="auto" />
         </PersistGate>
       </Provider>
     </>
   );
 }
-
-const SafeAreaStyle = styled.SafeAreaView`
-  flex: 1;
-`;

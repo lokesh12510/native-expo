@@ -7,33 +7,32 @@ import AuthStackScreen from "./AuthStack";
 import WelcomeStackScreen from "./WelcomeStack";
 import { ActivityIndicator } from "react-native";
 import styled from "styled-components";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { CookDrawerScreen } from "./CookStack";
+import theme from "../theme/AppTheme";
 
 const RootStack = () => {
-  const [isLoading, setIsLoading] = useState(true);
-
-  const { authToken, role } = useSelector((state) => state.auth);
+  const {
+    authToken,
+    role,
+    loading: isLoading,
+  } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
   console.log(authToken);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setIsLoading(false);
-      // setUser({});
-    }, 1000);
-  }, [authToken, role]);
+  useEffect(() => {}, [authToken, role]);
 
   return isLoading ? (
     <Container>
-      <ActivityIndicator size={"large"} color="#E70000" />
+      <ActivityIndicator size={"large"} color={theme.colors.primary} />
     </Container>
   ) : authToken && role === "ROLE_CUSTOMER" ? (
     <CustomerTabsScreen />
-  ) : authToken && role === "ROLE_COOK" ? (
+  ) : authToken && role === "ROLE_CHEF" ? (
     <CookDrawerScreen />
   ) : (
-    <AuthStackScreen />
+    !isLoading && <AuthStackScreen />
   );
 };
 

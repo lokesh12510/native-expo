@@ -13,7 +13,7 @@ import { Formik } from "formik";
 import { ScrollView, Text, View } from "react-native";
 import { TextInput } from "react-native-paper";
 
-import { useAuthLoginMutation } from "../../../../app/authSlice/authApi";
+import { useAuthCustomerLoginMutation } from "../../../../app/authSlice/authApi";
 import AppImages from "../../../../constants/Images";
 import { Routes } from "../../../../constants/routes";
 import theme from "../../../../theme/AppTheme";
@@ -21,7 +21,7 @@ import StyledTextField from "../../../../theme/uiSinppets/StyledTextField";
 import { Button } from "react-native-paper";
 import StyledButton from "../../../../theme/uiSinppets/StyledButton";
 import { useDispatch } from "react-redux";
-import { roleSwitch } from "../../../../app/authSlice/authSlice";
+import { loading } from "../../../../app/authSlice/authSlice";
 // Colors
 const { primary, darkLight, darkgray, black } = theme.colors;
 
@@ -30,19 +30,18 @@ const CustomerLogin = ({ navigation, route }) => {
   const dispatch = useDispatch();
 
   // authLogin RTK Query
-  const [authLogin, { data, isLoading, isError, error, isSuccess }] =
-    useAuthLoginMutation();
+  const [authCustomerLogin, { data, isLoading, isError, error, isSuccess }] =
+    useAuthCustomerLoginMutation();
 
   const handleLocalLogin = (credential, setSubmitting) => {
-    // dispatch(login(credential));
-    authLogin({ ...credential, attempts: 1 });
+    dispatch(loading());
+    authCustomerLogin({ ...credential, attempts: 1 });
 
     console.log(data, "Query");
     setSubmitting(false);
   };
 
   const handleRoleChange = () => {
-    dispatch(roleSwitch({ role: "ROLE_COOK" }));
     navigation.navigate(Routes.auth.cookLogin, { animate: "slide_from_right" });
   };
   useLayoutEffect(() => {
@@ -59,7 +58,7 @@ const CustomerLogin = ({ navigation, route }) => {
         <InnerContainer>
           <PageLogo resizeMode="cover" source={AppImages.LogoDark} />
           <SubTitle>Login As</SubTitle>
-          {isError && error?.data.error && (
+          {isError && error?.data?.error && (
             <Text
               style={{
                 color: primary,

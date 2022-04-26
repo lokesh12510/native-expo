@@ -23,9 +23,9 @@ import theme from "../../../../theme/AppTheme";
 import StyledTextField from "../../../../theme/uiSinppets/StyledTextField";
 import { Button } from "react-native-paper";
 import StyledButton from "../../../../theme/uiSinppets/StyledButton";
-import { roleSwitch } from "../../../../app/authSlice/authSlice";
 import { useDispatch } from "react-redux";
 import { useLayoutEffect } from "react";
+import { loading } from "../../../../app/authSlice/authSlice";
 // Colors
 const { primary, darkLight, darkgray, black } = theme.colors;
 
@@ -42,13 +42,12 @@ const CustomerRegister = ({ navigation, route }) => {
   }
 
   const handleLocalLogin = (credential, setSubmitting) => {
-    // dispatch(login(credential));
+    dispatch(loading());
     authRegister(credential);
     setSubmitting(false);
   };
 
   const handleRoleChange = () => {
-    dispatch(roleSwitch({ role: "ROLE_COOK" }));
     navigation.navigate(Routes.auth.cookRegister, {
       animate: "slide_from_right",
     });
@@ -56,6 +55,7 @@ const CustomerRegister = ({ navigation, route }) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      title: "Customer Registration",
       animation: route.params?.animate,
     });
   }, []);
@@ -135,7 +135,7 @@ const CustomerRegister = ({ navigation, route }) => {
                   label="Mobile Number"
                   icon="contact"
                   placeholder="Enter Mobile Number"
-                  keyboardType="keypad"
+                  keyboardType="numeric"
                   mode="outlined"
                   onChangeText={handleChange("phone")}
                   onBlur={handleBlur("phone")}

@@ -5,7 +5,7 @@ export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: fetchBaseQuery({ baseUrl: BASE_URL }),
   endpoints: (builder) => ({
-    authLogin: builder.mutation({
+    authCustomerLogin: builder.mutation({
       query: (body) => {
         console.log(body);
         return {
@@ -15,7 +15,26 @@ export const authApi = createApi({
         };
       },
     }),
-    authRegister: builder.mutation({
+    authCustomerRegister: builder.mutation({
+      query: ({ email, name, password, phone }) => {
+        return {
+          url: "auth/customersignup",
+          method: "POST",
+          body: { email, name, password, contact_number: phone },
+        };
+      },
+    }),
+    authCookLogin: builder.mutation({
+      query: (body) => {
+        console.log(body);
+        return {
+          url: "admin/auth/login",
+          method: "POST",
+          body,
+        };
+      },
+    }),
+    authCookRegister: builder.mutation({
       query: ({ email, name, password, phone }) => {
         return {
           url: "auth/customersignup",
@@ -27,4 +46,9 @@ export const authApi = createApi({
   }),
 });
 
-export const { useAuthLoginMutation, useAuthRegisterMutation } = authApi;
+export const {
+  useAuthCookLoginMutation,
+  useAuthCookRegisterMutation,
+  useAuthCustomerLoginMutation,
+  useAuthCustomerRegisterMutation,
+} = authApi;

@@ -95,12 +95,17 @@ const theme = {
     // base colors
     primary: "#E70000", // red
 
-    secondary: "#E5E7EB",
+    secondary: "#fb9209",
     tertiary: "#1F2937",
     darkLight: "#9CA3AF",
     brand: "#6D28D9",
     green: "#6D28D9",
     red: "#6D28D9",
+    gray: "#5e5f61",
+
+    text: "#454546",
+
+    pressed: "#52525510",
 
     // colors
     black: "#1E1F20",

@@ -10,10 +10,10 @@ import {
 } from "../../../../theme/Styles";
 import { StatusBar } from "expo-status-bar";
 import { Formik } from "formik";
-import { ScrollView, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { TextInput } from "react-native-paper";
 
-import { useAuthLoginMutation } from "../../../../app/authSlice/authApi";
+import { useAuthCookLoginMutation } from "../../../../app/authSlice/authApi";
 import AppImages from "../../../../constants/Images";
 import { Routes } from "../../../../constants/routes";
 import theme from "../../../../theme/AppTheme";
@@ -21,8 +21,8 @@ import StyledTextField from "../../../../theme/uiSinppets/StyledTextField";
 import { Button } from "react-native-paper";
 import StyledButton from "../../../../theme/uiSinppets/StyledButton";
 import { useDispatch } from "react-redux";
-import { roleSwitch } from "../../../../app/authSlice/authSlice";
 import { useLayoutEffect } from "react";
+import { loading } from "../../../../app/authSlice/authSlice";
 // Colors
 const { primary, darkgray, black } = theme.colors;
 
@@ -31,19 +31,19 @@ const CookLogin = ({ navigation, route }) => {
   const dispatch = useDispatch();
 
   // authLogin RTK Query
-  const [authLogin, { data, isLoading, isError, error, isSuccess }] =
-    useAuthLoginMutation();
+  const [authCookLogin, { data, isLoading, isError, error, isSuccess }] =
+    useAuthCookLoginMutation();
 
   const handleLocalLogin = (credential, setSubmitting) => {
     // dispatch(login(credential));
-    authLogin({ ...credential, attempts: 1 });
+    dispatch(loading());
+    authCookLogin({ ...credential, attempts: 1 });
 
     console.log(data, "Query");
     setSubmitting(false);
   };
 
   const handleRoleChange = () => {
-    dispatch(roleSwitch({ role: "ROLE_CUSTOMER" }));
     navigation.navigate(Routes.auth.customerLogin, {
       animate: "slide_from_left",
     });
@@ -51,6 +51,7 @@ const CookLogin = ({ navigation, route }) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      title: "Cook Login",
       animation: route.params?.animate,
     });
   }, []);
@@ -62,7 +63,7 @@ const CookLogin = ({ navigation, route }) => {
         <InnerContainer>
           <PageLogo resizeMode="cover" source={AppImages.LogoDark} />
           <SubTitle>Login As</SubTitle>
-          {isError && error?.data.error && (
+          {isError && error?.data?.error && (
             <Text
               style={{
                 color: primary,

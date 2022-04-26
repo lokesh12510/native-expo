@@ -1,79 +1,111 @@
 import {
   View,
   Text,
-  Button,
-  StyleSheet,
   ImageBackground,
   StatusBar,
+  Button,
+  Pressable,
 } from "react-native";
 import React, { useEffect } from "react";
 import { Routes } from "../../constants/routes";
 import { useDispatch } from "react-redux";
-import { roleSwitch } from "../../app/authSlice/authSlice";
-import AppImages from "../../constants/Images";
-import { PageLogo } from "../../theme/Styles";
-import StyledButton from "../../theme/uiSinppets/StyledButton";
+import { authReset } from "../../app/authSlice/authSlice";
+import styled from "styled-components";
+import { LinearGradient } from "expo-linear-gradient";
+import theme from "../../theme/AppTheme";
+import StyledBtn from "../../theme/uiSinppets/StyledBtn";
 
 const OnboardScreen = ({ navigation }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(roleSwitch({ role: "ROLE_GUEST" }));
+    dispatch(authReset());
   }, []);
 
-  const handleContinue = () => {
+  const handleLogin = () => {
     navigation.navigate(Routes.auth.customerLogin, {
+      animate: "slide_from_right",
+    });
+  };
+  const handleRegister = () => {
+    navigation.navigate(Routes.auth.customerRegister, {
       animate: "slide_from_right",
     });
   };
   return (
     <>
       <StatusBar barStyle="light-content" />
-      <View style={styles.container}>
-        <ImageBackground
+      <Container>
+        <Image
           source={{
             uri: "https://homecook.csuat.xyz/static/media/authBg.cbbba23627c8e2901cbb.webp",
           }}
           resizeMode="cover"
-          style={styles.image}
         >
-          <View style={styles.content}>
-            <StyledButton
-              title="Continue"
-              mode="contained"
-              onPress={handleContinue}
-            >
-              Continue
-            </StyledButton>
-          </View>
-          <View style={styles.overlay}></View>
-        </ImageBackground>
-      </View>
+          <Overlay
+            colors={["#00000000", "#000000"]}
+            style={{ height: "100%", width: "100%" }}
+          >
+            <Content>
+              <HeroText>Taste our Home food right now!</HeroText>
+              <StyledBtn title="Sign In" onPress={handleLogin} />
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flexDirection: "row",
+                }}
+              >
+                <SubText>Don't have an account ?</SubText>
+                <Pressable onPress={handleRegister}>
+                  <LinkText>Sign Up</LinkText>
+                </Pressable>
+              </View>
+            </Content>
+          </Overlay>
+        </Image>
+      </Container>
     </>
   );
 };
 
 export default OnboardScreen;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  image: {
-    flex: 1,
-    justifyContent: "flex-end",
-    position: "relative",
-  },
-  overlay: {
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
-    height: "100%",
-    backgroundColor: "#00000070",
-    zIndex: 1,
-  },
-  content: {
-    padding: 20,
-    zIndex: 2,
-  },
-});
+const Container = styled.View`
+  flex: 1;
+`;
+
+const Overlay = styled(LinearGradient)`
+  height: 100%;
+  width: 100%;
+  justify-content: flex-end;
+`;
+
+const Image = styled.ImageBackground`
+  position: relative;
+`;
+
+const Content = styled.View`
+  padding: 50px 30px;
+  z-index: 2;
+`;
+
+const HeroText = styled.Text`
+  font-size: 35px;
+  font-weight: bold;
+  padding-bottom: 30px;
+  color: #ffffff;
+`;
+
+const SubText = styled.Text`
+  font-size: 16px;
+  color: #fff;
+  text-align: center;
+`;
+
+const LinkText = styled.Text`
+  font-size: 16px;
+  color: ${theme.colors.primary};
+  text-align: center;
+  padding: 10px;
+`;
