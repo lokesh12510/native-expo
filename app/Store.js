@@ -4,9 +4,11 @@ import { authApi } from "./authSlice/authApi";
 import authReducer from "./authSlice/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { persistStore, persistReducer } from "redux-persist";
+import cartReducer from "./cartSlice/cartSlice";
 
 const reducers = combineReducers({
   auth: authReducer,
+  cart: cartReducer,
   [authApi.reducerPath]: authApi.reducer,
 });
 

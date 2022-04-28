@@ -1,8 +1,8 @@
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import React from "react";
 import { StatusBar } from "expo-status-bar";
-import theme from "../theme/AppTheme";
-import { MaterialIcons } from "react-native-vector-icons";
+import theme, { colors } from "../theme/AppTheme";
+import { MaterialIcons, Ionicons } from "react-native-vector-icons";
 
 const { darkgray, primary, text } = theme.colors;
 
@@ -35,6 +35,14 @@ const LocationSelect = () => {
           />
         </Pressable>
       </View>
+      <Pressable>
+        <Ionicons
+          name="notifications"
+          style={styles.notifyIcon}
+          size={25}
+          color={colors.darkgray}
+        />
+      </Pressable>
     </View>
   );
 };
@@ -48,14 +56,16 @@ const styles = StyleSheet.create({
   locationSelectContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "flex-start",
-    paddingHorizontal: 16,
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    marginTop: 10,
+    marginBottom: 10,
   },
+
   locationSelect: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 10,
   },
   locationIcon: {
     padding: 0,
@@ -78,6 +88,9 @@ const styles = StyleSheet.create({
     minWidth: theme.SIZES.width / 3,
     fontSize: 16,
     color: text,
+    padding: 4,
+  },
+  notifyIcon: {
     padding: 4,
   },
 });

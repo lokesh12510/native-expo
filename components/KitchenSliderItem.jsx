@@ -1,18 +1,33 @@
 import { View, Text, StyleSheet, Pressable, Image } from "react-native";
 import React from "react";
-import theme from "../../theme/AppTheme";
-import { MaterialIcons, Fontisto } from "react-native-vector-icons";
+import { MaterialIcons, Fontisto, Ionicons } from "react-native-vector-icons";
+import theme from "../theme/AppTheme";
+import { useState } from "react";
 
 const { colors, SIZES } = theme;
 
-const KitchenSliderItem = ({ item }) => {
+const KitchenSliderItem = ({ item, index }) => {
+  const [liked, setLiked] = useState(false);
   return (
     <View>
       <Pressable
-        style={styles.sliderItem}
+        style={[styles.sliderItem, index === 0 && { marginLeft: 10 }]}
         onPress={() => console.log("pressed")}
-        android_ripple={{ color: "#ccc" }}
+        android_ripple={{ color: "#ccc", foreground: true }}
       >
+        <Pressable
+          onPress={() => setLiked((liked) => !liked)}
+          style={({ pressed }) => [
+            styles.favoritesIcon,
+            pressed && { backgroundColor: "#6666662f" },
+          ]}
+        >
+          <Ionicons
+            name={"ios-heart-sharp"}
+            size={25}
+            color={liked ? colors.primary : colors.darkLight}
+          />
+        </Pressable>
         <View style={styles.wrapper}>
           <Image
             style={styles.image}
@@ -68,21 +83,24 @@ export default KitchenSliderItem;
 
 const styles = StyleSheet.create({
   sliderItem: {
-    marginVertical: 5,
-    marginRight: 10,
     backgroundColor: "#fff",
-    width: SIZES.width / 1.3,
+    width: 340,
     minHeight: SIZES.width / 3,
     borderRadius: 7,
-    elevation: 1,
+    elevation: 4,
     zIndex: 2,
     overflow: "hidden",
+    padding: 5,
+    borderWidth: 1,
+    borderColor: "#e9e9e9",
+    margin: 7,
   },
   image: {
     width: "40%",
     height: "100%",
     resizeMode: "cover",
     zIndex: 1,
+    borderRadius: 7,
   },
   wrapper: {
     flex: 1,
@@ -119,5 +137,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
+  },
+  favoritesIcon: {
+    position: "absolute",
+    zIndex: 5,
+    top: 4,
+    right: 4,
+    padding: 4,
+    borderRadius: 50,
   },
 });
