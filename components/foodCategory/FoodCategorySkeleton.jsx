@@ -3,7 +3,7 @@ import React from "react";
 
 const FoodTypeSkeleton = () => {
   return [...Array(4)].map((item, index) => {
-    return <View key={index} style={styles.skeleton}></View>;
+    return <View key={index} style={styles.skeleton} />;
   });
 };
 

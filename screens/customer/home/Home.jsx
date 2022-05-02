@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import SwipeTabsItem from "../../../components/SwipeTabsItem";
 import KitchenList from "../../../components/Kitchen/KitchenList";
 import FoodCategory from "../../../components/foodCategory/FoodCategory";
+import FoodList from "../../../components/foodList/FoodListContainer";
 
 const { colors } = theme;
 
@@ -39,7 +40,7 @@ const Home = () => {
         <SearchField />
         {/* Search Bar Container */}
         {/* Food Items Container */}
-        <SwipeTabsItem />
+        <FoodList />
         {/* Food Items Container */}
       </ScrollView>
       {/* Floating Cart View */}

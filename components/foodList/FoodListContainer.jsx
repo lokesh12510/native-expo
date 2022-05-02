@@ -7,7 +7,7 @@ import {
   Pressable,
   ScrollView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Ionicons,
   MaterialCommunityIcons,
@@ -18,6 +18,7 @@ import theme from "../../theme/AppTheme";
 import { addItem, removeItem } from "../../app/slices/cartSlice";
 import { closeKitchen } from "../../app/slices/FilterSlice";
 import FoodCard from "./FoodCard";
+import { useGetFoodListMutation } from "../../app/services/foodListApi";
 
 const { colors, SIZES } = theme;
 
@@ -107,12 +108,31 @@ export const FoodItem = () => {
 };
 
 const FoodList = () => {
-  const { isKitchen, kitchenInfo } = useSelector(
+  const { isKitchen, kitchenInfo, kitchenId } = useSelector(
     (state) => state.filter.kitchen
   );
   const { isCategory, categoryInfo } = useSelector(
     (state) => state.filter.category
   );
+  const { longitude, latitude } = useSelector((state) => state.user.location);
+
+  const [getFoodList, { isError, data: foodList = [], isLoading }] =
+    useGetFoodListMutation();
+
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(6);
+
+  useEffect(() => {
+    getFoodList({
+      page: page,
+      perPage: perPage,
+      latitude: latitude,
+      longitude: longitude,
+      cook: kitchenId || "",
+      food_type: categoryInfo.id || "",
+      food_name: "",
+    });
+  }, []);
 
   const dispatch = useDispatch();
 
@@ -166,11 +186,14 @@ const FoodList = () => {
             {categoryInfo.type}
           </Text>
         )}
-
-        {[...Array(6)].map((item, index) => {
-          return <FoodCard key={index} />;
-        })}
       </View>
+
+      <FlatList
+        data={foodList.list}
+        renderItem={({ item, index }) => <FoodCard item={item} index={index} />}
+        keyExtractor={(item) => item.id}
+        ListEmptyComponent={<Text>Loading...</Text>}
+      />
     </>
   );
 };

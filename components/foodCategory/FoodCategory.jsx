@@ -54,8 +54,6 @@ const FoodCategory = () => {
     getFoodTypeList();
   }, []);
 
-  console.log(foodTypeList);
-
   const { categoryType } = useSelector((state) => state.filter.category);
 
   const dispatch = useDispatch();
@@ -70,7 +68,6 @@ const FoodCategory = () => {
   return (
     <View style={styles.container}>
       {!isLoading &&
-        foodTypeList.length &&
         foodTypeList.map((item, index) => {
           return (
             <CategoryItem
@@ -124,22 +121,3 @@ const styles = StyleSheet.create({
     elevation: 7,
   },
 });
-
-const DATA = [
-  {
-    id: 1,
-    type: "BreakFast",
-  },
-  {
-    id: 2,
-    type: "Lunch",
-  },
-  {
-    id: 3,
-    type: "Snacks",
-  },
-  {
-    id: 4,
-    type: "Dinner",
-  },
-];
