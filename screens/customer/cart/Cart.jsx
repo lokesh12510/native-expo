@@ -1,11 +1,21 @@
-import { View, Text } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import React from "react";
+import SwipeTabsContainer from "../../../components/SwipeTabsContainer";
+import { FoodItem } from "../../../components/SwipeTabsItem";
 
 const Cart = () => {
   return (
-    <View>
-      <Text>Cart</Text>
-    </View>
+    <>
+      {/* Swipe Tabs Container */}
+      <ScrollView>
+        <SwipeTabsContainer />
+
+        {[...Array(6)].map((item, index) => {
+          return <FoodItem key={index} />;
+        })}
+      </ScrollView>
+      {/* Swipe Tabs Container */}
+    </>
   );
 };
 

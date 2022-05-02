@@ -5,6 +5,7 @@ import {
   FlatList,
   Image,
   Pressable,
+  ScrollView,
 } from "react-native";
 import React, { useState } from "react";
 import { colors } from "../theme/AppTheme";
@@ -16,7 +17,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { addItem, removeItem } from "../app/cartSlice/cartSlice";
 
-const FoodItem = () => {
+export const FoodItem = () => {
   const dispatch = useDispatch();
 
   const [itemCount, setItemCount] = useState(0);
@@ -43,9 +44,7 @@ const FoodItem = () => {
             <Text style={styles.foodTitle}>Chicken Biriyani</Text>
           </View>
           <View style={styles.foodContent}>
-            <Text style={styles.foodContentText}>
-              Lorem ipsum dolor sit amet consect etur adipisicing.
-            </Text>
+            <Text style={styles.foodContentText}>&#x20B9; 500</Text>
           </View>
           <View style={styles.divider}></View>
           <View style={styles.extraContent}>
@@ -105,13 +104,11 @@ const FoodItem = () => {
 
 const SwipeTabsItem = () => {
   return (
-    <FlatList
-      scrollEnabled
-      style={styles.container}
-      data={[{ id: 1 }, { id: 2 }, { id: 3 }, { id: 11 }]}
-      renderItem={(item) => <FoodItem item={item} />}
-      keyExtractor={(item) => item.id}
-    />
+    <ScrollView style={styles.container}>
+      {[...Array(6)].map((item, index) => {
+        return <FoodItem key={index} />;
+      })}
+    </ScrollView>
   );
 };
 
@@ -119,8 +116,8 @@ export default SwipeTabsItem;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 5,
+    padding: 8,
+    height: 200,
   },
   swipeItem: {
     minHeight: 130,
@@ -165,7 +162,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   foodContentText: {
-    fontSize: 14,
+    fontSize: 18,
     color: colors.gray,
     flexWrap: "wrap",
   },

@@ -15,7 +15,7 @@ import { TextInput } from "react-native-paper";
 
 import {
   useAuthLoginMutation,
-  useAuthRegisterMutation,
+  authCookRegister,
 } from "../../../../app/authSlice/authApi";
 import AppImages from "../../../../constants/Images";
 import { Routes } from "../../../../constants/routes";
@@ -34,8 +34,8 @@ const CookRegister = ({ navigation, route }) => {
   const dispatch = useDispatch();
 
   // authLogin RTK Query
-  const [authRegister, { data, isLoading, isError, error, isSuccess }] =
-    useAuthRegisterMutation();
+  const [authCookRegister, { data, isLoading, isError, error, isSuccess }] =
+    authCookRegister();
 
   if (!isLoading && isSuccess) {
     navigation.navigate(Routes.auth.customerLogin);
@@ -43,7 +43,7 @@ const CookRegister = ({ navigation, route }) => {
 
   const handleLocalLogin = (credential, setSubmitting) => {
     dispatch(loading());
-    authRegister(credential);
+    authCookRegister(credential);
     setSubmitting(false);
   };
 

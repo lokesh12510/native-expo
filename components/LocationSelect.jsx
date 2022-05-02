@@ -35,14 +35,6 @@ const LocationSelect = () => {
           />
         </Pressable>
       </View>
-      <Pressable>
-        <Ionicons
-          name="notifications"
-          style={styles.notifyIcon}
-          size={25}
-          color={colors.darkgray}
-        />
-      </Pressable>
     </View>
   );
 };
@@ -57,9 +49,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 10,
-    marginTop: 10,
-    marginBottom: 10,
   },
 
   locationSelect: {

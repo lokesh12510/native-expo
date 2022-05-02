@@ -6,7 +6,7 @@ import {
   ScrollView,
   FlatList,
 } from "react-native";
-import React from "react";
+import React, { useRef } from "react";
 import theme from "../../../theme/AppTheme";
 
 import SearchField from "../../../components/SearchField";
@@ -16,50 +16,59 @@ import KitchenSliderItem from "../../../components/KitchenSliderItem";
 import SpecialOffersSliderItem from "../../../components/SpecialOffersSliderItem";
 import MainCategory from "../../../components/MainCategory";
 import SwipeTabsContainer from "../../../components/SwipeTabsContainer";
-import SwipeTabsItem from "../../../components/SwipeTabsItem";
+import FloatingCart from "../../../components/FloatingCart";
+import { useSelector } from "react-redux";
+
+import { useScrollToTop } from "@react-navigation/native";
+import { useEffect } from "react";
+import { useState } from "react";
+import { FoodItem } from "../../../components/SwipeTabsItem";
 
 const { colors } = theme;
 
 const Home = () => {
-  return (
-    <ScrollView style={styles.root}>
-      {/* Location Container */}
-      <LocationSelect />
-      {/* Location Container */}
+  const { itemCount } = useSelector((state) => state.cart);
 
-      {/* Hero Text Container*/}
-      <View style={styles.heroTextContainer}>
-        <Text style={styles.heroText1}>Hi, Slyvie</Text>
-        <Text style={styles.heroText2}>
-          Order Food Online from the best Homecook{" "}
-        </Text>
-      </View>
-      {/* Hero Text Container*/}
-      {/* Search Bar Container */}
-      <SearchField />
-      {/* Search Bar Container */}
-      {/* Main Category Container */}
-      <MainCategory />
-      {/* Main Category Container */}
-      {/* Kitchen Slider  */}
-      <HSliderContainer sectionTitle={"Popular Kitchen"} bg={true}>
-        <FlatList
-          data={DATA}
-          showsHorizontalScrollIndicator={false}
-          horizontal
-          renderItem={({ item, index }) => (
-            <KitchenSliderItem item={item} index={index} />
-          )}
-          keyExtractor={(item) => item.id}
-          disableIntervalMomentum
-          decelerationRate={0}
-          snapToInterval={340} //your element width
-          snapToAlignment={"center"}
-        />
-      </HSliderContainer>
-      {/* Kitchen Slider  */}
-      {/* Special Offers Container */}
-      <HSliderContainer sectionTitle={"Special Offers"}>
+  return (
+    <>
+      <ScrollView
+        style={styles.root}
+        stickyHeaderIndices={[4, 5]}
+        stickyHeaderHiddenOnScroll={true}
+      >
+        {/* Hero Text Container*/}
+        <View style={styles.heroTextContainer}>
+          <Text style={styles.heroText1}>Hi, Slyvie</Text>
+          <Text style={styles.heroText2}>
+            Order Food Online from the best Homecook{" "}
+          </Text>
+        </View>
+        {/* Hero Text Container*/}
+        {/* Search Bar Container */}
+        <SearchField />
+        {/* Search Bar Container */}
+        {/* Main Category Container */}
+        <MainCategory />
+        {/* Main Category Container */}
+        {/* Kitchen Slider  */}
+        <HSliderContainer sectionTitle={"Popular Kitchen"}>
+          <FlatList
+            data={DATA}
+            showsHorizontalScrollIndicator={false}
+            horizontal
+            renderItem={({ item, index }) => (
+              <KitchenSliderItem item={item} index={index} />
+            )}
+            keyExtractor={(item) => item.id}
+            disableIntervalMomentum
+            decelerationRate={0}
+            snapToInterval={340} //your element width
+            snapToAlignment={"center"}
+          />
+        </HSliderContainer>
+        {/* Kitchen Slider  */}
+        {/* Special Offers Container */}
+        {/* <HSliderContainer sectionTitle={"Special Offers"}>
         <FlatList
           style={{ marginBottom: 10 }}
           data={OFFER_DATA}
@@ -74,14 +83,23 @@ const Home = () => {
           snapToInterval={210} //your element width
           snapToAlignment={"center"}
         />
-      </HSliderContainer>
-      {/* Special Offers Container */}
-      {/* Swipe Tabs Container */}
-      <SwipeTabsContainer />
-      {/* <SwipeTabsItem /> */}
-      {/* Swipe Tabs Container */}
-      <View style={{ padding: 50 }}></View>
-    </ScrollView>
+      </HSliderContainer> */}
+        {/* Special Offers Container */}
+
+        {/* {[...Array(4)].map((item, index) => {
+          return <FoodItem key={index} />;
+        })} */}
+
+        <View style={{ padding: 50 }}></View>
+        {/* Swipe Tabs Container */}
+        <SwipeTabsContainer />
+        {/* Swipe Tabs Container */}
+      </ScrollView>
+      {/* Floating Cart View */}
+      {itemCount > 0 && <FloatingCart />}
+
+      {/* Floating Cart View */}
+    </>
   );
 };
 
@@ -90,8 +108,9 @@ export default Home;
 const styles = StyleSheet.create({
   root: {
     width: theme.SIZES.width,
+    height: "100%",
     backgroundColor: "#fff",
-    paddingTop: StatusBar.currentHeight,
+    position: "relative",
   },
   container: {
     paddingHorizontal: 16,

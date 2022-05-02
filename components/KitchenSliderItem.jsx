@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Pressable, Image } from "react-native";
-import React from "react";
+import React, { forwardRef } from "react";
 import { MaterialIcons, Fontisto, Ionicons } from "react-native-vector-icons";
 import theme from "../theme/AppTheme";
 import { useState } from "react";
@@ -8,11 +8,14 @@ const { colors, SIZES } = theme;
 
 const KitchenSliderItem = ({ item, index }) => {
   const [liked, setLiked] = useState(false);
+  const handleScroll = () => {
+    console.log("pressed");
+  };
   return (
     <View>
       <Pressable
         style={[styles.sliderItem, index === 0 && { marginLeft: 10 }]}
-        onPress={() => console.log("pressed")}
+        onPress={handleScroll}
         android_ripple={{ color: "#ccc", foreground: true }}
       >
         <Pressable
