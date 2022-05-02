@@ -9,7 +9,7 @@ import {
 import React, { useEffect } from "react";
 import { Routes } from "../../constants/routes";
 import { useDispatch } from "react-redux";
-import { authReset } from "../../app/authSlice/authSlice";
+import { authReset } from "../../app/slices/authSlice";
 import styled from "styled-components";
 import { LinearGradient } from "expo-linear-gradient";
 import theme from "../../theme/AppTheme";

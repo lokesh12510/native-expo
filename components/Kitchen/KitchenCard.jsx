@@ -1,21 +1,20 @@
 import { View, Text, StyleSheet, Pressable, Image } from "react-native";
-import React, { forwardRef } from "react";
+import React from "react";
 import { MaterialIcons, Fontisto, Ionicons } from "react-native-vector-icons";
-import theme from "../theme/AppTheme";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectKitchen } from "../app/slices/FilterSlice";
+import theme from "../../theme/AppTheme";
+import { selectKitchen } from "../../app/slices/FilterSlice";
 
 const { colors, SIZES } = theme;
 
-const KitchenSliderItem = ({ item, index }) => {
+const KitchenCard = ({ item, index }) => {
   const [liked, setLiked] = useState(false);
 
   const { kitchenId } = useSelector((state) => state.filter.kitchen);
 
   const dispatch = useDispatch();
   const handleSelect = (item) => {
-    console.log(item, "kitchen");
     dispatch(selectKitchen({ kitchen: item }));
   };
   return (
@@ -96,13 +95,13 @@ const KitchenSliderItem = ({ item, index }) => {
   );
 };
 
-export default KitchenSliderItem;
+export default KitchenCard;
 
 const styles = StyleSheet.create({
   sliderItem: {
     backgroundColor: "#fff",
     width: 340,
-    minHeight: SIZES.width / 3,
+    minHeight: 145,
     borderRadius: 7,
     elevation: 4,
     zIndex: 2,

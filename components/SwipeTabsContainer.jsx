@@ -7,136 +7,91 @@ import {
   Image,
   Pressable,
   ScrollView,
+  useWindowDimensions,
   TouchableOpacity,
 } from "react-native";
 import React, { useRef } from "react";
-import { MaterialIcons, Ionicons } from "react-native-vector-icons";
 
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import SwipeTabsItem from "./SwipeTabsItem";
 import theme from "../theme/AppTheme";
 
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Profile from "../screens/customer/profile/Profile";
-
-const HEADER_HEIGHT = 200;
+import { TabView, SceneMap } from "react-native-tab-view";
+import { FoodItem } from "./SwipeTabsItem";
 
 const { colors, SIZES } = theme;
 
-const Tab = createMaterialTopTabNavigator();
+const FirstRoute = () => (
+  <ScrollView style={{ flex: 1, backgroundColor: "#f1f1f1" }}>
+    {[...Array(6)].map((item, index) => {
+      return <FoodItem key={index} />;
+    })}
+  </ScrollView>
+);
 
-function MyTabBar({ state, descriptors, navigation, position }) {
-  return (
-    <View style={{ flexDirection: "row" }}>
-      {state.routes.map((route, index) => {
-        const { options } = descriptors[route.key];
-        const label =
-          options.tabBarLabel !== undefined
-            ? options.tabBarLabel
-            : options.title !== undefined
-            ? options.title
-            : route.name;
-
-        const isFocused = state.index === index;
-
-        const onPress = () => {
-          const event = navigation.emit({
-            type: "tabPress",
-            target: route.key,
-            canPreventDefault: true,
-          });
-
-          if (!isFocused && !event.defaultPrevented) {
-            // The `merge: true` option makes sure that the params inside the tab screen are preserved
-            navigation.navigate({ name: route.name, merge: true });
-          }
-        };
-
-        const onLongPress = () => {
-          navigation.emit({
-            type: "tabLongPress",
-            target: route.key,
-          });
-        };
-
-        const inputRange = state.routes.map((_, i) => i);
-        const opacity = position.interpolate({
-          inputRange,
-          outputRange: inputRange.map((i) => (i === index ? 1 : 0)),
-        });
-
-        return (
-          <TouchableOpacity
-            accessibilityRole="button"
-            accessibilityState={isFocused ? { selected: true } : {}}
-            accessibilityLabel={options.tabBarAccessibilityLabel}
-            testID={options.tabBarTestID}
-            onPress={onPress}
-            onLongPress={onLongPress}
-            style={{ flex: 1 }}
-          >
-            <Animated.Text style={{ opacity }}>{label}</Animated.Text>
-          </TouchableOpacity>
-        );
-      })}
-    </View>
-  );
-}
-
+const SecondRoute = () => (
+  <ScrollView style={{ flex: 1, backgroundColor: "#f1f1f1" }}>
+    {[...Array(6)].map((item, index) => {
+      return <FoodItem key={index} />;
+    })}
+  </ScrollView>
+);
+const ThirdRoute = () => (
+  <ScrollView style={{ flex: 1, backgroundColor: "#f1f1f1" }}>
+    {[...Array(6)].map((item, index) => {
+      return <FoodItem key={index} />;
+    })}
+  </ScrollView>
+);
+const FourthRoute = () => (
+  <ScrollView style={{ flex: 1, backgroundColor: "#f1f1f1" }}>
+    {[...Array(6)].map((item, index) => {
+      return <FoodItem key={index} />;
+    })}
+  </ScrollView>
+);
+const renderScene = SceneMap({
+  first: FirstRoute,
+  second: SecondRoute,
+  third: ThirdRoute,
+  fourth: FourthRoute,
+  five: FirstRoute,
+});
 const SwipeTabsContainer = () => {
-  const offset = useRef(new Animated.Value(0)).current;
-  const insets = useSafeAreaInsets();
+  const layout = useWindowDimensions();
+
+  const [index, setIndex] = React.useState(0);
+  const [routes] = React.useState([
+    { key: "first", title: "First" },
+    { key: "second", title: "Second" },
+    { key: "third", title: "Third" },
+    { key: "fourth", title: "Fourth" },
+  ]);
 
   return (
     <>
-      <View style={[styles.selectedKitchenContainer]}>
-        <View style={styles.kitchenImageContainer}>
-          <Image
-            style={styles.image}
-            source={{
-              uri: "https://media.easemytrip.com/media/Blog/India/636977607425696252/636977607425696252QYiiUU.jpg",
-            }}
-          />
-        </View>
-        <View style={styles.kitchenContent}>
-          <Text style={styles.kitchenTitle}>The New View</Text>
-          <Text style={styles.subTitle}>Coimbatore</Text>
-        </View>
-        <View style={styles.IconBtn}>
-          <Pressable
-            android_ripple={{ color: "#ccc", borderLess: true }}
-            style={{ padding: 1 }}
-          >
-            <MaterialIcons
-              name="close"
-              size={30}
-              color={colors.black}
-              style={styles.closeIcon}
-            />
-          </Pressable>
-        </View>
-      </View>
-      <View style={styles.container}>
-        <Tab.Navigator
-          tabBar={(props) => <MyTabBar {...props} />}
-          style={[styles.tabContainer, { overflow: "visible" }]}
-          screenOptions={{
-            tabBarItemStyle: { width: "auto", paddingHorizontal: 15 },
-            tabBarScrollEnabled: true,
-            tabBarBounces: true,
-            tabBarStyle: { backgroundColor: "#fff", elevation: 0 },
-            tabBarIndicatorStyle: { backgroundColor: colors.primary },
-            tabBarActiveTintColor: colors.primary,
-            tabBarInactiveTintColor: colors.gray,
-          }}
-        >
-          <Tab.Screen name="Recommended" component={Profile} />
-          <Tab.Screen name="Featured" component={SwipeTabsItem} />
-          <Tab.Screen name="Non-Veg" component={SwipeTabsItem} />
-          <Tab.Screen name="Veg" component={SwipeTabsItem} />
-          <Tab.Screen name="Biriyani" component={SwipeTabsItem} />
-        </Tab.Navigator>
-      </View>
+      <Text>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim animi
+        rerum, quas deserunt eveniet provident possimus similique ab obcaecati
+        aperiam velit voluptas veniam repellendus nesciunt at totam dolores
+        dolorem maiores voluptatibus porro. Pariatur aliquam officia nostrum
+        incidunt hic impedit odio numquam dolorum dolor quibusdam, est
+        aspernatur, omnis eaque cumque tempora quod odit accusantium temporibus,
+        ut quas. Rerum voluptate beatae, temporibus error nemo quas non commodi
+        laborum excepturi aspernatur! Alias, doloribus impedit porro accusamus
+        quas ut. Laudantium porro corporis sed veritatis nihil magni et possimus
+        maiores molestias similique laboriosam hic quas minima, autem nam
+        cupiditate ut libero repellat labore non placeat maxime? Non cupiditate
+        doloribus praesentium doloremque aliquam, impedit quaerat consequuntur
+        rem veritatis numquam quibusdam eos, dignissimos in, alias ea beatae.
+        Eaque, veniam illo nemo adipisci eius rem? Tempore optio officia
+        nesciunt in inventore voluptatem labore, voluptatum laboriosam
+        repellendus amet accusamus vero fuga non incidunt expedita rem illo,
+        quasi atque. Eligendi repellat labore, accusamus consectetur inventore
+        ullam molestiae accusantium quasi illum adipisci pariatur delectus odit
+        nisi impedit veniam error repellendus quod expedita cum! Deleniti
+        voluptatibus sit inventore reprehenderit perspiciatis commodi reiciendis
+        tempora fugit consequatur esse enim magnam, eligendi vel repellat alias.
+        Voluptas omnis vel natus repellat nam reiciendis nulla cumque eos.
+      </Text>
     </>
   );
 };
@@ -169,7 +124,7 @@ const styles = StyleSheet.create({
     flex: 1,
     // flexDirection: "column",
     // height: 400,
-    // height: SIZES.height - 45,
+    height: SIZES.height - 45,
   },
   kitchenContent: {
     paddingHorizontal: 10,

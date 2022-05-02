@@ -8,15 +8,18 @@ import {
   ScrollView,
 } from "react-native";
 import React, { useState } from "react";
-import theme, { colors, SIZES } from "../theme/AppTheme";
 import {
   Ionicons,
   MaterialCommunityIcons,
   MaterialIcons,
 } from "react-native-vector-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { addItem, removeItem } from "../app/slices/cartSlice";
-import { closeKitchen } from "../app/slices/FilterSlice";
+import theme from "../../theme/AppTheme";
+import { addItem, removeItem } from "../../app/slices/cartSlice";
+import { closeKitchen } from "../../app/slices/FilterSlice";
+import FoodCard from "./FoodCard";
+
+const { colors, SIZES } = theme;
 
 export const FoodItem = () => {
   const dispatch = useDispatch();
@@ -103,7 +106,7 @@ export const FoodItem = () => {
   );
 };
 
-const SwipeTabsItem = () => {
+const FoodList = () => {
   const { isKitchen, kitchenInfo } = useSelector(
     (state) => state.filter.kitchen
   );
@@ -165,14 +168,14 @@ const SwipeTabsItem = () => {
         )}
 
         {[...Array(6)].map((item, index) => {
-          return <FoodItem key={index} />;
+          return <FoodCard key={index} />;
         })}
       </View>
     </>
   );
 };
 
-export default SwipeTabsItem;
+export default FoodList;
 
 const styles = StyleSheet.create({
   container: {

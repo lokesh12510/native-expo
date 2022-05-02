@@ -16,7 +16,7 @@ import { TextInput } from "react-native-paper";
 import {
   useAuthLoginMutation,
   authCookRegister,
-} from "../../../../app/authSlice/authApi";
+} from "../../../../app/services/authApi";
 import AppImages from "../../../../constants/Images";
 import { Routes } from "../../../../constants/routes";
 import theme from "../../../../theme/AppTheme";
@@ -25,7 +25,7 @@ import { Button } from "react-native-paper";
 import StyledButton from "../../../../theme/uiSinppets/StyledButton";
 import { useDispatch } from "react-redux";
 import { useLayoutEffect } from "react";
-import { loading } from "../../../../app/authSlice/authSlice";
+import { loading } from "../../../../app/slices/authSlice";
 // Colors
 const { primary, darkLight, darkgray, black } = theme.colors;
 

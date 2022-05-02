@@ -1,24 +1,17 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  Image,
-  Pressable,
-  ScrollView,
-} from "react-native";
-import React, { useState } from "react";
-import theme, { colors, SIZES } from "../theme/AppTheme";
+import { useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import {
   Ionicons,
   MaterialCommunityIcons,
   MaterialIcons,
 } from "react-native-vector-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { addItem, removeItem } from "../app/slices/cartSlice";
-import { closeKitchen } from "../app/slices/FilterSlice";
+import theme from "../../theme/AppTheme";
+import { addItem, removeItem } from "../../app/slices/cartSlice";
 
-export const FoodItem = () => {
+const { colors, SIZES } = theme;
+
+const FoodCard = () => {
   const dispatch = useDispatch();
 
   const [itemCount, setItemCount] = useState(0);
@@ -103,76 +96,7 @@ export const FoodItem = () => {
   );
 };
 
-const SwipeTabsItem = () => {
-  const { isKitchen, kitchenInfo } = useSelector(
-    (state) => state.filter.kitchen
-  );
-  const { isCategory, categoryInfo } = useSelector(
-    (state) => state.filter.category
-  );
-
-  const dispatch = useDispatch();
-
-  const handleClose = () => {
-    dispatch(closeKitchen());
-  };
-
-  return (
-    <>
-      {/* selected Kitchen Container */}
-      {isKitchen && (
-        <View style={[styles.selectedKitchenContainer]}>
-          <View style={styles.kitchenImageContainer}>
-            <Image
-              style={styles.image}
-              source={{
-                uri: kitchenInfo.image,
-              }}
-            />
-          </View>
-          <View style={styles.kitchenContent}>
-            <Text style={styles.kitchenTitle}>{kitchenInfo.kitchen_name}</Text>
-            <Text style={styles.subTitle}>{kitchenInfo.city}</Text>
-          </View>
-          <View style={styles.IconBtn}>
-            <Pressable
-              android_ripple={{ color: "#ccc", borderLess: true }}
-              style={{ padding: 1 }}
-              onPress={handleClose}
-            >
-              <MaterialIcons
-                name="close"
-                size={30}
-                color={colors.black}
-                style={styles.closeIcon}
-              />
-            </Pressable>
-          </View>
-        </View>
-      )}
-
-      {/* selected Kitchen Container */}
-      <View
-        style={[
-          styles.container,
-          isKitchen && { backgroundColor: theme.colors.secondary },
-        ]}
-      >
-        {isKitchen && isCategory && (
-          <Text style={[styles.foodTitle, { marginBottom: 10 }]}>
-            {categoryInfo.type}
-          </Text>
-        )}
-
-        {[...Array(6)].map((item, index) => {
-          return <FoodItem key={index} />;
-        })}
-      </View>
-    </>
-  );
-};
-
-export default SwipeTabsItem;
+export default FoodCard;
 
 const styles = StyleSheet.create({
   container: {

@@ -1,11 +1,67 @@
-import { View, Text } from "react-native";
+import { View, Text, useWindowDimensions, ScrollView } from "react-native";
 import React from "react";
+import { TabView, SceneMap } from "react-native-tab-view";
+import { FoodItem } from "../../../components/SwipeTabsItem";
 
 const Orders = () => {
+  const FirstRoute = () => (
+    <ScrollView style={{ flex: 1, backgroundColor: "#f1f1f1" }}>
+      {[...Array(6)].map((item, index) => {
+        return <FoodItem key={index} />;
+      })}
+    </ScrollView>
+  );
+
+  const SecondRoute = () => (
+    <ScrollView style={{ flex: 1, backgroundColor: "#f1f1f1" }}>
+      {[...Array(6)].map((item, index) => {
+        return <FoodItem key={index} />;
+      })}
+    </ScrollView>
+  );
+  const ThirdRoute = () => (
+    <ScrollView style={{ flex: 1, backgroundColor: "#f1f1f1" }}>
+      {[...Array(6)].map((item, index) => {
+        return <FoodItem key={index} />;
+      })}
+    </ScrollView>
+  );
+  const FourthRoute = () => (
+    <ScrollView style={{ flex: 1, backgroundColor: "#f1f1f1" }}>
+      {[...Array(6)].map((item, index) => {
+        return <FoodItem key={index} />;
+      })}
+    </ScrollView>
+  );
+
+  const renderScene = SceneMap({
+    first: FirstRoute,
+    second: SecondRoute,
+    third: ThirdRoute,
+    fourth: FourthRoute,
+    five: FirstRoute,
+  });
+
+  const layout = useWindowDimensions();
+
+  const [index, setIndex] = React.useState(0);
+  const [routes] = React.useState([
+    { key: "first", title: "First" },
+    { key: "second", title: "Second" },
+    { key: "third", title: "Third" },
+    { key: "fourth", title: "Fourth" },
+  ]);
   return (
-    <View>
-      <Text>Orders</Text>
-    </View>
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <TabView
+        tabStyle={{ width: "auto" }}
+        swipeEnabled
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={{ width: layout.width }}
+      />
+    </ScrollView>
   );
 };
 

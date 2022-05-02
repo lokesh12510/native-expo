@@ -15,7 +15,7 @@ const SearchField = () => {
           size={20}
           color={darkgray}
         />
-        <Text style={styles.searchTextField}>Search Food or Cook...</Text>
+        <Text style={styles.searchTextField}>Search Food...</Text>
       </Pressable>
     </View>
   );

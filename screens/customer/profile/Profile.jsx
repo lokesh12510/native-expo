@@ -1,7 +1,7 @@
 import { View, Text } from "react-native";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { authReset } from "../../../app/authSlice/authSlice";
+import { authReset } from "../../../app/slices/authSlice";
 import StyledBtn from "../../../theme/uiSinppets/StyledBtn";
 import styled from "styled-components";
 

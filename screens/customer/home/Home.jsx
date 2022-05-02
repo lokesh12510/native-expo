@@ -1,28 +1,16 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  StatusBar,
-  ScrollView,
-  FlatList,
-} from "react-native";
-import React, { useRef } from "react";
+import { View, Text, StyleSheet, ScrollView, FlatList } from "react-native";
+import React from "react";
 import theme from "../../../theme/AppTheme";
 
 import SearchField from "../../../components/SearchField";
-import LocationSelect from "../../../components/LocationSelect";
 import HSliderContainer from "../../../components/HSliderContainer";
 import KitchenSliderItem from "../../../components/KitchenSliderItem";
-import SpecialOffersSliderItem from "../../../components/SpecialOffersSliderItem";
 import MainCategory from "../../../components/MainCategory";
-import SwipeTabsContainer from "../../../components/SwipeTabsContainer";
 import FloatingCart from "../../../components/FloatingCart";
 import { useSelector } from "react-redux";
-
-import { useScrollToTop } from "@react-navigation/native";
-import { useEffect } from "react";
-import { useState } from "react";
-import { FoodItem } from "../../../components/SwipeTabsItem";
+import SwipeTabsItem from "../../../components/SwipeTabsItem";
+import KitchenList from "../../../components/Kitchen/KitchenList";
+import FoodCategory from "../../../components/foodCategory/FoodCategory";
 
 const { colors } = theme;
 
@@ -31,73 +19,31 @@ const Home = () => {
 
   return (
     <>
-      <ScrollView
-        style={styles.root}
-        stickyHeaderIndices={[4, 5]}
-        stickyHeaderHiddenOnScroll={true}
-      >
+      <ScrollView style={styles.root} stickyHeaderHiddenOnScroll={true}>
         {/* Hero Text Container*/}
         <View style={styles.heroTextContainer}>
           <Text style={styles.heroText1}>Hi, Slyvie</Text>
           <Text style={styles.heroText2}>
-            Order Food Online from the best Homecook{" "}
+            Order Food Online from the best Homecook
           </Text>
         </View>
         {/* Hero Text Container*/}
+
+        {/* Kitchen Slider  */}
+        <KitchenList />
+        {/* Kitchen Slider  */}
+        {/* Food Category Container */}
+        <FoodCategory />
+        {/* Food Category Container */}
         {/* Search Bar Container */}
         <SearchField />
         {/* Search Bar Container */}
-        {/* Main Category Container */}
-        <MainCategory />
-        {/* Main Category Container */}
-        {/* Kitchen Slider  */}
-        <HSliderContainer sectionTitle={"Popular Kitchen"}>
-          <FlatList
-            data={DATA}
-            showsHorizontalScrollIndicator={false}
-            horizontal
-            renderItem={({ item, index }) => (
-              <KitchenSliderItem item={item} index={index} />
-            )}
-            keyExtractor={(item) => item.id}
-            disableIntervalMomentum
-            decelerationRate={0}
-            snapToInterval={340} //your element width
-            snapToAlignment={"center"}
-          />
-        </HSliderContainer>
-        {/* Kitchen Slider  */}
-        {/* Special Offers Container */}
-        {/* <HSliderContainer sectionTitle={"Special Offers"}>
-        <FlatList
-          style={{ marginBottom: 10 }}
-          data={OFFER_DATA}
-          showsHorizontalScrollIndicator={false}
-          horizontal
-          renderItem={({ item, index }) => (
-            <SpecialOffersSliderItem item={item} index={index} />
-          )}
-          keyExtractor={(item) => item.id}
-          disableIntervalMomentum
-          decelerationRate={0}
-          snapToInterval={210} //your element width
-          snapToAlignment={"center"}
-        />
-      </HSliderContainer> */}
-        {/* Special Offers Container */}
-
-        {/* {[...Array(4)].map((item, index) => {
-          return <FoodItem key={index} />;
-        })} */}
-
-        <View style={{ padding: 50 }}></View>
-        {/* Swipe Tabs Container */}
-        <SwipeTabsContainer />
-        {/* Swipe Tabs Container */}
+        {/* Food Items Container */}
+        <SwipeTabsItem />
+        {/* Food Items Container */}
       </ScrollView>
       {/* Floating Cart View */}
       {itemCount > 0 && <FloatingCart />}
-
       {/* Floating Cart View */}
     </>
   );

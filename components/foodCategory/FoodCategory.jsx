@@ -13,11 +13,14 @@ import {
   pizza as Dinner,
   rice_bowl as Lunch,
   salad,
-} from "../constants/icons";
-import theme from "../theme/AppTheme";
+} from "../../constants/icons";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { removeCategory, selectCategory } from "../app/slices/FilterSlice";
+import theme from "../../theme/AppTheme";
+import { removeCategory, selectCategory } from "../../app/slices/FilterSlice";
+import { useGetFoodTypeListMutation } from "../../app/services/foodTypeApi";
+import { useEffect } from "react";
+import FoodTypeSkeleton from "./FoodCategorySkeleton";
 
 const { colors, SIZES } = theme;
 
@@ -43,7 +46,16 @@ const CategoryItem = ({ item, onPress, activeCategory }) => {
   );
 };
 
-const MainCategory = () => {
+const FoodCategory = () => {
+  const [getFoodTypeList, { isError, data: foodTypeList = [], isLoading }] =
+    useGetFoodTypeListMutation();
+
+  useEffect(() => {
+    getFoodTypeList();
+  }, []);
+
+  console.log(foodTypeList);
+
   const { categoryType } = useSelector((state) => state.filter.category);
 
   const dispatch = useDispatch();
@@ -57,21 +69,24 @@ const MainCategory = () => {
   };
   return (
     <View style={styles.container}>
-      {DATA.map((item, index) => {
-        return (
-          <CategoryItem
-            key={index}
-            item={item}
-            onPress={handleActiveCategory}
-            activeCategory={categoryType}
-          />
-        );
-      })}
+      {!isLoading &&
+        foodTypeList.length &&
+        foodTypeList.map((item, index) => {
+          return (
+            <CategoryItem
+              key={index}
+              item={item}
+              onPress={handleActiveCategory}
+              activeCategory={categoryType}
+            />
+          );
+        })}
+      {isLoading && <FoodTypeSkeleton />}
     </View>
   );
 };
 
-export default MainCategory;
+export default FoodCategory;
 
 const styles = StyleSheet.create({
   container: {

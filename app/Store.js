@@ -1,21 +1,27 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
-import { authApi } from "./authSlice/authApi";
-import authReducer from "./authSlice/authSlice";
+import { authApi } from "./services/authApi";
+import authReducer from "./slices/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { persistStore, persistReducer } from "redux-persist";
-import cartReducer from "./cartSlice/cartSlice";
+import cartReducer from "./slices/cartSlice";
+import filterReducer from "./slices/FilterSlice";
+import { api } from "./services/api";
+import userReducer from "./slices/userSlice";
 
 const reducers = combineReducers({
   auth: authReducer,
   cart: cartReducer,
+  filter: filterReducer,
+  user: userReducer,
   [authApi.reducerPath]: authApi.reducer,
+  [api.reducerPath]: api.reducer,
 });
 
 const persistConfig = {
   key: "root",
   storage: AsyncStorage,
-  whitelist: ["auth"],
+  whitelist: ["auth", "user"],
 };
 
 const RootReducer = (state, action) => {
@@ -32,7 +38,8 @@ export const store = configureStore({
   reducer: _persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }).concat(
-      authApi.middleware
+      authApi.middleware,
+      api.middleware
     ),
 });
 export const persistor = persistStore(store);

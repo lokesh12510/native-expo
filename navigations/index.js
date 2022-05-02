@@ -9,7 +9,7 @@ import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { CookDrawerScreen } from "./CookStack";
 import theme from "../theme/AppTheme";
-import { authReset } from "../app/authSlice/authSlice";
+import { authReset } from "../app/slices/authSlice";
 
 const RootStack = () => {
   const {
