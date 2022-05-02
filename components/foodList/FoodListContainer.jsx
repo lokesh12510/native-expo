@@ -6,6 +6,8 @@ import {
   Image,
   Pressable,
   ScrollView,
+  SafeAreaView,
+  VirtualizedList,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import {
@@ -19,93 +21,10 @@ import { addItem, removeItem } from "../../app/slices/cartSlice";
 import { closeKitchen } from "../../app/slices/FilterSlice";
 import FoodCard from "./FoodCard";
 import { useGetFoodListMutation } from "../../app/services/foodListApi";
+import FoodListSkeleton from "./FoodListSkeleton";
+import SearchField from "../SearchField";
 
 const { colors, SIZES } = theme;
-
-export const FoodItem = () => {
-  const dispatch = useDispatch();
-
-  const [itemCount, setItemCount] = useState(0);
-
-  const addItemCount = () => {
-    dispatch(addItem());
-    setItemCount((count) => count + 1);
-  };
-  const removeItemCount = () => {
-    dispatch(removeItem());
-    setItemCount((count) => count > 0 && count - 1);
-  };
-
-  return (
-    <View>
-      <Pressable style={styles.swipeItem}>
-        <View style={styles.foodContentContainer}>
-          <View style={[styles.foodType, { borderColor: colors.primary }]}>
-            <View
-              style={[styles.dot, { backgroundColor: colors.primary }]}
-            ></View>
-          </View>
-          <View style={styles.foodContent}>
-            <Text style={styles.foodTitle}>Chicken Biriyani</Text>
-          </View>
-          <View style={styles.foodContent}>
-            <Text style={styles.foodContentText}>&#x20B9; 500</Text>
-          </View>
-          <View style={styles.divider}></View>
-          <View style={styles.extraContent}>
-            <View style={styles.extraContentWrapper}>
-              <MaterialCommunityIcons
-                name="sale"
-                size={15}
-                color={colors.primary}
-              />
-              <Text style={styles.offerText}>Combo Offer Available</Text>
-            </View>
-          </View>
-        </View>
-        <View style={styles.foodImageContainer}>
-          <View style={styles.imageWrapper}>
-            <Image
-              style={styles.foodImage}
-              source={{
-                uri: "https://www.holidify.com/images/cmsuploads/compressed/Indian-Food-wikicont_20180907171823.jpg",
-              }}
-            />
-          </View>
-          {itemCount > 0 ? (
-            <View style={[styles.actionBtns, { borderRadius: 50 }]}>
-              <>
-                <Pressable onPress={removeItemCount}>
-                  <Ionicons
-                    name="ios-remove-circle-sharp"
-                    size={27}
-                    color={colors.white}
-                  />
-                </Pressable>
-                <Text style={styles.itemCount}>{itemCount}</Text>
-                <Pressable onPress={addItemCount}>
-                  <Ionicons
-                    name="ios-add-circle"
-                    size={27}
-                    color={colors.white}
-                  />
-                </Pressable>
-              </>
-            </View>
-          ) : (
-            <View style={[styles.actionBtns, { borderRadius: 10 }]}>
-              <>
-                <Pressable onPress={addItemCount}>
-                  <Text style={[styles.itemCount, { fontSize: 18 }]}>Add</Text>
-                </Pressable>
-              </>
-            </View>
-          )}
-        </View>
-      </Pressable>
-    </View>
-  );
-};
 
 const FoodList = () => {
   const { isKitchen, kitchenInfo, kitchenId } = useSelector(
@@ -115,12 +34,20 @@ const FoodList = () => {
     (state) => state.filter.category
   );
   const { longitude, latitude } = useSelector((state) => state.user.location);
+  const { cartItems, itemCount } = useSelector((state) => state.cart);
+
+  console.log(cartItems, itemCount);
 
   const [getFoodList, { isError, data: foodList = [], isLoading }] =
     useGetFoodListMutation();
 
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(6);
+  const [search, setSearch] = useState("");
+
+  const handleChangeText = (text) => {
+    setSearch(text);
+  };
 
   useEffect(() => {
     getFoodList({
@@ -130,9 +57,9 @@ const FoodList = () => {
       longitude: longitude,
       cook: kitchenId || "",
       food_type: categoryInfo.id || "",
-      food_name: "",
+      food_name: search,
     });
-  }, []);
+  }, [page, perPage, longitude, latitude, kitchenId, categoryInfo.id, search]);
 
   const dispatch = useDispatch();
 
@@ -181,19 +108,39 @@ const FoodList = () => {
           isKitchen && { backgroundColor: theme.colors.secondary },
         ]}
       >
-        {isKitchen && isCategory && (
-          <Text style={[styles.foodTitle, { marginBottom: 10 }]}>
-            {categoryInfo.type}
-          </Text>
-        )}
-      </View>
+        <SearchField handleChangeText={handleChangeText} />
 
-      <FlatList
-        data={foodList.list}
-        renderItem={({ item, index }) => <FoodCard item={item} index={index} />}
-        keyExtractor={(item) => item.id}
-        ListEmptyComponent={<Text>Loading...</Text>}
-      />
+        <Text
+          style={[
+            styles.foodTitle,
+            { marginBottom: 15, textTransform: "uppercase" },
+          ]}
+        >
+          {isKitchen && isCategory ? categoryInfo.type : "All Foods"}
+        </Text>
+
+        <View style={{ flex: 1 }}>
+          {isLoading ? (
+            <FoodListSkeleton />
+          ) : (
+            <FlatList
+              data={foodList.list}
+              scrollEnabled={false}
+              renderItem={({ item, index }) => (
+                <FoodCard item={item} index={index} />
+              )}
+              keyExtractor={(item) => item.id}
+              ListEmptyComponent={
+                <View style={{ justifyContent: "center" }}>
+                  <Text style={{ fontSize: 18, textAlign: "center" }}>
+                    No Food Found
+                  </Text>
+                </View>
+              }
+            />
+          )}
+        </View>
+      </View>
     </>
   );
 };
@@ -203,6 +150,7 @@ export default FoodList;
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    flex: 1,
     paddingBottom: 70,
   },
   swipeItem: {

@@ -100,19 +100,20 @@ export default KitchenCard;
 const styles = StyleSheet.create({
   sliderItem: {
     backgroundColor: "#fff",
-    width: 340,
-    minHeight: 145,
+    width: 310,
+    minHeight: 125,
     borderRadius: 7,
-    elevation: 4,
+    elevation: 3,
     zIndex: 2,
     overflow: "hidden",
     padding: 5,
     borderWidth: 1,
     borderColor: "#e9e9e9",
-    margin: 7,
+    margin: 5,
+    marginRight: 10,
   },
   image: {
-    width: "40%",
+    width: 100,
     height: "100%",
     resizeMode: "cover",
     zIndex: 1,
@@ -123,19 +124,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   content: {
-    padding: 10,
+    padding: 5,
   },
   kitchenHeader: {
     fontSize: 16,
     fontWeight: "bold",
     color: colors.text,
-    marginBottom: 10,
+    marginBottom: 8,
   },
   infoContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
-    marginBottom: 10,
+    marginBottom: 5,
   },
   locationIcon: {
     paddingRight: 5,

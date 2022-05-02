@@ -11,23 +11,23 @@ import { addItem, removeItem } from "../../app/slices/cartSlice";
 
 const { colors, SIZES } = theme;
 
-const FoodCard = () => {
+const FoodCard = ({ item }) => {
   const dispatch = useDispatch();
 
   const [itemCount, setItemCount] = useState(0);
 
-  const addItemCount = () => {
-    dispatch(addItem());
+  const addToCart = (item) => {
+    dispatch(addItem({ item }));
     setItemCount((count) => count + 1);
   };
-  const removeItemCount = () => {
-    dispatch(removeItem());
+  const removeFromCart = (id) => {
+    dispatch(removeItem({ id }));
     setItemCount((count) => count > 0 && count - 1);
   };
 
   return (
     <View>
-      <Pressable style={styles.swipeItem}>
+      <Pressable style={styles.swipeItem} onPress={() => console.log(item)}>
         <View style={styles.foodContentContainer}>
           <View style={[styles.foodType, { borderColor: colors.primary }]}>
             <View
@@ -35,10 +35,10 @@ const FoodCard = () => {
             ></View>
           </View>
           <View style={styles.foodContent}>
-            <Text style={styles.foodTitle}>Chicken Biriyani</Text>
+            <Text style={styles.foodTitle}>{item.food_name}</Text>
           </View>
           <View style={styles.foodContent}>
-            <Text style={styles.foodContentText}>&#x20B9; 500</Text>
+            <Text style={styles.foodContentText}>&#x20B9; {item.price}</Text>
           </View>
           <View style={styles.divider}></View>
           <View style={styles.extraContent}>
@@ -57,14 +57,14 @@ const FoodCard = () => {
             <Image
               style={styles.foodImage}
               source={{
-                uri: "https://www.holidify.com/images/cmsuploads/compressed/Indian-Food-wikicont_20180907171823.jpg",
+                uri: item.image_url,
               }}
             />
           </View>
           {itemCount > 0 ? (
             <View style={[styles.actionBtns, { borderRadius: 50 }]}>
               <>
-                <Pressable onPress={removeItemCount}>
+                <Pressable onPress={() => removeFromCart(item.id)}>
                   <Ionicons
                     name="ios-remove-circle-sharp"
                     size={27}
@@ -72,7 +72,7 @@ const FoodCard = () => {
                   />
                 </Pressable>
                 <Text style={styles.itemCount}>{itemCount}</Text>
-                <Pressable onPress={addItemCount}>
+                <Pressable onPress={() => addToCart(item)}>
                   <Ionicons
                     name="ios-add-circle"
                     size={27}
@@ -84,7 +84,7 @@ const FoodCard = () => {
           ) : (
             <View style={[styles.actionBtns, { borderRadius: 10 }]}>
               <>
-                <Pressable onPress={addItemCount}>
+                <Pressable onPress={() => addToCart(item)}>
                   <Text style={[styles.itemCount, { fontSize: 18 }]}>Add</Text>
                 </Pressable>
               </>
@@ -99,32 +99,29 @@ const FoodCard = () => {
 export default FoodCard;
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-    paddingBottom: 70,
-  },
   swipeItem: {
     minHeight: 130,
     padding: 8,
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fff",
-    marginBottom: 7,
+    margin: 5,
     borderRadius: 8,
-    elevation: 4,
+    elevation: 3,
   },
   foodImage: {
     width: "100%",
     height: "100%",
     resizeMode: "cover",
+    backgroundColor: "#f1f1f1",
   },
   foodImageContainer: {
-    height: 100,
+    height: 90,
     alignItems: "center",
   },
   imageWrapper: {
-    width: 110,
-    height: 100,
+    width: 100,
+    height: 90,
     borderRadius: 8,
     elevation: 6,
     borderRadius: 7,

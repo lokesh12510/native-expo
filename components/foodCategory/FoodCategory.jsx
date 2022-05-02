@@ -90,10 +90,10 @@ const styles = StyleSheet.create({
     padding: 16,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
   },
   categoryItem: {
-    width: 85,
+    flex: 1,
     height: 80,
     borderRadius: 8,
     display: "flex",
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     elevation: 0,
     backgroundColor: "#f6f6f6",
-    marginRight: 5,
+    margin: 2,
   },
   categoryImage: {
     width: 35,

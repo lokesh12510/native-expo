@@ -47,7 +47,7 @@ const KitchenList = () => {
               keyExtractor={(item) => item.id}
               disableIntervalMomentum
               decelerationRate={0}
-              snapToInterval={340} //your element width
+              snapToInterval={320} //your element width
               snapToAlignment={"center"}
               ListEmptyComponent={<KitchenSkeleton />}
             />
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   sectionTitleContainer: {
-    paddingVertical: 3,
+    paddingBottom: 7,
   },
   sectionTitle: {
     fontSize: 16,

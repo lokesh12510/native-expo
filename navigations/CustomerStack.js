@@ -11,9 +11,10 @@ import { Routes } from "../constants/routes";
 import theme, { colors } from "../theme/AppTheme";
 import { AntDesign, FontAwesome5 } from "react-native-vector-icons";
 import { useSelector } from "react-redux";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View, Pressable } from "react-native";
 import FloatingCart from "../components/FloatingCart";
 import LocationSelect from "../components/LocationSelect";
+import { useNavigation } from "@react-navigation/native";
 
 const { primary, darkgray } = theme.colors;
 
@@ -21,6 +22,8 @@ const { primary, darkgray } = theme.colors;
 const customerDrawer = createDrawerNavigator();
 
 export const CustomerDrawerScreen = () => {
+  const navigation = useNavigation();
+
   return (
     <>
       <customerDrawer.Navigator>
@@ -35,20 +38,24 @@ export const CustomerDrawerScreen = () => {
             },
             headerRight: ({ color }) => {
               return (
-                <View style={styles.profileIconWrapper}>
+                <Pressable
+                  style={styles.profileIconWrapper}
+                  onPress={() => navigation.navigate(Routes.customer.profile)}
+                >
                   <Image
                     source={{
                       uri: "https://lh3.googleusercontent.com/ogw/ADea4I4MthA1Px3_XdpXyXt8A4Mdd_VYQ3TJKOZh7eTa2A=s32-c-mo",
                     }}
                     style={styles.profileImage}
                   />
-                </View>
+                </Pressable>
               );
             },
           }}
         />
         <customerDrawer.Screen name="Orders" component={Orders} />
         <customerDrawer.Screen name="Cart" component={Cart} />
+        <customerDrawer.Screen name="Profile" component={Profile} />
       </customerDrawer.Navigator>
     </>
   );

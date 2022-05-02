@@ -9,13 +9,12 @@ const CartSlice = createSlice({
     totalAmount: 0,
   },
   reducers: {
-    addItem: (state) => {
-      return {
-        ...state,
-        itemCount: state.itemCount + 1,
-      };
+    addItem: (state, { payload }) => {
+      state.cartItems.push(payload.item);
+      state.itemCount = state.cartItems.length;
+      state.cartInitialized = true;
     },
-    removeItem: (state) => {
+    removeItem: (state, { payload }) => {
       return {
         ...state,
         itemCount: state.itemCount - 1,

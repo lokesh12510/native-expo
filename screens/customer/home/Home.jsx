@@ -1,4 +1,12 @@
-import { View, Text, StyleSheet, ScrollView, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  FlatList,
+  SectionList,
+  SafeAreaView,
+} from "react-native";
 import React from "react";
 import theme from "../../../theme/AppTheme";
 
@@ -17,13 +25,14 @@ const { colors } = theme;
 
 const Home = () => {
   const { itemCount } = useSelector((state) => state.cart);
+  const { user } = useSelector((state) => state.user);
 
   return (
-    <>
-      <ScrollView style={styles.root} stickyHeaderHiddenOnScroll={true}>
+    <SafeAreaView style={styles.root}>
+      <ScrollView nestedScrollEnabled={true}>
         {/* Hero Text Container*/}
         <View style={styles.heroTextContainer}>
-          <Text style={styles.heroText1}>Hi, Slyvie</Text>
+          <Text style={styles.heroText1}>Hi, {user?.name}</Text>
           <Text style={styles.heroText2}>
             Order Food Online from the best Homecook
           </Text>
@@ -36,9 +45,7 @@ const Home = () => {
         {/* Food Category Container */}
         <FoodCategory />
         {/* Food Category Container */}
-        {/* Search Bar Container */}
-        <SearchField />
-        {/* Search Bar Container */}
+
         {/* Food Items Container */}
         <FoodList />
         {/* Food Items Container */}
@@ -46,7 +53,7 @@ const Home = () => {
       {/* Floating Cart View */}
       {itemCount > 0 && <FloatingCart />}
       {/* Floating Cart View */}
-    </>
+    </SafeAreaView>
   );
 };
 
@@ -54,8 +61,8 @@ export default Home;
 
 const styles = StyleSheet.create({
   root: {
+    flex: 1,
     width: theme.SIZES.width,
-    height: "100%",
     backgroundColor: "#fff",
     position: "relative",
   },
@@ -70,10 +77,11 @@ const styles = StyleSheet.create({
     fontSize: 25,
     color: colors.secondary,
     fontWeight: "bold",
+    marginBottom: 7,
   },
   heroText2: {
     fontSize: 16,
-    color: colors.gray,
+    color: colors.darkLight,
     fontWeight: "bold",
   },
 });
