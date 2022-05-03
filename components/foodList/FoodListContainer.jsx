@@ -23,6 +23,7 @@ import FoodCard from "./FoodCard";
 import { useGetFoodListMutation } from "../../app/services/foodListApi";
 import FoodListSkeleton from "./FoodListSkeleton";
 import SearchField from "../SearchField";
+import StyledBtn from "../../theme/uiSinppets/StyledBtn";
 
 const { colors, SIZES } = theme;
 
@@ -38,12 +39,16 @@ const FoodList = () => {
 
   console.log(cartItems, itemCount);
 
-  const [getFoodList, { isError, data: foodList = [], isLoading }] =
+  const [getFoodList, { isError, data: foodList, isLoading, isSuccess }] =
     useGetFoodListMutation();
 
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(6);
   const [search, setSearch] = useState("");
+
+  const [food, setFood] = useState([]);
+
+  const [endReached, setEndReached] = useState(false);
 
   const handleChangeText = (text) => {
     setSearch(text);
@@ -59,12 +64,24 @@ const FoodList = () => {
       food_type: categoryInfo.id || "",
       food_name: search,
     });
+
+    if (isSuccess) {
+      setFood(foodList.list);
+      console.log(foodList.list, "**************");
+      if (foodList.list && foodList.list.length === 0) {
+        setEndReached(true);
+      }
+    }
   }, [page, perPage, longitude, latitude, kitchenId, categoryInfo.id, search]);
 
   const dispatch = useDispatch();
 
   const handleClose = () => {
     dispatch(closeKitchen());
+  };
+
+  const handleLoadMore = () => {
+    setPage((page) => page + 1);
   };
 
   return (
@@ -116,29 +133,27 @@ const FoodList = () => {
             { marginBottom: 15, textTransform: "uppercase" },
           ]}
         >
-          {isKitchen && isCategory ? categoryInfo.type : "All Foods"}
+          {isCategory ? categoryInfo.type : "All Foods"}
         </Text>
 
         <View style={{ flex: 1 }}>
           {isLoading ? (
             <FoodListSkeleton />
           ) : (
-            <FlatList
-              data={foodList.list}
-              scrollEnabled={false}
-              renderItem={({ item, index }) => (
-                <FoodCard item={item} index={index} />
-              )}
-              keyExtractor={(item) => item.id}
-              ListEmptyComponent={
-                <View style={{ justifyContent: "center" }}>
-                  <Text style={{ fontSize: 18, textAlign: "center" }}>
-                    No Food Found
-                  </Text>
-                </View>
-              }
-            />
+            food &&
+            food.map((item, index) => {
+              return <FoodCard item={item} key={index} />;
+            })
           )}
+          <View style={{ marginVertical: 15, padding: 8 }}>
+            {endReached ? (
+              <Text style={{ textAlign: "center" }}>
+                Your have reached the end!
+              </Text>
+            ) : (
+              <StyledBtn title={"Load More"} onPress={handleLoadMore} />
+            )}
+          </View>
         </View>
       </View>
     </>

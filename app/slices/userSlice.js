@@ -4,7 +4,7 @@ import { authApi } from "../services/authApi";
 const UserSlice = createSlice({
   name: "user",
   initialState: {
-    user: [],
+    profile: [],
     isLocated: false,
     location: {
       latitude: 11.0067712,
@@ -25,7 +25,7 @@ const UserSlice = createSlice({
     resetUser: (state) => {
       return {
         isLocated: false,
-        userName: [],
+        profile: [],
         location: {
           latitude: null,
           longitude: null,
@@ -37,7 +37,7 @@ const UserSlice = createSlice({
     builder.addMatcher(
       authApi.endpoints.authCustomerLogin.matchFulfilled,
       (state, { payload }) => {
-        state.user.push(payload.user);
+        state.profile = payload.user;
       }
     );
   },

@@ -25,14 +25,14 @@ const { colors } = theme;
 
 const Home = () => {
   const { itemCount } = useSelector((state) => state.cart);
-  const { user } = useSelector((state) => state.user);
+  const { profile } = useSelector((state) => state.user);
 
   return (
     <SafeAreaView style={styles.root}>
       <ScrollView nestedScrollEnabled={true}>
         {/* Hero Text Container*/}
         <View style={styles.heroTextContainer}>
-          <Text style={styles.heroText1}>Hi, {user?.name}</Text>
+          <Text style={styles.heroText1}>Hi, {profile?.name}</Text>
           <Text style={styles.heroText2}>
             Order Food Online from the best Homecook
           </Text>
