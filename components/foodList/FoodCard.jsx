@@ -17,8 +17,8 @@ const FoodCard = ({ item }) => {
   const [itemCount, setItemCount] = useState(0);
 
   const addToCart = (item) => {
-    dispatch(addItem({ item }));
     setItemCount((count) => count + 1);
+    dispatch(addItem(item));
   };
   const removeFromCart = (id) => {
     dispatch(removeItem({ id }));
@@ -62,22 +62,22 @@ const FoodCard = ({ item }) => {
             />
           </View>
           {itemCount > 0 ? (
-            <View style={[styles.actionBtns, { borderRadius: 50 }]}>
+            <View style={[styles.actionBtnOutline, { borderRadius: 50 }]}>
               <>
-                <Pressable onPress={() => removeFromCart(item.id)}>
+                <Pressable
+                  onPress={() => removeFromCart(item.id)}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
                   <Ionicons
-                    name="ios-remove-circle-sharp"
-                    size={27}
-                    color={colors.white}
+                    name="ios-checkmark-circle-sharp"
+                    size={20}
+                    color={colors.primary}
                   />
-                </Pressable>
-                <Text style={styles.itemCount}>{itemCount}</Text>
-                <Pressable onPress={() => addToCart(item)}>
-                  <Ionicons
-                    name="ios-add-circle"
-                    size={27}
-                    color={colors.white}
-                  />
+                  <Text style={[styles.itemCountOutline]}>Added</Text>
                 </Pressable>
               </>
             </View>
@@ -85,7 +85,7 @@ const FoodCard = ({ item }) => {
             <View style={[styles.actionBtns, { borderRadius: 10 }]}>
               <>
                 <Pressable onPress={() => addToCart(item)}>
-                  <Text style={[styles.itemCount, { fontSize: 18 }]}>Add</Text>
+                  <Text style={[styles.itemCount]}>Add</Text>
                 </Pressable>
               </>
             </View>
@@ -141,6 +141,7 @@ const styles = StyleSheet.create({
     color: "#2c2b2b",
     fontWeight: "bold",
     flexShrink: 1,
+    textTransform: "capitalize",
   },
   foodContentText: {
     fontSize: 18,
@@ -160,11 +161,31 @@ const styles = StyleSheet.create({
     alignItems: "center",
     elevation: 7,
   },
+  actionBtnOutline: {
+    flexDirection: "row",
+    backgroundColor: colors.white,
+    borderColor: colors.primary,
+    borderWidth: 1,
+    bottom: 20,
+    left: 0,
+    right: 0,
+    padding: 2,
+    marginLeft: "auto",
+    marginRight: "auto",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 7,
+  },
   itemCount: {
-    fontSize: 20,
+    fontSize: 18,
     color: colors.white,
     paddingHorizontal: 7,
     fontWeight: "bold",
+  },
+  itemCountOutline: {
+    fontSize: 16,
+    color: colors.primary,
+    paddingHorizontal: 6,
   },
   foodType: {
     width: 15,

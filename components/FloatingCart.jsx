@@ -8,7 +8,9 @@ import { useSelector } from "react-redux";
 
 const FloatingCart = () => {
   const navigation = useNavigation();
-  const { itemCount } = useSelector((state) => state.cart);
+  const { cartItemsCount, cartTotalAmount } = useSelector(
+    (state) => state.cart
+  );
   return (
     <View style={styles.container}>
       <View
@@ -22,7 +24,8 @@ const FloatingCart = () => {
         <View style={{ marginLeft: 10 }}>
           <Text style={styles.subTitle}>Total Amount</Text>
           <Text style={styles.sectionTitle}>
-            $ 300 <Text style={styles.itemCount}>| {itemCount} Items</Text>
+            &#x20B9; {cartTotalAmount}{" "}
+            <Text style={styles.itemCount}>| {cartItemsCount} Items</Text>
           </Text>
         </View>
       </View>

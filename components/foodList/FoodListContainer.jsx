@@ -17,7 +17,6 @@ import {
 } from "react-native-vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import theme from "../../theme/AppTheme";
-import { addItem, removeItem } from "../../app/slices/cartSlice";
 import { closeKitchen } from "../../app/slices/FilterSlice";
 import FoodCard from "./FoodCard";
 import { useGetFoodListMutation } from "../../app/services/foodListApi";
