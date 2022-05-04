@@ -4,14 +4,14 @@ import { MaterialIcons, Fontisto, Ionicons } from "react-native-vector-icons";
 import theme from "../theme/AppTheme";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectKitchen } from "../app/slices/FilterSlice";
+import { selectKitchen } from "../app/slices/foodSlice";
 
 const { colors, SIZES } = theme;
 
 const KitchenSliderItem = ({ item, index }) => {
   const [liked, setLiked] = useState(false);
 
-  const { kitchenId } = useSelector((state) => state.filter.kitchen);
+  const { kitchenId } = useSelector((state) => state.food.kitchen);
 
   const dispatch = useDispatch();
   const handleSelect = (item) => {

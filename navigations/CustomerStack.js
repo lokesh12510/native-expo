@@ -5,23 +5,21 @@ import {
   DrawerContentScrollView,
   DrawerItemList,
 } from "@react-navigation/drawer";
-import { Ionicons } from "@expo/vector-icons";
 import Home from "../screens/customer/home/Home";
 import Profile from "../screens/customer/profile/Profile";
-import Settings from "../screens/customer/settings/Settings";
 import Orders from "../screens/customer/orders/Orders";
 import Cart from "../screens/customer/cart/Cart";
 import { Routes } from "../constants/routes";
 import theme, { colors } from "../theme/AppTheme";
-import { AntDesign, FontAwesome5 } from "react-native-vector-icons";
+import { AntDesign } from "react-native-vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { Image, StyleSheet, Text, View, Pressable } from "react-native";
-import FloatingCart from "../components/FloatingCart";
 import LocationSelect from "../components/LocationSelect";
 import { useNavigation } from "@react-navigation/native";
 import { Divider } from "react-native-paper";
-import StyledBtn from "../theme/uiSinppets/StyledBtn";
 import { authReset } from "../app/slices/authSlice";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import ConfirmOrder from "../screens/customer/confirmOrder/ConfirmOrder";
 
 const { primary, darkgray } = theme.colors;
 
@@ -97,7 +95,7 @@ export const CustomerDrawerScreen = () => {
           name={Routes.customer.home}
           component={Home}
           options={{
-            drawerLabel: "Home",
+            drawerLabel: Routes.customer.home,
             headerRightContainerStyle: { marginRight: 16 },
             headerTitle: () => {
               return <LocationSelect />;
@@ -119,11 +117,41 @@ export const CustomerDrawerScreen = () => {
             },
           }}
         />
-        <customerDrawer.Screen name="Orders" component={Orders} />
-        <customerDrawer.Screen name="Cart" component={Cart} />
-        <customerDrawer.Screen name="Profile" component={Profile} />
+        <customerDrawer.Screen name={Routes.customer.cart} component={Cart} />
+        <customerDrawer.Screen
+          options={{
+            drawerLabel: "My Orders",
+          }}
+          name={Routes.customer.myOrders}
+          component={Orders}
+        />
       </customerDrawer.Navigator>
     </>
+  );
+};
+
+// customer Stack
+
+const CustomerStack = createNativeStackNavigator();
+
+export const CustomerStackScreen = () => {
+  return (
+    <CustomerStack.Navigator>
+      <CustomerStack.Screen
+        name={"index"}
+        component={CustomerDrawerScreen}
+        options={{ headerShown: false }}
+      />
+      <CustomerStack.Screen
+        name={Routes.customer.profile}
+        component={Profile}
+      />
+      <CustomerStack.Screen
+        options={{ headerTitle: "Confirm Order" }}
+        name={Routes.customer.confirm}
+        component={ConfirmOrder}
+      />
+    </CustomerStack.Navigator>
   );
 };
 

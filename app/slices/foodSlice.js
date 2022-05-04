@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { api } from "../services/api";
 
-const Filter = createSlice({
-  name: "filter",
+const FoodSlice = createSlice({
+  name: "food",
   initialState: {
     kitchen: {
       isKitchen: false,
@@ -16,6 +17,12 @@ const Filter = createSlice({
     search: {
       isSearched: false,
       searchInfo: "",
+    },
+    food: {
+      foodList: [],
+      currentPage: 1,
+      perPage: 6,
+      endReached: false,
     },
     isLoading: false,
   },
@@ -61,12 +68,55 @@ const Filter = createSlice({
         },
       };
     },
+    setCurrentPage: (state, { payload }) => {
+      return {
+        ...state,
+        food: {
+          ...state.food,
+          currentPage: payload,
+        },
+      };
+    },
+    setPerPage: (state, { payload }) => {
+      return {
+        ...state,
+        food: {
+          ...state.food,
+          perPage: payload,
+        },
+      };
+    },
+    clearFood: (state) => {
+      return {
+        ...state,
+        food: {
+          foodList: [],
+          currentPage: 1,
+          perPage: 6,
+          hasMore: false,
+        },
+      };
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      api.endpoints.getFoodList.matchFulfilled,
+      (state, { payload }) => {
+        state.food.foodList.push(...payload.list);
+        state.food.hasMore = payload.list.length > 0 ? true : false;
+      }
+    );
   },
 });
 
-export const selectKitchen = Filter.actions.selectKitchen;
-export const closeKitchen = Filter.actions.closeKitchen;
-export const selectCategory = Filter.actions.selectCategory;
-export const removeCategory = Filter.actions.removeCategory;
+export const {
+  selectKitchen,
+  closeKitchen,
+  selectCategory,
+  removeCategory,
+  setCurrentPage,
+  setPerPage,
+  clearFood,
+} = FoodSlice.actions;
 
-export default Filter.reducer;
+export default FoodSlice.reducer;

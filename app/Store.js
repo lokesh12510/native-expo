@@ -5,14 +5,15 @@ import authReducer from "./slices/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { persistStore, persistReducer } from "redux-persist";
 import cartReducer from "./slices/cartSlice";
-import filterReducer from "./slices/FilterSlice";
+import foodReducer from "./slices/foodSlice";
 import { api } from "./services/api";
 import userReducer from "./slices/userSlice";
+import foodSlice from "./slices/foodSlice";
 
 const reducers = combineReducers({
   auth: authReducer,
   cart: cartReducer,
-  filter: filterReducer,
+  food: foodReducer,
   user: userReducer,
   [authApi.reducerPath]: authApi.reducer,
   [api.reducerPath]: api.reducer,

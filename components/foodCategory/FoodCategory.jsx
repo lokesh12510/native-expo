@@ -17,7 +17,11 @@ import {
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import theme from "../../theme/AppTheme";
-import { removeCategory, selectCategory } from "../../app/slices/FilterSlice";
+import {
+  clearFood,
+  removeCategory,
+  selectCategory,
+} from "../../app/slices/foodSlice";
 import { useGetFoodTypeListMutation } from "../../app/services/foodTypeApi";
 import { useEffect } from "react";
 import FoodTypeSkeleton from "./FoodCategorySkeleton";
@@ -54,14 +58,16 @@ const FoodCategory = () => {
     getFoodTypeList();
   }, []);
 
-  const { categoryType } = useSelector((state) => state.filter.category);
+  const { categoryType } = useSelector((state) => state.food.category);
 
   const dispatch = useDispatch();
 
   const handleActiveCategory = (item) => {
     if (categoryType === item.id) {
+      dispatch(clearFood());
       dispatch(removeCategory());
     } else {
+      dispatch(clearFood());
       dispatch(selectCategory({ category: item }));
     }
   };

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 
 // * Navigation imports
 import { NavigationContainer } from "@react-navigation/native";
-import { CustomerDrawerScreen, CustomerTabsScreen } from "./CustomerStack";
 import AuthStackScreen from "./AuthStack";
 import { ActivityIndicator, Button } from "react-native";
 import styled from "styled-components";
@@ -10,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { CookDrawerScreen } from "./CookStack";
 import theme from "../theme/AppTheme";
 import { authReset } from "../app/slices/authSlice";
+import { CustomerStackScreen } from "./CustomerStack";
 
 const RootStack = () => {
   const {
@@ -30,7 +30,7 @@ const RootStack = () => {
     </Container>
   ) : authToken && role === "ROLE_CUSTOMER" ? (
     <>
-      <CustomerDrawerScreen />
+      <CustomerStackScreen />
     </>
   ) : authToken && role === "ROLE_CHEF" ? (
     <CookDrawerScreen />

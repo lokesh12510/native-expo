@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import {
   Ionicons,
@@ -8,6 +8,8 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import theme from "../../theme/AppTheme";
 import { addItem, removeItem } from "../../app/slices/cartSlice";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
 
 const { colors, SIZES } = theme;
 
@@ -24,6 +26,13 @@ const FoodCard = ({ item }) => {
     dispatch(removeItem({ id }));
     setItemCount((count) => count > 0 && count - 1);
   };
+
+  // * This hook is called when user focus or return to this screen
+  useFocusEffect(
+    useCallback(() => {
+      setItemCount(0);
+    }, [])
+  );
 
   return (
     <View>
@@ -104,7 +113,7 @@ const styles = StyleSheet.create({
     padding: 8,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "#f1f1f1",
     margin: 5,
     borderRadius: 8,
     elevation: 3,

@@ -1,8 +1,8 @@
 // App Static Images
 const LogoLight = require("../assets/adaptive-icon.png");
 const LogoDark = require("../assets/images/Logo-Dark.png");
-const Food1 = require("../assets/images/food1.jpg");
+const EmptyCart = require("../assets/images/empty-cart.png");
 
-const AppImages = { LogoLight, LogoDark, Food1 };
+const AppImages = { LogoLight, LogoDark, EmptyCart };
 
 export default AppImages;

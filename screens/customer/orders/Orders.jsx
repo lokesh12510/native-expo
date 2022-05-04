@@ -2,8 +2,9 @@ import { View, Text, useWindowDimensions, ScrollView } from "react-native";
 import React from "react";
 import { TabView, SceneMap } from "react-native-tab-view";
 import { FoodItem } from "../../../components/SwipeTabsItem";
+import { useLayoutEffect } from "react";
 
-const Orders = () => {
+const Orders = ({ navigation }) => {
   const FirstRoute = () => (
     <ScrollView style={{ flex: 1, backgroundColor: "#f1f1f1" }}>
       {[...Array(6)].map((item, index) => {
@@ -51,6 +52,13 @@ const Orders = () => {
     { key: "third", title: "Third" },
     { key: "fourth", title: "Fourth" },
   ]);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: "My Orders",
+    });
+  }, []);
+
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <TabView

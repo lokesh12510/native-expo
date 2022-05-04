@@ -17,7 +17,7 @@ import {
 import theme from "../theme/AppTheme";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { removeCategory, selectCategory } from "../app/slices/FilterSlice";
+import { removeCategory, selectCategory } from "../app/slices/foodSlice";
 
 const { colors, SIZES } = theme;
 
@@ -44,7 +44,7 @@ const CategoryItem = ({ item, onPress, activeCategory }) => {
 };
 
 const MainCategory = () => {
-  const { categoryType } = useSelector((state) => state.filter.category);
+  const { categoryType } = useSelector((state) => state.food.category);
 
   const dispatch = useDispatch();
 

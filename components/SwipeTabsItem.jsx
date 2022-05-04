@@ -16,7 +16,7 @@ import {
 } from "react-native-vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { addItem, removeItem } from "../app/slices/cartSlice";
-import { closeKitchen } from "../app/slices/FilterSlice";
+import { closeKitchen } from "../app/slices/foodSlice";
 
 export const FoodItem = () => {
   const dispatch = useDispatch();
@@ -104,11 +104,9 @@ export const FoodItem = () => {
 };
 
 const SwipeTabsItem = () => {
-  const { isKitchen, kitchenInfo } = useSelector(
-    (state) => state.filter.kitchen
-  );
+  const { isKitchen, kitchenInfo } = useSelector((state) => state.food.kitchen);
   const { isCategory, categoryInfo } = useSelector(
-    (state) => state.filter.category
+    (state) => state.food.category
   );
 
   const dispatch = useDispatch();

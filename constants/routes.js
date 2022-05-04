@@ -12,6 +12,7 @@ export const Routes = {
     cart: "Cart",
     profile: "Profile",
     favorites: "Favorites",
+    confirm: "Confirm",
   },
   cook: {
     dashboard: "Dashboard",

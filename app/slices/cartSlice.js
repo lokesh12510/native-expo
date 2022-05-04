@@ -1,4 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
+import moment from "moment";
+import {
+  getCurrentDay,
+  getCurrentDayIndex,
+  getCurrentPeriod,
+  getCurrentTiming,
+} from "../../utils/datePicker";
 
 const CartSlice = createSlice({
   name: "cart",
@@ -21,6 +28,10 @@ const CartSlice = createSlice({
               ...payload,
               u_quantity: 1,
               u_total: Number(payload.price),
+              u_day: getCurrentDay(),
+              u_hour: getCurrentTiming(),
+              u_period: getCurrentPeriod(),
+              u_date_time: new Date(),
             },
           ],
           cartItemsCount: state.cartItemsCount + 1,
@@ -40,30 +51,64 @@ const CartSlice = createSlice({
               : item
           ),
           cartItemsCount: state.cartItemsCount + 1,
-          cartTotalAmount: state.cartTotalAmount + payload.u_total,
+          cartTotalAmount: state.cartTotalAmount + Number(payload.price),
         };
       }
     },
-    removeItem: (state, { payload }) => {
+    updateTimings: (state, { payload }) => {
       return {
         ...state,
-        itemCount: state.itemCount - 1,
-      };
-    },
-  },
-  extraReducers: {
-    calculateTotal: (state, action) => {
-      return {
-        ...state,
-        cartTotalAmount: state.cartItems.reduce(
-          (a, b) => parseInt(a.price) + parseInt(b.price)
+        cartItems: state.cartItems.map((item) =>
+          item.id === payload.id
+            ? {
+                ...item,
+                ...payload.data,
+
+                u_date_time: payload.data?.u_day
+                  ? moment().isoWeekday() <=
+                    getCurrentDayIndex(payload.data?.u_day)
+                    ? moment().isoWeekday(
+                        getCurrentDayIndex(payload.data?.u_day)
+                      )
+                    : moment()
+                        .isoWeekday(getCurrentDayIndex(payload.data?.u_day))
+                        .add(1, "week")
+                  : item.u_date_time,
+              }
+            : item
         ),
       };
+    },
+    removeItem: (state, { payload }) => {
+      const [item] = state.cartItems.filter((item) => item.id === payload.id);
+      state.cartItemsCount = state.cartItemsCount - item.u_quantity;
+
+      state.cartTotalAmount = state.cartTotalAmount - item.u_total;
+
+      state.cartItems = state.cartItems.filter(
+        (item) => item.id !== payload.id
+      );
+    },
+
+    reduceItem: (state, { payload }) => {
+      const [item] = state.cartItems.filter((item) => item.id === payload.id);
+      state.cartItemsCount = state.cartItemsCount - 1;
+      state.cartTotalAmount = state.cartTotalAmount - Number(item.price);
+
+      state.cartItems = state.cartItems.map((item) =>
+        item.id === payload.id
+          ? {
+              ...item,
+              u_quantity: item.u_quantity - 1,
+              u_total: item.u_total - Number(item.price),
+            }
+          : item
+      );
     },
   },
 });
 
-export const addItem = CartSlice.actions.addItem;
-export const removeItem = CartSlice.actions.removeItem;
+export const { addItem, removeItem, reduceItem, updateTimings } =
+  CartSlice.actions;
 
 export default CartSlice.reducer;

@@ -17,7 +17,11 @@ import {
 } from "react-native-vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import theme from "../../theme/AppTheme";
-import { closeKitchen } from "../../app/slices/FilterSlice";
+import {
+  clearFood,
+  closeKitchen,
+  setCurrentPage,
+} from "../../app/slices/foodSlice";
 import FoodCard from "./FoodCard";
 import { useGetFoodListMutation } from "../../app/services/foodListApi";
 import FoodListSkeleton from "./FoodListSkeleton";
@@ -27,35 +31,32 @@ import StyledBtn from "../../theme/uiSinppets/StyledBtn";
 const { colors, SIZES } = theme;
 
 const FoodList = () => {
+  const dispatch = useDispatch();
+
   const { isKitchen, kitchenInfo, kitchenId } = useSelector(
-    (state) => state.filter.kitchen
+    (state) => state.food.kitchen
   );
   const { isCategory, categoryInfo } = useSelector(
-    (state) => state.filter.category
+    (state) => state.food.category
+  );
+  const { foodList, currentPage, perPage, hasMore } = useSelector(
+    (state) => state.food.food
   );
   const { longitude, latitude } = useSelector((state) => state.user.location);
-  const { cartItems, itemCount } = useSelector((state) => state.cart);
 
-  console.log(cartItems, itemCount);
-
-  const [getFoodList, { isError, data: foodList, isLoading, isSuccess }] =
+  const [getFoodList, { isError, isLoading, isSuccess }] =
     useGetFoodListMutation();
 
-  const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(6);
   const [search, setSearch] = useState("");
-
-  const [food, setFood] = useState([]);
-
-  const [endReached, setEndReached] = useState(false);
 
   const handleChangeText = (text) => {
     setSearch(text);
+    dispatch(clearFood());
   };
 
   useEffect(() => {
     getFoodList({
-      page: page,
+      page: currentPage,
       perPage: perPage,
       latitude: latitude,
       longitude: longitude,
@@ -63,24 +64,23 @@ const FoodList = () => {
       food_type: categoryInfo.id || "",
       food_name: search,
     });
-
-    if (isSuccess) {
-      setFood(foodList.list);
-      console.log(foodList.list, "**************");
-      if (foodList.list && foodList.list.length === 0) {
-        setEndReached(true);
-      }
-    }
-  }, [page, perPage, longitude, latitude, kitchenId, categoryInfo.id, search]);
-
-  const dispatch = useDispatch();
+  }, [
+    currentPage,
+    perPage,
+    longitude,
+    latitude,
+    kitchenId,
+    categoryInfo.id,
+    search,
+  ]);
 
   const handleClose = () => {
+    dispatch(clearFood());
     dispatch(closeKitchen());
   };
 
   const handleLoadMore = () => {
-    setPage((page) => page + 1);
+    dispatch(setCurrentPage(currentPage + 1));
   };
 
   return (
@@ -136,21 +136,25 @@ const FoodList = () => {
         </Text>
 
         <View style={{ flex: 1 }}>
-          {isLoading ? (
+          {foodList.length === 0 ? (
             <FoodListSkeleton />
           ) : (
-            food &&
-            food.map((item, index) => {
+            foodList &&
+            foodList.map((item, index) => {
               return <FoodCard item={item} key={index} />;
             })
           )}
           <View style={{ marginVertical: 15, padding: 8 }}>
-            {endReached ? (
+            {hasMore ? (
+              <StyledBtn
+                type="outlined"
+                title={"Load More"}
+                onPress={handleLoadMore}
+              />
+            ) : (
               <Text style={{ textAlign: "center" }}>
                 Your have reached the end!
               </Text>
-            ) : (
-              <StyledBtn title={"Load More"} onPress={handleLoadMore} />
             )}
           </View>
         </View>

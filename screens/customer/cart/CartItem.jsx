@@ -4,29 +4,90 @@ import theme from "../../../theme/AppTheme";
 import { Ionicons, MaterialIcons } from "react-native-vector-icons";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
-import { addItem, removeItem } from "../../../app/slices/cartSlice";
+import {
+  addItem,
+  reduceItem,
+  removeItem,
+  updateTimings,
+} from "../../../app/slices/cartSlice";
 import { Divider } from "react-native-paper";
 import ScrollPicker from "react-native-wheel-scrollview-picker";
+import {
+  days,
+  getCurrentDay,
+  getCurrentDayIndex,
+  getCurrentPeriod,
+  getCurrentPeriodIndex,
+  getCurrentTiming,
+  getCurrentTimingIndex,
+  period,
+  timings,
+} from "../../../utils/datePicker";
+import { timing } from "react-native-reanimated";
 
 const { colors } = theme;
 
 const CartItem = ({ item }) => {
   const dispatch = useDispatch();
 
-  const [selectedDay, setSelectedDay] = useState([1, 1]);
-  const [selectedHour, setSelectedHour] = useState([1, 1]);
-  const [selectedSession, setSelectedSession] = useState([1, 1]);
-
-  const [itemCount, setItemCount] = useState(1);
+  const [selectedDay, setSelectedDay] = useState([
+    item.u_day,
+    getCurrentDayIndex(item.u_day),
+  ]);
+  const [selectedHour, setSelectedHour] = useState([
+    item.u_hour,
+    getCurrentTimingIndex(item.u_hour),
+  ]);
+  const [selectedSession, setSelectedSession] = useState([
+    item.u_period,
+    getCurrentPeriodIndex(item.u_period),
+  ]);
 
   const addToCart = (item) => {
-    setItemCount((count) => count + 1);
     dispatch(addItem(item));
   };
   const removeFromCart = (id) => {
     dispatch(removeItem({ id }));
-    setItemCount((count) => count > 0 && count - 1);
   };
+  const reduceFromCart = (id) => {
+    if (item.u_quantity > 1) {
+      dispatch(reduceItem({ id }));
+    } else {
+      dispatch(removeItem({ id }));
+    }
+  };
+
+  const handleDayChange = (id, day) => {
+    dispatch(
+      updateTimings({
+        id: id,
+        data: {
+          u_day: day,
+        },
+      })
+    );
+  };
+  const handleHourChange = (id, hour) => {
+    dispatch(
+      updateTimings({
+        id: id,
+        data: {
+          u_hour: hour,
+        },
+      })
+    );
+  };
+  const handleSessionChange = (id, session) => {
+    dispatch(
+      updateTimings({
+        id: id,
+        data: {
+          u_period: session,
+        },
+      })
+    );
+  };
+
   return (
     <View style={styles.cartItem}>
       <View style={styles.itemContainer}>
@@ -64,7 +125,7 @@ const CartItem = ({ item }) => {
             <>
               <Pressable
                 style={{ paddingHorizontal: 5 }}
-                onPress={() => removeFromCart(item.id)}
+                onPress={() => reduceFromCart(item.id)}
               >
                 <Ionicons
                   name="ios-remove-circle-sharp"
@@ -114,16 +175,8 @@ const CartItem = ({ item }) => {
           >
             <ScrollPicker
               style={{ padding: 0 }}
-              dataSource={[
-                "Sunday",
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-              ]}
-              selectedIndex={1}
+              dataSource={days}
+              selectedIndex={selectedDay[1]}
               renderItem={(data, index) => {
                 return (
                   <View>
@@ -132,7 +185,7 @@ const CartItem = ({ item }) => {
                         { color: "#ccc" },
                         selectedDay[1] === index && {
                           color: colors.secondary,
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: "bold",
                         },
                       ]}
@@ -143,10 +196,13 @@ const CartItem = ({ item }) => {
                 );
               }}
               onValueChange={(data, selectedIndex) => {
-                setSelectedDay([data, selectedIndex]);
+                setSelectedDay(
+                  [data, selectedIndex],
+                  handleDayChange(item.id, data)
+                );
               }}
               wrapperHeight={70}
-              wrapperWidth={120}
+              wrapperWidth={140}
               wrapperColor="#FFFFFF"
               itemHeight={28}
               highlightColor={"#fff"}
@@ -156,22 +212,9 @@ const CartItem = ({ item }) => {
             />
             <ScrollPicker
               style={{ padding: 0 }}
-              dataSource={[
-                "01-02",
-                "02-03",
-                "03-04",
-                "04-05",
-                "05-06",
-                "06-07",
-                "07-08",
-                "08-09",
-                "09-10",
-                "10-11",
-                "11-12",
-                "12-01",
-              ]}
-              selectedIndex={1}
-              renderItem={(data, index, selectedIndex) => {
+              dataSource={timings}
+              selectedIndex={selectedHour[1]}
+              renderItem={(data, index) => {
                 return (
                   <View>
                     <Text
@@ -179,7 +222,7 @@ const CartItem = ({ item }) => {
                         { color: "#ccc" },
                         selectedHour[1] === index && {
                           color: colors.secondary,
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: "bold",
                         },
                       ]}
@@ -190,7 +233,10 @@ const CartItem = ({ item }) => {
                 );
               }}
               onValueChange={(data, selectedIndex) => {
-                setSelectedHour([data, selectedIndex]);
+                setSelectedHour(
+                  [data, selectedIndex],
+                  handleHourChange(item.id, data)
+                );
               }}
               wrapperHeight={70}
               wrapperWidth={120}
@@ -203,9 +249,9 @@ const CartItem = ({ item }) => {
             />
             <ScrollPicker
               style={{ padding: 0 }}
-              dataSource={["AM", "PM"]}
-              selectedIndex={1}
-              renderItem={(data, index, selectedIndex) => {
+              dataSource={period}
+              selectedIndex={selectedSession[1]}
+              renderItem={(data, index) => {
                 return (
                   <View>
                     <Text
@@ -213,7 +259,7 @@ const CartItem = ({ item }) => {
                         { color: "#ccc" },
                         selectedSession[1] === index && {
                           color: colors.secondary,
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: "bold",
                         },
                       ]}
@@ -224,7 +270,10 @@ const CartItem = ({ item }) => {
                 );
               }}
               onValueChange={(data, selectedIndex) => {
-                setSelectedSession([data, selectedIndex]);
+                setSelectedSession(
+                  [data, selectedIndex],
+                  handleSessionChange(item.id, data)
+                );
               }}
               wrapperHeight={70}
               wrapperWidth={120}
@@ -238,7 +287,10 @@ const CartItem = ({ item }) => {
           </View>
         </View>
         <View>
-          <Pressable style={{ padding: 10, marginLeft: 15 }}>
+          <Pressable
+            style={{ padding: 10, marginLeft: 15 }}
+            onPress={() => removeFromCart(item.id)}
+          >
             <MaterialIcons name="delete" size={30} color={colors.primary} />
           </Pressable>
         </View>

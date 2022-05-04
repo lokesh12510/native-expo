@@ -13,8 +13,10 @@ const styles = StyleSheet.create({
   skeleton: {
     width: 310,
     height: 125,
+    padding: 5,
     backgroundColor: "#f1f1f1",
-    marginVertical: 10,
-    marginHorizontal: 10,
+    margin: 5,
+    marginRight: 10,
+    borderRadius: 7,
   },
 });

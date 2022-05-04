@@ -1,22 +1,9 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  FlatList,
-  SectionList,
-  SafeAreaView,
-} from "react-native";
+import { View, Text, StyleSheet, ScrollView, SafeAreaView } from "react-native";
 import React from "react";
 import theme from "../../../theme/AppTheme";
 
-import SearchField from "../../../components/SearchField";
-import HSliderContainer from "../../../components/HSliderContainer";
-import KitchenSliderItem from "../../../components/KitchenSliderItem";
-import MainCategory from "../../../components/MainCategory";
 import FloatingCart from "../../../components/FloatingCart";
 import { useSelector } from "react-redux";
-import SwipeTabsItem from "../../../components/SwipeTabsItem";
 import KitchenList from "../../../components/Kitchen/KitchenList";
 import FoodCategory from "../../../components/foodCategory/FoodCategory";
 import FoodList from "../../../components/foodList/FoodListContainer";
