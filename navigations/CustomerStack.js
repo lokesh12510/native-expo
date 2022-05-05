@@ -20,6 +20,8 @@ import { Divider } from "react-native-paper";
 import { authReset } from "../app/slices/authSlice";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ConfirmOrder from "../screens/customer/confirmOrder/ConfirmOrder";
+import SuccessScreen from "../screens/customer/confirmOrder/SuccessScreen";
+import { clearCart } from "../app/slices/cartSlice";
 
 const { primary, darkgray } = theme.colors;
 
@@ -28,6 +30,11 @@ const customerDrawer = createDrawerNavigator();
 
 function CustomDrawerContent(props) {
   const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    dispatch(authReset());
+    dispatch(clearCart());
+  };
   return (
     <DrawerContentScrollView {...props}>
       <View style={styles.sidebarWrapper}>
@@ -68,7 +75,7 @@ function CustomDrawerContent(props) {
             alignContent: "center",
             elevation: 4,
           }}
-          onPress={() => dispatch(authReset())}
+          onPress={handleLogout}
           android_ripple={{ color: "#ccc" }}
         >
           <Text style={{ color: "#fff", textAlign: "center", fontSize: 16 }}>
@@ -138,7 +145,7 @@ export const CustomerStackScreen = () => {
   return (
     <CustomerStack.Navigator>
       <CustomerStack.Screen
-        name={"index"}
+        name={"Index"}
         component={CustomerDrawerScreen}
         options={{ headerShown: false }}
       />
@@ -150,6 +157,11 @@ export const CustomerStackScreen = () => {
         options={{ headerTitle: "Confirm Order" }}
         name={Routes.customer.confirm}
         component={ConfirmOrder}
+      />
+      <CustomerStack.Screen
+        options={{ headerShown: false }}
+        name={"Success"}
+        component={SuccessScreen}
       />
     </CustomerStack.Navigator>
   );

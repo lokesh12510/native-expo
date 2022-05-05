@@ -9,6 +9,7 @@ import foodReducer from "./slices/foodSlice";
 import { api } from "./services/api";
 import userReducer from "./slices/userSlice";
 import foodSlice from "./slices/foodSlice";
+import ordersReducer from "./slices/ordersSlice";
 
 const reducers = combineReducers({
   auth: authReducer,

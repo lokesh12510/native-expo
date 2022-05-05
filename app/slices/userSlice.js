@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { addressApi } from "../services/addressApi";
 import { authApi } from "../services/authApi";
 
 const UserSlice = createSlice({
@@ -10,6 +11,7 @@ const UserSlice = createSlice({
       latitude: 11.0067712,
       longitude: 76.955648,
     },
+    delivery_address: [],
   },
   reducers: {
     setLocation: (state, { payload }) => {
@@ -38,6 +40,12 @@ const UserSlice = createSlice({
       authApi.endpoints.authCustomerLogin.matchFulfilled,
       (state, { payload }) => {
         state.profile = payload.user;
+      }
+    );
+    builder.addMatcher(
+      addressApi.endpoints.getUserAddress.matchFulfilled,
+      (state, { payload }) => {
+        state.delivery_address = payload;
       }
     );
   },

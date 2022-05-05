@@ -6,6 +6,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   ScrollView,
+  Pressable,
 } from "react-native";
 import React, { useState } from "react";
 import theme from "../../../theme/AppTheme";
@@ -13,17 +14,79 @@ import StyledTextField from "../../../theme/uiSinppets/StyledTextField";
 import KeyboardAvoidWrapper from "../../../utils/KeyboardAvoidWrapper";
 import { Divider, RadioButton } from "react-native-paper";
 import StyledBtn from "../../../theme/uiSinppets/StyledBtn";
+import { useEffect } from "react";
+import { MaterialIcons } from "react-native-vector-icons";
+import { useSelector } from "react-redux";
+import { useGetUserAddressQuery } from "../../../app/services/addressApi";
+import { useOrderConfirmMutation } from "../../../app/services/ordersApi";
+import { clearCart } from "../../../app/slices/cartSlice";
+import { useDispatch } from "react-redux";
 
 const { colors } = theme;
 
 const ConfirmOrder = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const { cartItems, cartTotalAmount, cartItemsCount } = useSelector(
+    (state) => state.cart
+  );
+  const {
+    profile,
+    location,
+    delivery_address: userAddress,
+  } = useSelector((state) => state.user);
+
+  const { isLoading, isError, isSuccess } = useGetUserAddressQuery(profile.id);
+
+  const [orderConfirm, { isLoading: orderStatus, data, isError: orderError }] =
+    useOrderConfirmMutation();
+
   const [address, setAddress] = useState("");
 
   const handleChange = (text) => {
     setAddress(text);
   };
 
-  const [value, setValue] = React.useState("first");
+  const [value, setValue] = React.useState(0);
+
+  const [addressList, setAddressList] = useState([]);
+
+  useEffect(() => {
+    setAddressList(userAddress);
+  }, []);
+
+  const handleAddressList = () => {
+    setAddressList((add) => [...add, { delivery_address: address }]);
+    setAddress("");
+    Keyboard.dismiss();
+  };
+
+  const handlePlaceOrder = () => {
+    const addressData = {
+      user_id: profile.id,
+      delivery_address: addressList[value].delivery_address,
+      delivery_latitude: location.latitude,
+      delivery_longitude: location.longitude,
+      default_flag: 1,
+    };
+
+    let formData = new FormData();
+
+    formData.append(
+      "address",
+      JSON.stringify(addressList[value].delivery_address)
+    );
+    formData.append("payment_status", 1);
+    formData.append("payment_type", "Cash");
+    formData.append("orderDetail", JSON.stringify(cartItems));
+    formData.append("addressData", JSON.stringify(addressData));
+
+    orderConfirm(formData);
+    // On order confirm success navigate to success page and clear cart
+    if (!isLoading && isSuccess) {
+      dispatch(clearCart());
+      navigation.navigate("Success");
+    }
+  };
 
   return (
     <>
@@ -34,59 +97,26 @@ const ConfirmOrder = ({ navigation }) => {
         <View style={styles.wrapper}>
           <Text
             style={{
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: "bold",
-              marginBottom: 20,
+              marginBottom: 10,
+              color: colors.gray,
             }}
           >
-            Select Delivery Address
+            Items ({cartItemsCount})
           </Text>
-          <StyledTextField
-            label="New Address"
-            placeholder="New Delivery Address"
-            mode="outlined"
-            onChangeText={handleChange}
-            value={address}
-          />
-          <Divider />
-          <RadioButton.Group
-            onValueChange={(value) => setValue(value)}
-            value={value}
-          >
-            <RadioButton.Item
-              label="812,first floor , Mtp Road, Puthiyavan Nagar, Sukrawar Pettai, R.S. Puram, Coimbatore, Tamil Nadu 641002, India"
-              value="first"
-              color={colors.primary}
-            />
-            <RadioButton.Item
-              label="812,first floor , Mtp Road, Puthiyavan Nagar, Sukrawar Pettai, R.S. Puram, Coimbatore, Tamil Nadu 641002, India"
-              value="second"
-              color={colors.primary}
-            />
-          </RadioButton.Group>
-        </View>
-        <View style={styles.wrapper}>
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: "bold",
-              marginBottom: 20,
-            }}
-          >
-            Items (3)
-          </Text>
-          {[...new Array(3)].map((item, index) => (
-            <View style={styles.orderItem} key={index}>
+          {cartItems.map((item, index) => (
+            <View style={styles.orderItem} key={item.id}>
               <Image
                 source={{
-                  uri: "https://homecook.csuat.xyz:8000/uploads/food/File_ddf25537-4140-433c-80ef-3fbee084f072.jpg",
+                  uri: item.image_url,
                 }}
                 style={styles.image}
               />
               <View style={styles.content}>
-                <Text style={styles.title}>Biriyani</Text>
-                <Text style={styles.qty}>Quantity : 2</Text>
-                <Text style={styles.price}>$ 200</Text>
+                <Text style={styles.title}>{item.food_name}</Text>
+                <Text style={styles.qty}>Quantity : {item.u_quantity}</Text>
+                <Text style={styles.price}>&#x20B9; {item.u_total}</Text>
               </View>
             </View>
           ))}
@@ -105,16 +135,74 @@ const ConfirmOrder = ({ navigation }) => {
                 fontWeight: "bold",
               }}
             >
-              &nbsp; $ 600
+              &nbsp; &#x20B9; {cartTotalAmount}
             </Text>
           </View>
         </View>
+        <View style={styles.wrapper}>
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: "bold",
+              marginBottom: 14,
+              color: colors.gray,
+            }}
+          >
+            Add Delivery Address
+          </Text>
+          <View style={styles.inputContainer}>
+            <View style={{ flex: 2 }}>
+              <StyledTextField
+                label="Add New Address"
+                placeholder="New Delivery Address"
+                mode="outlined"
+                onChangeText={handleChange}
+                value={address}
+              />
+            </View>
+            <View>
+              <Pressable style={styles.addIcon} onPress={handleAddressList}>
+                <MaterialIcons
+                  name="add-box"
+                  size={40}
+                  color={colors.primary}
+                />
+              </Pressable>
+            </View>
+          </View>
+          <Divider />
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: "bold",
+              marginVertical: 14,
+              color: colors.gray,
+            }}
+          >
+            Select Address
+          </Text>
+          <RadioButton.Group
+            onValueChange={(value) => setValue(value)}
+            value={value}
+          >
+            {!isLoading &&
+              isSuccess &&
+              addressList.length > 0 &&
+              addressList.map((item, index) => {
+                return (
+                  <RadioButton.Item
+                    key={item.id}
+                    label={item.delivery_address}
+                    value={index}
+                    color={colors.primary}
+                  />
+                );
+              })}
+          </RadioButton.Group>
+        </View>
       </ScrollView>
       <View style={{ bottom: -6, paddingHorizontal: 10, paddingVertical: 5 }}>
-        <StyledBtn
-          title={"Place Order"}
-          onPress={() => navigation.navigate(Routes.customer.confirm)}
-        />
+        <StyledBtn title={"Place Order"} onPress={handlePlaceOrder} />
       </View>
     </>
   );
@@ -170,5 +258,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  addIcon: {
+    padding: 10,
+    marginBottom: 15,
   },
 });

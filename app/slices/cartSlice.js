@@ -105,10 +105,19 @@ const CartSlice = createSlice({
           : item
       );
     },
+
+    clearCart: (state) => {
+      return {
+        cartInitialized: false,
+        cartItems: [],
+        cartItemsCount: 0,
+        cartTotalAmount: 0,
+      };
+    },
   },
 });
 
-export const { addItem, removeItem, reduceItem, updateTimings } =
+export const { addItem, removeItem, reduceItem, updateTimings, clearCart } =
   CartSlice.actions;
 
 export default CartSlice.reducer;
