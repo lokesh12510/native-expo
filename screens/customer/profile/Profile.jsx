@@ -5,6 +5,7 @@ import { authReset } from "../../../app/slices/authSlice";
 import StyledBtn from "../../../theme/uiSinppets/StyledBtn";
 import styled from "styled-components";
 import { clearCart } from "../../../app/slices/cartSlice";
+import { resetUser } from "../../../app/slices/userSlice";
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -12,6 +13,7 @@ const Profile = () => {
   const handleLogout = () => {
     dispatch(clearCart());
     dispatch(authReset());
+    dispatch(resetUser());
   };
   return (
     <Root>

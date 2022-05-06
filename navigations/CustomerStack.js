@@ -22,6 +22,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ConfirmOrder from "../screens/customer/confirmOrder/ConfirmOrder";
 import SuccessScreen from "../screens/customer/confirmOrder/SuccessScreen";
 import { clearCart } from "../app/slices/cartSlice";
+import { resetUser } from "../app/slices/userSlice";
+import LocationScreen from "../screens/customer/location/LocationScreen";
 
 const { primary, darkgray } = theme.colors;
 
@@ -34,6 +36,7 @@ function CustomDrawerContent(props) {
   const handleLogout = () => {
     dispatch(authReset());
     dispatch(clearCart());
+    dispatch(resetUser());
   };
   return (
     <DrawerContentScrollView {...props}>
@@ -104,6 +107,7 @@ export const CustomerDrawerScreen = () => {
           options={{
             drawerLabel: Routes.customer.home,
             headerRightContainerStyle: { marginRight: 16 },
+            headerTitleContainerStyle: { flexGrow: 2 },
             headerTitle: () => {
               return <LocationSelect />;
             },
@@ -142,27 +146,44 @@ export const CustomerDrawerScreen = () => {
 const CustomerStack = createNativeStackNavigator();
 
 export const CustomerStackScreen = () => {
+  const { isLocated } = useSelector((state) => state.user);
+
   return (
     <CustomerStack.Navigator>
-      <CustomerStack.Screen
-        name={"Index"}
-        component={CustomerDrawerScreen}
-        options={{ headerShown: false }}
-      />
-      <CustomerStack.Screen
-        name={Routes.customer.profile}
-        component={Profile}
-      />
-      <CustomerStack.Screen
-        options={{ headerTitle: "Confirm Order" }}
-        name={Routes.customer.confirm}
-        component={ConfirmOrder}
-      />
-      <CustomerStack.Screen
-        options={{ headerShown: false }}
-        name={"Success"}
-        component={SuccessScreen}
-      />
+      {isLocated ? (
+        <>
+          <CustomerStack.Screen
+            name={"Index"}
+            component={CustomerDrawerScreen}
+            options={{ headerShown: false }}
+          />
+          <CustomerStack.Screen
+            name={Routes.customer.profile}
+            component={Profile}
+          />
+          <CustomerStack.Screen
+            options={{ headerTitle: "Confirm Order" }}
+            name={Routes.customer.confirm}
+            component={ConfirmOrder}
+          />
+          <CustomerStack.Screen
+            options={{ headerShown: false }}
+            name={"Success"}
+            component={SuccessScreen}
+          />
+          <CustomerStack.Screen
+            name={"ChangeLocation"}
+            options={{ headerTitle: "Change Location" }}
+            component={LocationScreen}
+          />
+        </>
+      ) : (
+        <CustomerStack.Screen
+          name={"Location"}
+          options={{ headerTitle: "Select Location", headerShown: false }}
+          component={LocationScreen}
+        />
+      )}
     </CustomerStack.Navigator>
   );
 };

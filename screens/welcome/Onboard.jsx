@@ -14,12 +14,14 @@ import styled from "styled-components";
 import { LinearGradient } from "expo-linear-gradient";
 import theme from "../../theme/AppTheme";
 import StyledBtn from "../../theme/uiSinppets/StyledBtn";
+import { resetUser } from "../../app/slices/userSlice";
 
 const OnboardScreen = ({ navigation }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(authReset());
+    dispatch(resetUser());
   }, []);
 
   const handleLogin = () => {

@@ -8,6 +8,7 @@ import {
   ScrollView,
   SafeAreaView,
   VirtualizedList,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import {
@@ -136,21 +137,28 @@ const FoodList = () => {
         </Text>
 
         <View style={{ flex: 1 }}>
-          {foodList.length === 0 ? (
+          {isLoading && foodList.length === 0 ? (
             <FoodListSkeleton />
-          ) : (
-            foodList &&
+          ) : foodList && foodList.length > 0 ? (
             foodList.map((item, index) => {
               return <FoodCard item={item} key={index} />;
             })
+          ) : (
+            <Text style={{ textAlign: "center" }}>No Data Found!</Text>
           )}
           <View style={{ marginVertical: 15, padding: 8 }}>
             {hasMore ? (
-              <StyledBtn
-                type="outlined"
-                title={"Load More"}
-                onPress={handleLoadMore}
-              />
+              isLoading ? (
+                <View>
+                  <ActivityIndicator size={"small"} color={colors.primary} />
+                </View>
+              ) : (
+                <StyledBtn
+                  type="outlined"
+                  title={"Load More"}
+                  onPress={handleLoadMore}
+                />
+              )
             ) : (
               <Text style={{ textAlign: "center" }}>
                 Your have reached the end!

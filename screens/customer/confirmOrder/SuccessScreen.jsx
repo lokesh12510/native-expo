@@ -10,16 +10,16 @@ import { useFocusEffect } from "@react-navigation/native";
 const { colors } = theme;
 
 const SuccessScreen = ({ navigation }) => {
-  useFocusEffect(
-    useCallback(() => {
-      const onBackPress = () => {
-        navigation.navigate(Routes.customer.home); // move to home screen
-        return true; // disable normal behavior
-      };
-      BackHandler.addEventListener("hardwareBackPress", onBackPress); // detect back button press
-      return () => BackHandler.removeEventListener("hardwareBackPress");
-    }, [])
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const onBackPress = () => {
+  //       navigation.navigate(Routes.customer.home); // move to home screen
+  //       return true; // disable normal behavior
+  //     };
+  //     BackHandler.addEventListener("hardwareBackPress", onBackPress); // detect back button press
+  //     return () => BackHandler.removeEventListener("hardwareBackPress");
+  //   }, [])
+  // );
 
   return (
     <View style={styles.container}>

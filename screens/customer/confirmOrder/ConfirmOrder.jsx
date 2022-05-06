@@ -189,6 +189,7 @@ const ConfirmOrder = ({ navigation }) => {
               isSuccess &&
               addressList.length > 0 &&
               addressList.map((item, index) => {
+                console.log(item);
                 return (
                   <RadioButton.Item
                     key={item.id}

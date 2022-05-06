@@ -3,15 +3,25 @@ import React from "react";
 import { StatusBar } from "expo-status-bar";
 import theme, { colors } from "../theme/AppTheme";
 import { MaterialIcons, Ionicons } from "react-native-vector-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { resetLocation } from "../app/slices/userSlice";
 
 const { darkgray, primary, text } = theme.colors;
 
 const LocationSelect = () => {
+  const dispatch = useDispatch();
+
+  const handleLocationChange = () => {
+    dispatch(resetLocation());
+  };
+
+  const { currentAddress } = useSelector((state) => state.user.location);
+
   return (
     <View style={styles.locationSelectContainer}>
       <View>
         <Pressable
-          onPress={() => console.log("pressed")}
+          onPress={handleLocationChange}
           android_ripple={{ color: "#ccc" }}
           style={styles.locationSelect}
         >
@@ -24,7 +34,7 @@ const LocationSelect = () => {
           <View>
             <Text style={styles.locationTitle}>Current Location</Text>
             <Text style={styles.locationContent}>
-              142B, Ram Nagar, Coimbatore...
+              {currentAddress.slice(0, 30) + "..."}
             </Text>
           </View>
           <MaterialIcons

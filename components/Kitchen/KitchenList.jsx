@@ -1,4 +1,12 @@
-import { View, Text, StyleSheet, FlatList, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  ScrollView,
+  RefreshControl,
+  Alert,
+} from "react-native";
 import React, { useCallback } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import theme from "../../theme/AppTheme";
@@ -6,14 +14,18 @@ import KitchenCard from "./KitchenCard";
 import { useGetKitchensMutation } from "../../app/services/kitchenApi";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import KitchenSkeleton from "./KitchenSkeleton";
 
 const { colors, SIZES } = theme;
 
 const KitchenList = () => {
-  const [getKitchens, { isError, data: kitchenList = [], isLoading }] =
-    useGetKitchensMutation();
+  const navigation = useNavigation();
+
+  const [
+    getKitchens,
+    { isError, data: kitchenList = [], isLoading, isSuccess },
+  ] = useGetKitchensMutation();
 
   const { longitude, latitude } = useSelector((state) => state.user.location);
 
@@ -28,6 +40,20 @@ const KitchenList = () => {
       });
     }, [longitude, latitude])
   );
+
+  if (isSuccess && kitchenList.total === 0) {
+    Alert.alert(
+      "No Kitchens found",
+      "Please change the current location",
+      [
+        {
+          text: "Change Location",
+          onPress: navigation.navigate("ChangeLocation"),
+        },
+      ],
+      { cancelable: false }
+    );
+  }
 
   return (
     <>

@@ -17,11 +17,13 @@ const RootStack = () => {
     role,
     loading: isLoading,
   } = useSelector((state) => state.auth);
+
+  const { isLocated } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   console.log(authToken);
 
-  useEffect(() => {}, [authToken, role]);
+  useEffect(() => {}, [authToken, role, isLocated]);
 
   return isLoading ? (
     <Container>

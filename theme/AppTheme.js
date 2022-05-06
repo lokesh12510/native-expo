@@ -100,7 +100,7 @@ const theme = {
     tertiary: "#1F2937",
     darkLight: "#9CA3AF",
     brand: "#6D28D9",
-    green: "#6D28D9",
+    green: "#1b5e20",
     red: "#6D28D9",
     gray: "#5e5f61",
 

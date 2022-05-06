@@ -23,7 +23,7 @@ import StyledButton from "../../../../theme/uiSinppets/StyledButton";
 import { useDispatch } from "react-redux";
 import { loading } from "../../../../app/slices/authSlice";
 // Colors
-const { primary, darkLight, darkgray, black } = theme.colors;
+const { primary, darkLight, darkgray, black, green } = theme.colors;
 
 const CustomerLogin = ({ navigation, route }) => {
   const [hidePass, setHidePass] = useState(true);
@@ -70,6 +70,19 @@ const CustomerLogin = ({ navigation, route }) => {
               Username or Password does't Exist!
             </Text>
           )}
+          {route.params?.isRegistration && (
+            <Text
+              style={{
+                color: green,
+                padding: 10,
+                backgroundColor: `${green}15`,
+                marginBottom: 10,
+                textAlign: "center",
+              }}
+            >
+              Customer Registration Successful! Please Login!
+            </Text>
+          )}
           <View
             style={{
               flexDirection: "row",
@@ -103,11 +116,12 @@ const CustomerLogin = ({ navigation, route }) => {
 
           <Formik
             initialValues={{ email: "", password: "" }}
-            onSubmit={(values, { setSubmitting }) => {
+            onSubmit={(values, { setSubmitting, resetForm }) => {
               if (values.email == "" || values.password == "") {
                 setSubmitting(false);
               } else {
                 handleLocalLogin(values, setSubmitting);
+                resetForm();
               }
             }}
           >

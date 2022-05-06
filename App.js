@@ -16,7 +16,7 @@ export default function App() {
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <PaperProvider theme={theme}>
-            <SafeAreaView style={{ flex: 1 }} forceInset={{ top: "always" }}>
+            <SafeAreaView style={{ flex: 1 }}>
               <RootNavigation />
             </SafeAreaView>
           </PaperProvider>

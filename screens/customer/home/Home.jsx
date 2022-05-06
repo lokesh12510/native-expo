@@ -1,4 +1,11 @@
-import { View, Text, StyleSheet, ScrollView, SafeAreaView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  SafeAreaView,
+  RefreshControl,
+} from "react-native";
 import React from "react";
 import theme from "../../../theme/AppTheme";
 
@@ -7,12 +14,15 @@ import { useSelector } from "react-redux";
 import KitchenList from "../../../components/Kitchen/KitchenList";
 import FoodCategory from "../../../components/foodCategory/FoodCategory";
 import FoodList from "../../../components/foodList/FoodListContainer";
+import { useEffect } from "react";
 
 const { colors } = theme;
 
 const Home = () => {
   const { cartItemsCount } = useSelector((state) => state.cart);
   const { profile } = useSelector((state) => state.user);
+
+  const [refreshing, setRefreshing] = React.useState(false);
 
   return (
     <SafeAreaView style={styles.root}>

@@ -10,7 +10,7 @@ import {
 } from "../../../../theme/Styles";
 import { StatusBar } from "expo-status-bar";
 import { Formik } from "formik";
-import { ActivityIndicator, ScrollView, View } from "react-native";
+import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 import { TextInput } from "react-native-paper";
 
 import {
@@ -38,10 +38,10 @@ const CustomerRegister = ({ navigation, route }) => {
     useAuthCustomerRegisterMutation();
 
   if (!isLoading && isSuccess) {
-    navigation.navigate(Routes.auth.customerLogin);
+    navigation.navigate(Routes.auth.customerLogin, { isRegistration: true });
   }
 
-  const handleLocalLogin = (credential, setSubmitting) => {
+  const handleCustomerRegistration = (credential, setSubmitting) => {
     dispatch(loading());
     authCustomerRegister(credential);
     setSubmitting(false);
@@ -68,6 +68,18 @@ const CustomerRegister = ({ navigation, route }) => {
           {isLoading && <ActivityIndicator size={"large"} color="primary" />}
           <PageLogo resizeMode="cover" source={AppImages.LogoDark} />
           <SubTitle>Register As</SubTitle>
+          {isError && error?.data?.error && (
+            <Text
+              style={{
+                color: primary,
+                padding: 10,
+                backgroundColor: `${primary}15`,
+                marginBottom: 10,
+              }}
+            >
+              Email id or Mobile Number Already Exist!
+            </Text>
+          )}
           <View
             style={{
               flexDirection: "row",
@@ -101,7 +113,7 @@ const CustomerRegister = ({ navigation, route }) => {
 
           <Formik
             initialValues={{ name: "", phone: "", email: "", password: "" }}
-            onSubmit={(values, { setSubmitting }) => {
+            onSubmit={(values, { setSubmitting, resetForm }) => {
               if (
                 values.email == "" ||
                 values.password == "" ||
@@ -110,7 +122,8 @@ const CustomerRegister = ({ navigation, route }) => {
               ) {
                 setSubmitting(false);
               } else {
-                handleLocalLogin(values, setSubmitting);
+                handleCustomerRegistration(values, setSubmitting);
+                resetForm();
               }
             }}
           >
