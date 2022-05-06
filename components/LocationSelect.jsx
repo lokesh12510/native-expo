@@ -5,14 +5,17 @@ import theme, { colors } from "../theme/AppTheme";
 import { MaterialIcons, Ionicons } from "react-native-vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { resetLocation } from "../app/slices/userSlice";
+import { useNavigation } from "@react-navigation/native";
 
 const { darkgray, primary, text } = theme.colors;
 
 const LocationSelect = () => {
   const dispatch = useDispatch();
 
+  const navigation = useNavigation();
+
   const handleLocationChange = () => {
-    dispatch(resetLocation());
+    navigation.navigate("ChangeLocation");
   };
 
   const { currentAddress } = useSelector((state) => state.user.location);

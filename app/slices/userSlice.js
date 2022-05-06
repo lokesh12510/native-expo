@@ -24,12 +24,12 @@ const UserSlice = createSlice({
       state.isLocated = true;
     },
     resetLocation: (state) => {
-      (state.location = {
+      state.location = {
         latitude: 11.0067712,
         longitude: 76.955648,
         currentAddress: "",
-      }),
-        (state.isLocated = false);
+      };
+      state.isLocated = false;
     },
     resetUser: (state) => {
       return {
@@ -55,7 +55,7 @@ const UserSlice = createSlice({
       addressApi.endpoints.getUserAddress.matchFulfilled,
       (state, { payload }) => {
         if (payload.length > 0) {
-          state.delivery_address.push(payload);
+          state.delivery_address = payload;
         }
       }
     );

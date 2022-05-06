@@ -6,9 +6,10 @@ import {
   Pressable,
   Dimensions,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect } from "react";
-import theme from "../../../theme/AppTheme";
+import theme, { SIZES } from "../../../theme/AppTheme";
 import StyledTextField from "../../../theme/uiSinppets/StyledTextField";
 import { SafeAreaView } from "react-native-safe-area-context";
 import StyledBtn from "../../../theme/uiSinppets/StyledBtn";
@@ -22,12 +23,14 @@ import { GOOGLE_MAPS_API_KEY } from "../../../constants";
 import * as Location from "expo-location";
 import { useDispatch, useSelector } from "react-redux";
 import { setLocation } from "../../../app/slices/userSlice";
+import { Routes } from "./../../../constants/routes";
 
 const { colors } = theme;
 
 const LocationScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const { authToken } = useSelector((state) => state.auth);
+  const { isLocated } = useSelector((state) => state.user);
   // Get current Location
   const [location, setLocations] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
@@ -35,10 +38,10 @@ const LocationScreen = ({ navigation }) => {
   const [selectedAddress, setSelectedAddress] = useState("");
 
   const [latLang, setLatLang] = useState({
-    // latitude: 11.0067712,
-    // longitude: 76.955648,
-    latitude: null,
-    longitude: null,
+    latitude: 11.0067712,
+    longitude: 76.955648,
+    // latitude: "",
+    // longitude: "",
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   });
@@ -89,56 +92,24 @@ const LocationScreen = ({ navigation }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: authToken ? true : false,
-      headerTitle: () => {
-        return (
-          <View style={{ flex: 1, position: "relative" }}>
-            <GooglePlacesAutocomplete
-              placeholder="Search"
-              fetchDetails={true}
-              GooglePlacesSearchQuery={{
-                rankby: "distance",
-              }}
-              onPress={(data, details = null) => {
-                // 'details' is provided when fetchDetails = true
-                setSelectedAddress(data.description);
 
-                setLatLang({
-                  latitude: details.geometry.location.lat,
-                  longitude: details.geometry.location.lng,
-                  latitudeDelta: 0.0922,
-                  longitudeDelta: 0.0421,
-                });
-              }}
-              query={{
-                key: GOOGLE_MAPS_API_KEY,
-                language: "en",
-                types: "establishment",
-                components: "country:IN",
-                radius: 30000,
-                location: `${location?.coords.latitude}, ${location?.coords.longitude}`,
-              }}
-              styles={{
-                container: {
-                  flex: 1,
-                  position: "absolute",
-                  width: "100%",
-                  zIndex: 1,
-                  // padding: 15,
-                  // marginTop: 20,
-                  borderWidth: 1,
-                },
-                listView: { backgroundColor: "white" },
-              }}
-            />
-          </View>
-        );
-      },
+      // headerLeft: ({ color, size }) => (
+      //   <MaterialIcons name="search" size={20} color={color} />
+      // ),
+
+      // headerRight: (color) => (
+      //   <MaterialIcons name="close" size={25} color={color} />
+      // ),
     });
   }, []);
 
   const handleSetLocation = () => {
     // console.log({ location: latLang, address: selectedAddress });
     dispatch(setLocation({ location: latLang, address: selectedAddress }));
+
+    if (isLocated) {
+      navigation.navigate(Routes.customer.home);
+    }
   };
 
   console.log(selectedAddress);
@@ -175,7 +146,60 @@ const LocationScreen = ({ navigation }) => {
       {location && (
         <View style={styles.mapView}>
           {/* Google Places Container */}
+          <GooglePlacesAutocomplete
+            placeholder="Search Location..."
+            fetchDetails={true}
+            GooglePlacesSearchQuery={{
+              rankby: "distance",
+            }}
+            onPress={(data, details = null) => {
+              // 'details' is provided when fetchDetails = true
+              setSelectedAddress(data.description);
 
+              setLatLang({
+                latitude: details.geometry.location.lat,
+                longitude: details.geometry.location.lng,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              });
+            }}
+            query={{
+              key: GOOGLE_MAPS_API_KEY,
+              language: "en",
+              types: "establishment",
+              components: "country:IN",
+              radius: 30000,
+              location: `${location?.coords.latitude}, ${location?.coords.longitude}`,
+            }}
+            styles={{
+              container: {
+                position: "absolute",
+                padding: 16,
+                zIndex: 2,
+                top: 0,
+                left: 0,
+                width: "100%",
+              },
+              textInputContainer: {
+                borderTopWidth: 0,
+                borderBottomWidth: 0,
+              },
+              textInput: {
+                borderRadius: 5,
+
+                height: 45,
+                color: "#000",
+                fontWeight: "bold",
+                fontSize: 16,
+                shadowRadius: 2,
+                width: "100%",
+              },
+
+              predefinedPlacesDescription: {
+                color: "#1faadb",
+              },
+            }}
+          />
           {/* Google Places Container */}
           {/* Map View Container */}
           <MapView
@@ -223,7 +247,7 @@ const LocationScreen = ({ navigation }) => {
 
       <View>
         <View style={styles.bottomModalContainer}>
-          {selectedAddress !== "" && (
+          {selectedAddress ? (
             <>
               <Text style={styles.title}> Selected Location</Text>
               <View>
@@ -239,26 +263,17 @@ const LocationScreen = ({ navigation }) => {
                   </View>
                 </View>
               </View>
-            </>
-          )}
-
-          <View>
-            {selectedAddress ? (
               <StyledBtn
                 title={authToken ? "Change" : "Proceed"}
                 type="contained"
                 onPress={handleSetLocation}
               />
-            ) : (
-              <StyledBtn
-                title={"Locate Current Address"}
-                type="outlined"
-                onPress={() =>
-                  getAddress(latLang?.latitude, latLang?.longitude)
-                }
-              />
-            )}
-          </View>
+            </>
+          ) : (
+            <View style={styles.flexCenter}>
+              <ActivityIndicator size="large" color={colors.primary} />
+            </View>
+          )}
         </View>
       </View>
     </View>
@@ -281,6 +296,7 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: colors.white,
     width: "100%",
+    minHeight: 170,
   },
   mapView: {
     flex: 1,
@@ -308,5 +324,9 @@ const styles = StyleSheet.create({
     margin: 1,
     padding: 1,
     marginBottom: 15,
+  },
+  flexCenter: {
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

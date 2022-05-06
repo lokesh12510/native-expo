@@ -8,7 +8,7 @@ import {
   ScrollView,
   Pressable,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import theme from "../../../theme/AppTheme";
 import StyledTextField from "../../../theme/uiSinppets/StyledTextField";
 import KeyboardAvoidWrapper from "../../../utils/KeyboardAvoidWrapper";
@@ -50,7 +50,7 @@ const ConfirmOrder = ({ navigation }) => {
 
   const [addressList, setAddressList] = useState([]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setAddressList(userAddress);
   }, []);
 

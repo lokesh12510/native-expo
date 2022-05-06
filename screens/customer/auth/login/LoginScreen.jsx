@@ -52,7 +52,7 @@ const CustomerLogin = ({ navigation, route }) => {
   }, []);
 
   return (
-    <ScrollView>
+    <ScrollView style={{ flex: 1, backgroundColor: "#fff" }}>
       <StyledContainer>
         <StatusBar style="dark" />
         <InnerContainer>
