@@ -13,6 +13,9 @@ export const Routes = {
     profile: "Profile",
     favorites: "Favorites",
     confirm: "Confirm",
+    location: "Location",
+    changeLocation: "ChangeLocation",
+    success: "Success",
   },
   cook: {
     dashboard: "Dashboard",

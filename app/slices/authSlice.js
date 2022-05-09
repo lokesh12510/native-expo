@@ -5,14 +5,14 @@ const AuthSlice = createSlice({
   name: "auth",
   initialState: {
     authToken: null,
-    role: "ROLE_GUEST",
+    role: "ROLE_CUSTOMER",
     loading: false,
   },
   reducers: {
     authReset: (state) => {
       return {
         authToken: null,
-        role: "ROLE_GUEST",
+        role: "ROLE_CUSTOMER",
       };
     },
     loading: (state) => {

@@ -2,35 +2,34 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
-  Pressable,
-  Dimensions,
   Alert,
   ActivityIndicator,
+  SafeAreaView,
+  Pressable,
 } from "react-native";
 import React, { useEffect } from "react";
 import theme, { SIZES } from "../../../theme/AppTheme";
-import StyledTextField from "../../../theme/uiSinppets/StyledTextField";
-import { SafeAreaView } from "react-native-safe-area-context";
 import StyledBtn from "../../../theme/uiSinppets/StyledBtn";
 import { useLayoutEffect } from "react";
 import { MaterialIcons } from "react-native-vector-icons";
-import { IconButton } from "react-native-paper";
 import MapView, { Marker, Callout, Circle } from "react-native-maps";
 import { useState } from "react";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { GOOGLE_MAPS_API_KEY } from "../../../constants";
 import * as Location from "expo-location";
 import { useDispatch, useSelector } from "react-redux";
-import { setLocation } from "../../../app/slices/userSlice";
+import { addDeliveryAddress, setLocation } from "../../../app/slices/userSlice";
 import { Routes } from "./../../../constants/routes";
 
 const { colors } = theme;
 
 const LocationScreen = ({ navigation }) => {
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
   const { authToken } = useSelector((state) => state.auth);
-  const { isLocated } = useSelector((state) => state.user);
+  const { isLocated, location: currenLocation } = useSelector(
+    (state) => state.user
+  );
   // Get current Location
   const [location, setLocations] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
@@ -47,41 +46,72 @@ const LocationScreen = ({ navigation }) => {
   });
 
   // Checking user permission for location
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        Alert.alert(
-          "Permission not granted",
-          "Allow the app to use location service.",
-          [{ text: "OK" }],
-          { cancelable: false }
-        );
-        return;
-      }
-
-      let location = await Location.getCurrentPositionAsync({});
-      setLocations(location);
-
+  useEffect(async () => {
+    setIsLoading(true);
+    if (isLocated) {
+      // if user already has current location
       setLatLang({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
+        latitude: currenLocation.latitude,
+        longitude: currenLocation.longitude,
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
       });
 
       let address = await getAddress(
-        location.coords.latitude,
-        location.coords.longitude
+        currenLocation.latitude,
+        currenLocation.longitude
       );
 
-      console.log(address);
-
       setSelectedAddress(address);
-    })();
+      setIsLoading(false);
+    } else {
+      // else access location from device and set current location
+      (async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+
+        // alert popup for user to grand permission to access location (* Mandatory!)
+        if (status !== "granted") {
+          setErrorMsg("Permission to access location was denied");
+          Alert.alert(
+            "Permission not granted",
+            "Allow the app to use location service.",
+            [{ text: "OK" }],
+            { cancelable: false }
+          );
+          return;
+        }
+
+        // Access location from device
+        handleCurrentLocation();
+      })();
+    }
   }, []);
+
+  // get Current Location
+  const handleCurrentLocation = async () => {
+    setIsLoading(true);
+    // Access location
+    let location = await Location.getCurrentPositionAsync({});
+    setLocations(location);
+
+    // set lat long
+    setLatLang({
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+      latitudeDelta: 0.0922,
+      longitudeDelta: 0.0421,
+    });
+
+    let address = await getAddress(
+      location.coords.latitude,
+      location.coords.longitude
+    );
+
+    // set address~
+    setSelectedAddress(address);
+
+    setIsLoading(false);
+  };
 
   if (errorMsg) {
     console.log(errorMsg);
@@ -91,7 +121,7 @@ const LocationScreen = ({ navigation }) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerShown: authToken ? true : false,
+      headerShown: isLocated ? true : false,
 
       // headerLeft: ({ color, size }) => (
       //   <MaterialIcons name="search" size={20} color={color} />
@@ -104,9 +134,10 @@ const LocationScreen = ({ navigation }) => {
   }, []);
 
   const handleSetLocation = () => {
+    setIsLoading(true);
     // console.log({ location: latLang, address: selectedAddress });
     dispatch(setLocation({ location: latLang, address: selectedAddress }));
-
+    setIsLoading(false);
     if (isLocated) {
       navigation.navigate(Routes.customer.home);
     }
@@ -114,7 +145,7 @@ const LocationScreen = ({ navigation }) => {
 
   console.log(selectedAddress);
 
-  // get current location based on lat and lon
+  // get current address based on lat and lon
   const getAddress = async (lat, lon) => {
     try {
       // let address = await Location.reverseGeocodeAsync({
@@ -142,9 +173,24 @@ const LocationScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      {location && (
+    <SafeAreaView style={styles.container}>
+      {
         <View style={styles.mapView}>
+          {/* FabIcon */}
+          <View style={styles.fabBtnWrapper}>
+            <Pressable
+              style={styles.fabBtn}
+              android_ripple={{ color: "#ccc" }}
+              onPress={handleCurrentLocation}
+            >
+              <MaterialIcons
+                name="my-location"
+                size={25}
+                color={colors.white}
+              />
+            </Pressable>
+          </View>
+          {/* FabIcon */}
           {/* Google Places Container */}
           <GooglePlacesAutocomplete
             placeholder="Search Location..."
@@ -169,14 +215,14 @@ const LocationScreen = ({ navigation }) => {
               types: "establishment",
               components: "country:IN",
               radius: 30000,
-              location: `${location?.coords.latitude}, ${location?.coords.longitude}`,
+              location: `${latLang.latitude}, ${latLang.longitude}`,
             }}
             styles={{
               container: {
                 position: "absolute",
                 padding: 16,
                 zIndex: 2,
-                top: 0,
+                top: isLocated ? 0 : 15,
                 left: 0,
                 width: "100%",
               },
@@ -186,7 +232,9 @@ const LocationScreen = ({ navigation }) => {
               },
               textInput: {
                 borderRadius: 5,
-
+                borderWidth: 0.5,
+                borderColor: "#ccc",
+                elevation: 4,
                 height: 45,
                 color: "#000",
                 fontWeight: "bold",
@@ -243,11 +291,11 @@ const LocationScreen = ({ navigation }) => {
           </MapView>
           {/* Map View Container */}
         </View>
-      )}
+      }
 
       <View>
         <View style={styles.bottomModalContainer}>
-          {selectedAddress ? (
+          {selectedAddress && !isLoading ? (
             <>
               <Text style={styles.title}> Selected Location</Text>
               <View>
@@ -264,7 +312,7 @@ const LocationScreen = ({ navigation }) => {
                 </View>
               </View>
               <StyledBtn
-                title={authToken ? "Change" : "Proceed"}
+                title={isLocated ? "Change" : "Proceed"}
                 type="contained"
                 onPress={handleSetLocation}
               />
@@ -276,7 +324,7 @@ const LocationScreen = ({ navigation }) => {
           )}
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -285,7 +333,7 @@ export default LocationScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "red",
+    backgroundColor: colors.white,
   },
   title: {
     marginVertical: 7,
@@ -310,6 +358,7 @@ const styles = StyleSheet.create({
     right: 16,
     elevation: 6,
     backgroundColor: colors.primary,
+    zIndex: 3,
   },
   fabBtn: {
     borderRadius: 50,

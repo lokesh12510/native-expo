@@ -11,7 +11,7 @@ import Orders from "../screens/customer/orders/Orders";
 import Cart from "../screens/customer/cart/Cart";
 import { Routes } from "../constants/routes";
 import theme, { colors } from "../theme/AppTheme";
-import { AntDesign } from "react-native-vector-icons";
+import { AntDesign, FontAwesome5 } from "react-native-vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { Image, StyleSheet, Text, View, Pressable } from "react-native";
 import LocationSelect from "../components/LocationSelect";
@@ -24,33 +24,58 @@ import SuccessScreen from "../screens/customer/confirmOrder/SuccessScreen";
 import { clearCart } from "../app/slices/cartSlice";
 import { resetUser } from "../app/slices/userSlice";
 import LocationScreen from "../screens/customer/location/LocationScreen";
+import { clearFood } from "../app/slices/foodSlice";
+import StyledBtn from "../theme/uiSinppets/StyledBtn";
+import CustomerLogin from "../screens/customer/auth/login/LoginScreen";
+import CustomerRegister from "../screens/customer/auth/register/RegisterScreen";
+import CookLogin from "../screens/cook/auth/login/LoginScreen";
+import CookRegister from "../screens/cook/auth/register/RegisterScreen";
+import AppImages from "../constants/Images";
+import OnboardScreen from "../screens/welcome/Onboard";
 
 const { primary, darkgray } = theme.colors;
 
 // Side Drawer Navigation
 const customerDrawer = createDrawerNavigator();
 
-function CustomDrawerContent(props) {
+const CustomDrawerContent = (props) => {
+  // select Auth]
+  const { authToken } = useSelector((state) => state.auth);
+  const { profile } = useSelector((state) => state.user);
+  const navigation = useNavigation();
   const dispatch = useDispatch();
+
+  const handleLogin = () => {
+    navigation.navigate(Routes.auth.customerLogin);
+  };
+
+  const handleRegister = () => {
+    navigation.navigate(Routes.auth.customerRegister);
+  };
 
   const handleLogout = () => {
     dispatch(authReset());
     dispatch(clearCart());
     dispatch(resetUser());
+    dispatch(clearFood());
   };
   return (
     <DrawerContentScrollView {...props}>
       <View style={styles.sidebarWrapper}>
         <View style={styles.profileImageWrapper}>
-          <Image
-            style={styles.profileImage}
-            source={{
-              uri: "https://lh3.googleusercontent.com/a-/AOh14Gg4uD5GLRsuNd8dgTtIMc8nv3YIgLqrQTLwB0qnZw=s83-c-mo",
-            }}
-          />
+          {profile.image ? (
+            <Image
+              style={styles.profileImage}
+              source={{ uri: profile.image }}
+            />
+          ) : (
+            <Image style={styles.profileImage} source={AppImages.Avatar} />
+          )}
         </View>
         <View>
-          <Text style={styles.profileTitle}>Lokesh</Text>
+          <Text style={styles.profileTitle}>
+            {(profile.name && profile.name) || "Guest"}
+          </Text>
           <Text style={styles.profileSubTitle}>Customer</Text>
         </View>
       </View>
@@ -67,32 +92,87 @@ function CustomDrawerContent(props) {
           marginTop: 50,
         }}
       >
-        <Pressable
-          style={{
-            flex: 1,
-            paddingVertical: 8,
-            paddingHorizontal: 32,
-            borderRadius: 5,
-            backgroundColor: primary,
-            justifyContent: "center",
-            alignContent: "center",
-            elevation: 4,
-          }}
-          onPress={handleLogout}
-          android_ripple={{ color: "#ccc" }}
-        >
-          <Text style={{ color: "#fff", textAlign: "center", fontSize: 16 }}>
-            Logout
-          </Text>
-        </Pressable>
+        {authToken ? (
+          <Pressable
+            style={{
+              flex: 1,
+              paddingVertical: 8,
+              paddingHorizontal: 32,
+              borderRadius: 5,
+              backgroundColor: primary,
+              justifyContent: "center",
+              alignContent: "center",
+              elevation: 4,
+            }}
+            onPress={handleLogout}
+            android_ripple={{ color: "#ccc" }}
+          >
+            <Text style={{ color: "#fff", textAlign: "center", fontSize: 16 }}>
+              Logout
+            </Text>
+          </Pressable>
+        ) : (
+          <View style={{ flexDirection: "row" }}>
+            <Pressable
+              style={{
+                flex: 1,
+                paddingVertical: 8,
+                paddingHorizontal: 30,
+                borderRadius: 5,
+                margin: 1,
+                borderColor: primary,
+                borderWidth: 0.5,
+                backgroundColor: "#fff",
+                justifyContent: "center",
+                alignContent: "center",
+                elevation: 4,
+              }}
+              onPress={handleLogin}
+              android_ripple={{ color: "#ccc" }}
+            >
+              <Text
+                style={{
+                  color: colors.primary,
+                  textAlign: "center",
+                  fontSize: 16,
+                }}
+              >
+                Login
+              </Text>
+            </Pressable>
+            <Pressable
+              style={{
+                flex: 1,
+                paddingVertical: 8,
+                paddingHorizontal: 30,
+                borderRadius: 5,
+                margin: 1,
+                backgroundColor: primary,
+                justifyContent: "center",
+                alignContent: "center",
+                elevation: 4,
+              }}
+              onPress={handleRegister}
+              android_ripple={{ color: "#ccc" }}
+            >
+              <Text
+                style={{ color: "#fff", textAlign: "center", fontSize: 16 }}
+              >
+                Register
+              </Text>
+            </Pressable>
+          </View>
+        )}
       </View>
     </DrawerContentScrollView>
   );
-}
+};
 
 export const CustomerDrawerScreen = () => {
   const navigation = useNavigation();
-
+  // select Auth]
+  const { profile } = useSelector((state) => state.user);
+  const { authToken } = useSelector((state) => state.auth);
   return (
     <>
       <customerDrawer.Navigator
@@ -107,7 +187,7 @@ export const CustomerDrawerScreen = () => {
           options={{
             drawerLabel: Routes.customer.home,
             headerRightContainerStyle: { marginRight: 16 },
-            headerTitleContainerStyle: { flexGrow: 2 },
+
             headerTitle: () => {
               return <LocationSelect />;
             },
@@ -117,12 +197,17 @@ export const CustomerDrawerScreen = () => {
                   style={styles.profileIconWrapper}
                   onPress={() => navigation.navigate(Routes.customer.profile)}
                 >
-                  <Image
-                    source={{
-                      uri: "https://lh3.googleusercontent.com/ogw/ADea4I4MthA1Px3_XdpXyXt8A4Mdd_VYQ3TJKOZh7eTa2A=s32-c-mo",
-                    }}
-                    style={styles.profileImage}
-                  />
+                  {profile.image ? (
+                    <Image
+                      source={{ uri: profile.image }}
+                      style={styles.profileImage}
+                    />
+                  ) : (
+                    <Image
+                      source={AppImages.Avatar}
+                      style={styles.profileImage}
+                    />
+                  )}
                 </Pressable>
               );
             },
@@ -147,6 +232,8 @@ const CustomerStack = createNativeStackNavigator();
 
 export const CustomerStackScreen = () => {
   const { isLocated } = useSelector((state) => state.user);
+  // select Auth]
+  const { authToken } = useSelector((state) => state.auth);
 
   return (
     <CustomerStack.Navigator>
@@ -161,11 +248,7 @@ export const CustomerStackScreen = () => {
             name={Routes.customer.profile}
             component={Profile}
           />
-          <CustomerStack.Screen
-            options={{ headerTitle: "Confirm Order" }}
-            name={Routes.customer.confirm}
-            component={ConfirmOrder}
-          />
+
           <CustomerStack.Screen
             options={{ headerShown: false }}
             name={"Success"}
@@ -176,13 +259,48 @@ export const CustomerStackScreen = () => {
             options={{ headerTitle: "Change Location" }}
             component={LocationScreen}
           />
+          {/* Customer auth*/}
+          {authToken ? (
+            <CustomerStack.Screen
+              options={{ headerTitle: "Confirm Order" }}
+              name={Routes.customer.confirm}
+              component={ConfirmOrder}
+            />
+          ) : (
+            <CustomerStack.Group>
+              <CustomerStack.Screen
+                name={Routes.auth.customerLogin}
+                component={CustomerLogin}
+              />
+              <CustomerStack.Screen
+                name={Routes.auth.customerRegister}
+                component={CustomerRegister}
+              />
+              {/* Cook auth*/}
+              <CustomerStack.Screen
+                name={Routes.auth.cookLogin}
+                component={CookLogin}
+              />
+              <CustomerStack.Screen
+                name={Routes.auth.cookRegister}
+                component={CookRegister}
+              />
+            </CustomerStack.Group>
+          )}
         </>
       ) : (
-        <CustomerStack.Screen
-          name={"Location"}
-          options={{ headerTitle: "Select Location", headerShown: false }}
-          component={LocationScreen}
-        />
+        <CustomerStack.Group>
+          <CustomerStack.Screen
+            name="Welcome"
+            component={OnboardScreen}
+            options={{ headerShown: false }}
+          />
+          <CustomerStack.Screen
+            name={Routes.customer.location}
+            options={{ headerTitle: "Select Location", headerShown: false }}
+            component={LocationScreen}
+          />
+        </CustomerStack.Group>
       )}
     </CustomerStack.Navigator>
   );

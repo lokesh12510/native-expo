@@ -24,16 +24,16 @@ const OnboardScreen = ({ navigation }) => {
     dispatch(resetUser());
   }, []);
 
-  const handleLogin = () => {
-    navigation.navigate(Routes.auth.customerLogin, {
+  const handleContinue = () => {
+    navigation.navigate(Routes.customer.location, {
       animate: "slide_from_right",
     });
   };
-  const handleRegister = () => {
-    navigation.navigate(Routes.auth.customerRegister, {
-      animate: "slide_from_right",
-    });
-  };
+  // const handleRegister = () => {
+  //   navigation.navigate(Routes.auth.customerRegister, {
+  //     animate: "slide_from_right",
+  //   });
+  // };
   return (
     <>
       <StatusBar barStyle="light-content" />
@@ -49,9 +49,13 @@ const OnboardScreen = ({ navigation }) => {
             style={{ height: "100%", width: "100%" }}
           >
             <Content>
-              <HeroText>Taste our Home food right now!</HeroText>
-              <StyledBtn title="Sign In" onPress={handleLogin} />
-              <View
+              <View style={{ marginBottom: 60 }}>
+                <SubText>Taste our </SubText>
+                <HeroText>Home food</HeroText>
+                <SubText>right now!</SubText>
+              </View>
+              <StyledBtn title="Continue" onPress={handleContinue} />
+              {/* <View
                 style={{
                   justifyContent: "center",
                   alignItems: "center",
@@ -62,7 +66,7 @@ const OnboardScreen = ({ navigation }) => {
                 <Pressable onPress={handleRegister}>
                   <LinkText>Sign Up</LinkText>
                 </Pressable>
-              </View>
+              </View> */}
             </Content>
           </Overlay>
         </Image>
@@ -88,21 +92,20 @@ const Image = styled.ImageBackground`
 `;
 
 const Content = styled.View`
-  padding: 50px 30px;
+  padding: 50px 16px;
   z-index: 2;
 `;
 
 const HeroText = styled.Text`
-  font-size: 35px;
+  font-size: 40px;
   font-weight: bold;
-  padding-bottom: 30px;
-  color: #ffffff;
+  color: ${theme.colors.secondary};
 `;
 
 const SubText = styled.Text`
-  font-size: 16px;
+  font-size: 25px;
+  font-weight: bold;
   color: #fff;
-  text-align: center;
 `;
 
 const LinkText = styled.Text`

@@ -43,8 +43,8 @@ const KitchenList = () => {
 
   if (isSuccess && kitchenList.total === 0) {
     Alert.alert(
-      "No Kitchens found",
-      "Please change the current location",
+      "No Kitchens Found",
+      "Please change the current location, kitchens are not available in your location!",
       [
         {
           text: "Change Location",

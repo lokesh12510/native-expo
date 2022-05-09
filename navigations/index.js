@@ -30,7 +30,7 @@ const RootStack = () => {
       <Button onPress={dispatch(authReset())} />
       <ActivityIndicator size={"large"} color={theme.colors.primary} />
     </Container>
-  ) : authToken && role === "ROLE_CUSTOMER" ? (
+  ) : role === "ROLE_CUSTOMER" ? (
     <>
       <CustomerStackScreen />
     </>

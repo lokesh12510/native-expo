@@ -20,6 +20,8 @@ const Cart = ({ navigation }) => {
   const { cartItems, cartItemsCount, cartTotalAmount } = useSelector(
     (state) => state.cart
   );
+  // select Auth]
+  const { authToken } = useSelector((state) => state.auth);
 
   return (
     <>
@@ -58,7 +60,13 @@ const Cart = ({ navigation }) => {
           >
             <StyledBtn
               title={`Confirm Order (₹ ${cartTotalAmount})`}
-              onPress={() => navigation.navigate(Routes.customer.confirm)}
+              onPress={() =>
+                authToken
+                  ? navigation.navigate(Routes.customer.confirm)
+                  : navigation.navigate(Routes.auth.customerLogin, {
+                      isConfirm: true,
+                    })
+              }
             />
           </View>
         </>

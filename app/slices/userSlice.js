@@ -12,7 +12,7 @@ const UserSlice = createSlice({
       longitude: 76.955648,
       currentAddress: "",
     },
-    delivery_address: [{ delivery_address: "Coimbatore, Tamil Nadu, India" }],
+    delivery_address: [],
   },
   reducers: {
     setLocation: (state, { payload }) => {
@@ -43,6 +43,9 @@ const UserSlice = createSlice({
         delivery_address: [],
       };
     },
+    addDeliveryAddress: (state, { payload }) => {
+      state.delivery_address.push(payload);
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -54,14 +57,17 @@ const UserSlice = createSlice({
     builder.addMatcher(
       addressApi.endpoints.getUserAddress.matchFulfilled,
       (state, { payload }) => {
-        if (payload.length > 0) {
-          state.delivery_address = payload;
-        }
+        const newList = [...payload];
+        state.delivery_address = [
+          { delivery_address: state.location.currentAddress },
+          ...newList,
+        ];
       }
     );
   },
 });
 
-export const { setLocation, resetUser, resetLocation } = UserSlice.actions;
+export const { setLocation, resetUser, resetLocation, addDeliveryAddress } =
+  UserSlice.actions;
 
 export default UserSlice.reducer;

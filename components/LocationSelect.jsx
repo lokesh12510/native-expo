@@ -22,32 +22,30 @@ const LocationSelect = () => {
 
   return (
     <View style={styles.locationSelectContainer}>
-      <View>
-        <Pressable
-          onPress={handleLocationChange}
-          android_ripple={{ color: "#ccc" }}
-          style={styles.locationSelect}
-        >
-          <MaterialIcons
-            name="location-on"
-            size={30}
-            color={primary}
-            style={styles.locationIcon}
-          />
-          <View>
-            <Text style={styles.locationTitle}>Current Location</Text>
-            <Text style={styles.locationContent}>
-              {currentAddress.slice(0, 30) + "..."}
-            </Text>
-          </View>
-          <MaterialIcons
-            style={styles.locationDropdownIcon}
-            name="keyboard-arrow-down"
-            size={30}
-            color={darkgray}
-          />
-        </Pressable>
-      </View>
+      <Pressable
+        onPress={handleLocationChange}
+        android_ripple={{ color: "#ccc" }}
+        style={styles.locationSelect}
+      >
+        <MaterialIcons
+          name="location-on"
+          size={30}
+          color={primary}
+          style={styles.locationIcon}
+        />
+        <View>
+          <Text style={styles.locationTitle}>Current Location</Text>
+          <Text style={styles.locationContent}>
+            {currentAddress.slice(0, 25) + "..."}
+          </Text>
+        </View>
+        <MaterialIcons
+          style={styles.locationDropdownIcon}
+          name="keyboard-arrow-down"
+          size={30}
+          color={darkgray}
+        />
+      </Pressable>
     </View>
   );
 };
@@ -71,10 +69,10 @@ const styles = StyleSheet.create({
   },
   locationIcon: {
     padding: 0,
-    paddingRight: 7,
+    paddingRight: 1,
   },
   locationDropdownIcon: {
-    paddingLeft: 7,
+    paddingLeft: 1,
   },
   locationTitle: {
     fontSize: 11,

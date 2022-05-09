@@ -37,6 +37,10 @@ const CustomerLogin = ({ navigation, route }) => {
     dispatch(loading());
     authCustomerLogin({ ...credential, attempts: 1 });
 
+    if (!isLoading && isSuccess) {
+      navigation.navigate(Routes.customer.home, { animate: "pop" });
+    }
+
     console.log(data, "Query");
     setSubmitting(false);
   };
@@ -70,7 +74,7 @@ const CustomerLogin = ({ navigation, route }) => {
               Username or Password does't Exist!
             </Text>
           )}
-          {route.params?.isRegistration && (
+          {/* {route.params?.isRegistration && (
             <Text
               style={{
                 color: green,
@@ -82,7 +86,7 @@ const CustomerLogin = ({ navigation, route }) => {
             >
               Customer Registration Successful! Please Login!
             </Text>
-          )}
+          )} */}
           <View
             style={{
               flexDirection: "row",

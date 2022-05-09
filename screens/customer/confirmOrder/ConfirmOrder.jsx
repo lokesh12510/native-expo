@@ -21,6 +21,8 @@ import { useGetUserAddressQuery } from "../../../app/services/addressApi";
 import { useOrderConfirmMutation } from "../../../app/services/ordersApi";
 import { clearCart } from "../../../app/slices/cartSlice";
 import { useDispatch } from "react-redux";
+import { addDeliveryAddress } from "../../../app/slices/userSlice";
+import { Routes } from "../../../constants/routes";
 
 const { colors } = theme;
 
@@ -35,10 +37,22 @@ const ConfirmOrder = ({ navigation }) => {
     delivery_address: userAddress,
   } = useSelector((state) => state.user);
 
-  const { isLoading, isError, isSuccess } = useGetUserAddressQuery(profile.id);
+  const {
+    isLoading,
+    isError,
+    isSuccess,
+    data: addressList,
+  } = useGetUserAddressQuery(profile.id);
 
-  const [orderConfirm, { isLoading: orderStatus, data, isError: orderError }] =
-    useOrderConfirmMutation();
+  const [
+    orderConfirm,
+    {
+      isLoading: orderStatus,
+      data,
+      isError: orderError,
+      isSuccess: isOrderSuccess,
+    },
+  ] = useOrderConfirmMutation();
 
   const [address, setAddress] = useState("");
 
@@ -48,22 +62,13 @@ const ConfirmOrder = ({ navigation }) => {
 
   const [value, setValue] = React.useState(0);
 
-  const [addressList, setAddressList] = useState([]);
-
-  useLayoutEffect(() => {
-    setAddressList(userAddress);
-  }, []);
-
-  const handleAddressList = () => {
-    setAddressList((add) => [...add, { delivery_address: address }]);
-    setAddress("");
-    Keyboard.dismiss();
-  };
-
   const handlePlaceOrder = () => {
     const addressData = {
       user_id: profile.id,
-      delivery_address: addressList[value].delivery_address,
+      delivery_address:
+        address !== ""
+          ? address
+          : JSON.stringify(userAddress[value].delivery_address),
       delivery_latitude: location.latitude,
       delivery_longitude: location.longitude,
       default_flag: 1,
@@ -73,7 +78,9 @@ const ConfirmOrder = ({ navigation }) => {
 
     formData.append(
       "address",
-      JSON.stringify(addressList[value].delivery_address)
+      address !== ""
+        ? address
+        : JSON.stringify(userAddress[value].delivery_address)
     );
     formData.append("payment_status", 1);
     formData.append("payment_type", "Cash");
@@ -82,11 +89,20 @@ const ConfirmOrder = ({ navigation }) => {
 
     orderConfirm(formData);
     // On order confirm success navigate to success page and clear cart
-    if (!isLoading && isSuccess) {
-      dispatch(clearCart());
-      navigation.navigate("Success");
-    }
+
+    console.log(isOrderSuccess, orderStatus, "order????????????????????????");
+
+    setAddress("");
+    Keyboard.dismiss();
+    dispatch(clearCart());
   };
+
+  // on success
+  if (!orderStatus && isOrderSuccess) {
+    // console.log("order- success????????????????????????");
+
+    navigation.navigate(Routes.customer.success);
+  }
 
   return (
     <>
@@ -144,37 +160,6 @@ const ConfirmOrder = ({ navigation }) => {
             style={{
               fontSize: 16,
               fontWeight: "bold",
-              marginBottom: 14,
-              color: colors.gray,
-            }}
-          >
-            Add Delivery Address
-          </Text>
-          <View style={styles.inputContainer}>
-            <View style={{ flex: 2 }}>
-              <StyledTextField
-                label="Add New Address"
-                placeholder="New Delivery Address"
-                mode="outlined"
-                onChangeText={handleChange}
-                value={address}
-              />
-            </View>
-            <View>
-              <Pressable style={styles.addIcon} onPress={handleAddressList}>
-                <MaterialIcons
-                  name="add-box"
-                  size={40}
-                  color={colors.primary}
-                />
-              </Pressable>
-            </View>
-          </View>
-          <Divider />
-          <Text
-            style={{
-              fontSize: 16,
-              fontWeight: "bold",
               marginVertical: 14,
               color: colors.gray,
             }}
@@ -187,12 +172,23 @@ const ConfirmOrder = ({ navigation }) => {
           >
             {!isLoading &&
               isSuccess &&
-              addressList.length > 0 &&
-              addressList.map((item, index) => {
+              userAddress.map((item, index) => {
                 console.log(item);
-                return (
+                return index === 0 ? (
+                  <View key={index}>
+                    <Text style={{ color: colors.primary }}>
+                      Current Location
+                    </Text>
+                    <RadioButton.Item
+                      label={item.delivery_address}
+                      value={index}
+                      color={colors.primary}
+                    />
+                    <Divider style={{ marginVertical: 15 }} />
+                  </View>
+                ) : (
                   <RadioButton.Item
-                    key={item.id}
+                    key={index}
                     label={item.delivery_address}
                     value={index}
                     color={colors.primary}
@@ -200,6 +196,28 @@ const ConfirmOrder = ({ navigation }) => {
                 );
               })}
           </RadioButton.Group>
+          <Divider />
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: "bold",
+              marginVertical: 14,
+              color: colors.gray,
+            }}
+          >
+            Choose New Delivery Address
+          </Text>
+          <View style={styles.inputContainer}>
+            <View style={{ flex: 2 }}>
+              <StyledTextField
+                label="Add New Address"
+                placeholder="New Delivery Address"
+                mode="outlined"
+                onChangeText={handleChange}
+                value={address}
+              />
+            </View>
+          </View>
         </View>
       </ScrollView>
       <View style={{ bottom: -6, paddingHorizontal: 10, paddingVertical: 5 }}>

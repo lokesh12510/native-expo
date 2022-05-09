@@ -28,12 +28,14 @@ const Home = () => {
     <SafeAreaView style={styles.root}>
       <ScrollView nestedScrollEnabled={true}>
         {/* Hero Text Container*/}
-        <View style={styles.heroTextContainer}>
-          <Text style={styles.heroText1}>Hi, {profile?.name}</Text>
-          <Text style={styles.heroText2}>
-            Order Food Online from the best Homecook
-          </Text>
-        </View>
+        {profile.name && (
+          <View style={styles.heroTextContainer}>
+            <Text style={styles.heroText1}>Hi, {profile?.name}</Text>
+            <Text style={styles.heroText2}>
+              Order Food Online from the best Homecook
+            </Text>
+          </View>
+        )}
         {/* Hero Text Container*/}
 
         {/* Kitchen Slider  */}

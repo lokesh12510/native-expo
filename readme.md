@@ -47,3 +47,7 @@
 
 - Axios for service call : $ npm i axios
   "# native-expo"
+
+## For Android Build
+
+- cmd `eas build -p android --profile preview`
