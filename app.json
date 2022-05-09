@@ -26,7 +26,10 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#E70000"
       },
-      "package": "com.loks.HomeCook"
+      "package": "com.loks.HomeCook",
+      "config": {
+        "googleMaps": { "apiKey": "AIzaSyDHrICUykQjf96A-MDyWBAWdO756ep7rH8"}   
+     }
     },
     "web": {
       "favicon": "./assets/favicon.png"
