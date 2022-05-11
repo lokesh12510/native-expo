@@ -19,9 +19,7 @@ import { Routes } from "../../../../constants/routes";
 import theme from "../../../../theme/AppTheme";
 import StyledTextField from "../../../../theme/uiSinppets/StyledTextField";
 import { Button } from "react-native-paper";
-import { useDispatch } from "react-redux";
 import { useLayoutEffect } from "react";
-import { loading } from "../../../../app/slices/authSlice";
 import { object, string } from "yup";
 import PrimaryBtn from "../../../../theme/uiSinppets/PrimaryBtn";
 // Colors
@@ -29,7 +27,6 @@ const { primary, darkLight, darkgray, black } = theme.colors;
 
 const CustomerRegister = ({ navigation, route }) => {
 	const [hidePass, setHidePass] = useState(true);
-	const dispatch = useDispatch();
 	// authLogin RTK Query
 	const [authCustomerRegister, { data, isLoading, isError, error, isSuccess }] = useAuthCustomerRegisterMutation();
 
@@ -82,7 +79,6 @@ const CustomerRegister = ({ navigation, route }) => {
 
 	// Customer Registration handler
 	const handleCustomerRegistration = (credential, setSubmitting) => {
-		dispatch(loading());
 		authCustomerRegister(credential);
 		setSubmitting(false);
 	};

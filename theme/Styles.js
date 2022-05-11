@@ -154,6 +154,7 @@ export const GlobalStyles = StyleSheet.create({
 		fontWeight: "bold",
 		color: colors.black,
 		marginBottom: SIZES.margin2,
+		textTransform: "uppercase",
 	},
 	divider: {
 		marginVertical: 7,

@@ -20,7 +20,7 @@ import SuccessScreen from "../screens/customer/confirmOrder/SuccessScreen";
 import { clearCart } from "../app/slices/cartSlice";
 import { resetUser } from "../app/slices/userSlice";
 import LocationScreen from "../screens/customer/location/LocationScreen";
-import { clearFood } from "../app/slices/foodSlice";
+import { clearFood, closeKitchen, removeCategory } from "../app/slices/foodSlice";
 import StyledBtn from "../theme/uiSinppets/StyledBtn";
 import CustomerLogin from "../screens/customer/auth/login/LoginScreen";
 import CustomerRegister from "../screens/customer/auth/register/RegisterScreen";
@@ -38,20 +38,20 @@ const CustomDrawerContent = (props) => {
 	// select Auth]
 	const { authToken } = useSelector((state) => state.auth);
 	const { profile } = useSelector((state) => state.user);
-	const navigation = useNavigation();
+
 	const dispatch = useDispatch();
 	// customer login handler
 	const handleLogin = () => {
-		navigation.navigate(Routes.auth.customerLogin);
+		props.navigation.navigate(Routes.auth.customerLogin);
 	};
 	// customer register handler
 	const handleRegister = () => {
-		navigation.navigate(Routes.auth.customerRegister);
+		props.navigation.navigate(Routes.auth.customerRegister);
 	};
 	// customer logout handler
 	const handleLogout = () => {
-		dispatch(authReset());
 		dispatch(clearCart());
+		dispatch(authReset());
 		dispatch(resetUser());
 		dispatch(clearFood());
 		dispatch(closeKitchen());
@@ -95,32 +95,14 @@ const CustomDrawerContent = (props) => {
 				}}
 			>
 				{authToken ? (
-					<Pressable
+					<View
 						style={{
+							flexDirection: "column",
 							flex: 1,
-							paddingVertical: 8,
-							paddingHorizontal: 32,
-							borderRadius: 5,
-							backgroundColor: primary,
-							justifyContent: "center",
-							alignContent: "center",
-							elevation: 4,
-						}}
-						onPress={handleLogout}
-						android_ripple={{
-							color: "#ccc",
 						}}
 					>
-						<Text
-							style={{
-								color: "#fff",
-								textAlign: "center",
-								fontSize: 16,
-							}}
-						>
-							Logout
-						</Text>
-					</Pressable>
+						<StyledBtn title="Logout" onPress={handleLogout} />
+					</View>
 				) : (
 					<View
 						style={{
@@ -141,7 +123,6 @@ export const CustomerDrawerScreen = () => {
 	const navigation = useNavigation();
 	// select Auth]
 	const { profile } = useSelector((state) => state.user);
-	const { authToken } = useSelector((state) => state.auth);
 	return (
 		<>
 			<customerDrawer.Navigator
@@ -206,47 +187,61 @@ export const CustomerStackScreen = () => {
 		<CustomerStack.Navigator>
 			{isLocated ? (
 				<>
-					<CustomerStack.Screen
-						name={"Index"}
-						component={CustomerDrawerScreen}
-						options={{
-							headerShown: false,
-						}}
-					/>
-					<CustomerStack.Screen name={Routes.customer.profile} component={Profile} />
-
-					<CustomerStack.Screen
-						options={{
-							headerShown: false,
-						}}
-						name={Routes.customer.success}
-						component={SuccessScreen}
-					/>
-					<CustomerStack.Screen
-						name={Routes.customer.changeLocation}
-						options={{
-							headerTitle: "Change Location",
-						}}
-						component={LocationScreen}
-					/>
-					{/* Customer auth*/}
-					<CustomerStack.Screen name={Routes.auth.customerLogin} component={CustomerLogin} />
-					<CustomerStack.Screen name={Routes.auth.customerRegister} component={CustomerRegister} />
-					{/* Cook auth*/}
-					<CustomerStack.Screen name={Routes.auth.cookLogin} component={CookLogin} />
-					<CustomerStack.Screen name={Routes.auth.cookRegister} component={CookRegister} />
-
-					{authToken && (
+					{/* Common screens for guest users */}
+					<CustomerStack.Group>
 						<CustomerStack.Screen
+							name={"Index"}
+							component={CustomerDrawerScreen}
 							options={{
-								headerTitle: "Confirm Order",
+								headerShown: false,
 							}}
-							name={Routes.customer.confirm}
-							component={ConfirmOrder}
 						/>
+						<CustomerStack.Screen name={Routes.customer.profile} component={Profile} />
+
+						<CustomerStack.Screen
+							name={Routes.customer.changeLocation}
+							options={{
+								headerTitle: "Change Location",
+							}}
+							component={LocationScreen}
+						/>
+					</CustomerStack.Group>
+					{/* Common screens for guest users */}
+
+					{/* Screens for Authenticated Customers */}
+					{authToken && (
+						<CustomerStack.Group>
+							<CustomerStack.Screen
+								options={{
+									headerTitle: "Confirm Order",
+								}}
+								name={Routes.customer.confirm}
+								component={ConfirmOrder}
+							/>
+							<CustomerStack.Screen
+								options={{
+									headerShown: false,
+								}}
+								name={Routes.customer.success}
+								component={SuccessScreen}
+							/>
+						</CustomerStack.Group>
 					)}
+					{/* Screens for Authenticated Customers */}
+
+					{/* Auth Screens for Customers */}
+					<CustomerStack.Group>
+						{/* Customer auth*/}
+						<CustomerStack.Screen name={Routes.auth.customerLogin} component={CustomerLogin} />
+						<CustomerStack.Screen name={Routes.auth.customerRegister} component={CustomerRegister} />
+						{/* Cook auth*/}
+						<CustomerStack.Screen name={Routes.auth.cookLogin} component={CookLogin} />
+						<CustomerStack.Screen name={Routes.auth.cookRegister} component={CookRegister} />
+					</CustomerStack.Group>
+					{/* Auth Screens for Customers */}
 				</>
 			) : (
+				// Starter Screens for Guest users when user location is not added
 				<CustomerStack.Group>
 					<CustomerStack.Screen
 						name="Welcome"
@@ -268,90 +263,6 @@ export const CustomerStackScreen = () => {
 		</CustomerStack.Navigator>
 	);
 };
-
-// Bottom Tabs Navigation
-
-// const customerTabs = createMaterialBottomTabNavigator();
-// export const CustomerTabsScreen = () => {
-//   const { itemCount } = useSelector((state) => state.cart);
-
-//   return (
-//     <>
-//       <customerTabs.Navigator
-//         activeColor={primary}
-//         inactiveColor={darkgray}
-//         barStyle={{
-//           backgroundColor: "#f1f1f1",
-//           paddingVertical: 5,
-//           elevation: 5,
-//           shadowOffset: { width: 5, height: 10 },
-//           shadowRadius: 1,
-//         }}
-//       >
-//         <customerTabs.Screen
-//           name={Routes.customer.home}
-//           component={Home}
-//           options={{
-//             tabBarIcon: ({ color, size }) => (
-//               <AntDesign name="home" size={20} color={color} />
-//             ),
-//           }}
-//         />
-
-//         <customerTabs.Screen
-//           name={Routes.customer.cart}
-//           component={Profile}
-//           options={{
-//             tabBarIcon: ({ color, size }) => {
-//               return (
-//                 <View style={{ position: "relative" }}>
-//                   {itemCount > 0 && (
-//                     <View
-//                       style={{
-//                         position: "absolute",
-//                         backgroundColor: colors.primary,
-//                         borderRadius: 50,
-//                         width: 19,
-//                         height: 19,
-//                         zIndex: 3,
-//                         justifyContent: "center",
-//                         flex: 1,
-//                         alignItems: "center",
-//                         top: -7,
-//                         right: -10,
-//                       }}
-//                     >
-//                       <Text style={{ color: "#fff" }}>{itemCount}</Text>
-//                     </View>
-//                   )}
-//                   <AntDesign name="shoppingcart" size={20} color={color} />
-//                 </View>
-//               );
-//             },
-//           }}
-//         />
-//         <customerTabs.Screen
-//           name={Routes.customer.favorites}
-//           component={Profile}
-//           options={{
-//             tabBarIcon: ({ color, size }) => (
-//               <AntDesign name="hearto" size={20} color={color} />
-//             ),
-//           }}
-//         />
-//         <customerTabs.Screen
-//           name={Routes.customer.profile}
-//           component={Profile}
-//           options={{
-//             tabBarIcon: ({ color, size }) => (
-//               <AntDesign name="user" size={20} color={color} />
-//             ),
-//           }}
-//         />
-//       </customerTabs.Navigator>
-//     </>
-//   );
-// };
 
 const styles = StyleSheet.create({
 	profileIconWrapper: {

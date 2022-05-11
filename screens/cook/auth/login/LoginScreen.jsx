@@ -1,18 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
 	InnerContainer,
 	PageLogo,
 	StyledContainer,
-	StyledFormArea,
 	SubTitle,
 	ExtraView,
 	ExtraText,
+	GlobalStyles,
 } from "../../../../theme/Styles";
 import { StatusBar } from "expo-status-bar";
-import { Formik } from "formik";
+import { useFormik } from "formik";
 import { ScrollView, Text, View } from "react-native";
 import { TextInput } from "react-native-paper";
-
+import { MaterialIcons } from "react-native-vector-icons";
 import { useAuthCookLoginMutation } from "../../../../app/services/authApi";
 import AppImages from "../../../../constants/Images";
 import { Routes } from "../../../../constants/routes";
@@ -20,59 +20,87 @@ import theme from "../../../../theme/AppTheme";
 import StyledTextField from "../../../../theme/uiSinppets/StyledTextField";
 import { Button } from "react-native-paper";
 import PrimaryBtn from "../../../../theme/uiSinppets/PrimaryBtn";
-import { useDispatch } from "react-redux";
 import { useLayoutEffect } from "react";
-import { loading } from "../../../../app/slices/authSlice";
+import { object, string } from "yup";
+
 // Colors
 const { primary, darkgray, black } = theme.colors;
 
 const CookLogin = ({ navigation, route }) => {
 	const [hidePass, setHidePass] = useState(true);
-	const dispatch = useDispatch();
 
 	// authLogin RTK Query
 	const [authCookLogin, { data, isLoading, isError, error, isSuccess }] = useAuthCookLoginMutation();
 
-	const handleLocalLogin = (credential, setSubmitting) => {
-		// dispatch(login(credential));
-		dispatch(loading());
-		authCookLogin({ ...credential, attempts: 1 });
+	// Form validation with `formik`
+	const formik = useFormik({
+		initialValues: { email: "", password: "" },
+		onSubmit: (values, { setSubmitting }) => {
+			handleLocalLogin(values, setSubmitting);
+		},
+		validationSchema: object({
+			email: string().email("Invalid Email!").required("Enter Email ID"),
+			password: string().min(6, "Too Short!").required("Enter Password"),
+		}),
+	});
 
-		console.log(data, "Query");
+	const handleLocalLogin = (credential, setSubmitting) => {
+		console.log("fetching...");
+		authCookLogin({ ...credential, attempts: 1 });
 		setSubmitting(false);
 	};
 
-	const handleRoleChange = () => {
-		navigation.navigate(Routes.auth.customerLogin, {
-			animate: "slide_from_left",
-		});
-	};
+	useEffect(() => {
+		console.log("useEffect...", isLoading, isSuccess);
+		if (!isLoading && isSuccess) {
+			console.log("success");
+			navigation.navigate("Index");
+			formik.resetForm();
+		}
+	}, [isSuccess, navigation]);
 
+	const handleRoleChange = () => {
+		navigation.navigate(Routes.auth.customerLogin, { animate: "slide_from_right" });
+	};
+	// Hook used to render simultaneously when page loads to configure page header without flickering
 	useLayoutEffect(() => {
 		navigation.setOptions({
-			title: "Cook Login",
 			animation: route.params?.animate,
+			title: "Cook Login",
 		});
+		formik.resetForm();
 	}, []);
 
 	return (
-		<ScrollView>
+		<ScrollView style={{ flex: 1, backgroundColor: "#fff" }}>
 			<StyledContainer>
 				<StatusBar style="dark" />
 				<InnerContainer>
 					<PageLogo resizeMode="cover" source={AppImages.LogoDark} />
 					<SubTitle>Login As</SubTitle>
 					{isError && error?.data?.error && (
-						<Text
-							style={{
-								color: primary,
-								padding: 10,
-								backgroundColor: `${primary}15`,
-								marginBottom: 10,
-							}}
-						>
-							Username or Password does't Exist!
-						</Text>
+						<View style={[GlobalStyles.flexRowCenter, { padding: 10, backgroundColor: `${primary}15`, marginBottom: 10 }]}>
+							<MaterialIcons name="error" size={25} color={primary} style={{ marginRight: 10 }} />
+							<Text
+								style={{
+									color: primary,
+								}}
+							>
+								Email or Password does't exist!
+							</Text>
+						</View>
+					)}
+					{route.params?.isRegistration && !isError && !isLoading && (
+						<View style={[GlobalStyles.flexRowCenter, { padding: 10, backgroundColor: `${green}15`, marginBottom: 10 }]}>
+							<MaterialIcons name="check-circle" size={25} color={green} style={{ marginRight: 10 }} />
+							<Text
+								style={{
+									color: green,
+								}}
+							>
+								Registration successfully Completed!
+							</Text>
+						</View>
 					)}
 					<View
 						style={{
@@ -81,89 +109,84 @@ const CookLogin = ({ navigation, route }) => {
 							justifyContent: "center",
 						}}
 					>
-						<Button style={{ width: theme.SIZES.width / 2.5 }} mode="text" onPress={handleRoleChange} color={black}>
+						<Button style={{ width: theme.SIZES.width / 2.5 }} mode="text" color={black} onPress={handleRoleChange}>
 							Customer
 						</Button>
 						<Button
+							mode="outlined"
+							onPress={() => console.log("Pressed")}
 							style={{
-								borderBottomColor: primary,
+								borderBottomColor: theme.colors.primary,
 								borderWidth: 0,
 								borderBottomWidth: 3,
 								alignItems: "center",
 								justifyContent: "center",
 								width: theme.SIZES.width / 2.5,
 							}}
-							mode="outlined"
-							onPress={() => navigation.navigate(Routes.auth.cookLogin)}
 						>
 							Cook
 						</Button>
 					</View>
 
-					<Formik
-						initialValues={{ email: "", password: "" }}
-						onSubmit={(values, { setSubmitting }) => {
-							if (values.email == "" || values.password == "") {
-								setSubmitting(false);
-							} else {
-								handleLocalLogin(values, setSubmitting);
-							}
+					<View style={GlobalStyles.formContainer}>
+						<StyledTextField
+							label="Email"
+							name="email"
+							icon="mail-outline"
+							placeholder="Enter Email Address"
+							keyboardType="email-address"
+							mode="outlined"
+							onChangeText={formik.handleChange("email")}
+							error={Boolean(formik.errors.email) && Boolean(formik.touched.email)}
+							helperText={Boolean(formik.touched.email) && formik.errors.email}
+							onBlur={formik.handleBlur("email")}
+							value={formik.values.email}
+						/>
+						<StyledTextField
+							label={"Password"}
+							name="password"
+							icon="lock-closed-outline"
+							placeholder="* * * * * * * *"
+							onChangeText={formik.handleChange("password")}
+							onBlur={formik.handleBlur("password")}
+							value={formik.values.password}
+							isPassword={true}
+							secureTextEntry={hidePass}
+							error={Boolean(formik.errors.password) && Boolean(formik.touched.password)}
+							helperText={Boolean(formik.touched.password) && formik.errors.password}
+							setHidePass={setHidePass}
+							mode="outlined"
+							right={<TextInput.Icon name="eye" color={darkgray} onPress={() => setHidePass((hidePass) => !hidePass)} />}
+						/>
+
+						<PrimaryBtn
+							isLoading={isLoading}
+							mode="contained"
+							onPress={formik.handleSubmit}
+							title="Login"
+							disabled={!formik.isValid}
+						>
+							Login
+						</PrimaryBtn>
+
+						<ExtraView>
+							<ExtraText>Don't have an account already?</ExtraText>
+							<Button mode="text" onPress={() => navigation.navigate(Routes.auth.cookRegister)}>
+								Register
+							</Button>
+						</ExtraView>
+						{/* <Button
+						style={{
+							display: "flex",
+							alignItems: "center",
 						}}
+						color={"#000"}
+						mode="text"
+						onPress={() => console.log("forgot password")}
 					>
-						{({ handleChange, handleBlur, handleSubmit, values, isSubmitting }) => (
-							<StyledFormArea>
-								<StyledTextField
-									label="Email"
-									icon="mail-outline"
-									placeholder="Enter Email Address"
-									keyboardType="email-address"
-									mode="outlined"
-									onChangeText={handleChange("email")}
-									onBlur={handleBlur("email")}
-									value={values.email}
-								/>
-								<StyledTextField
-									label={"Password"}
-									icon="lock-closed-outline"
-									placeholder="* * * * * * * *"
-									onChangeText={handleChange("password")}
-									onBlur={handleBlur("password")}
-									value={values.password}
-									isPassword={true}
-									secureTextEntry={hidePass}
-									setHidePass={setHidePass}
-									mode="outlined"
-									right={<TextInput.Icon name="eye" color={darkgray} onPress={() => setHidePass((hidePass) => !hidePass)} />}
-								/>
-
-								<PrimaryBtn isLoading={isSubmitting} mode="contained" onPress={handleSubmit} title="Login">
-									Login
-								</PrimaryBtn>
-
-								<ExtraView>
-									<ExtraText>Don't have an account already?</ExtraText>
-									<Button mode="text" onPress={() => navigation.navigate(Routes.auth.customerRegister)}>
-										Register
-									</Button>
-								</ExtraView>
-								{/* <Button
-									style={{
-										display: "flex",
-										alignItems: "center",
-									}}
-									color={"#000"}
-									mode="text"
-									onPress={() =>
-										navigation.navigate(Routes.auth.customerRegister, {
-											animate: "pop",
-										})
-									}
-								>
-									Forgot Password?
-								</Button> */}
-							</StyledFormArea>
-						)}
-					</Formik>
+						Forgot Password?
+					</Button> */}
+					</View>
 				</InnerContainer>
 			</StyledContainer>
 		</ScrollView>

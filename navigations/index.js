@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import AuthStackScreen from "./AuthStack";
 import { useSelector } from "react-redux";
-import { CookDrawerScreen } from "./CookStack";
+import { CookStackScreen } from "./CookStack";
 import { CustomerStackScreen } from "./CustomerStack";
 import { ROLE } from "../constants";
 
@@ -19,7 +19,7 @@ const RootStack = () => {
 		case ROLE.CUSTOMER:
 			return <CustomerStackScreen />;
 		case ROLE.CHEF:
-			return authToken ? <CookDrawerScreen /> : <AuthStackScreen />;
+			return <CookStackScreen />;
 	}
 };
 

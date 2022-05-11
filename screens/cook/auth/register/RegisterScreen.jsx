@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
 	InnerContainer,
 	PageLogo,
@@ -7,38 +7,43 @@ import {
 	SubTitle,
 	ExtraView,
 	ExtraText,
+	GlobalStyles,
 } from "../../../../theme/Styles";
 import { StatusBar } from "expo-status-bar";
-import { Formik } from "formik";
-import { ActivityIndicator, ScrollView, View } from "react-native";
+import { useFormik } from "formik";
+import { ActivityIndicator, ScrollView, StyleSheet, View, Text } from "react-native";
 import { TextInput } from "react-native-paper";
-
-import { useAuthLoginMutation, authCookRegister } from "../../../../app/services/authApi";
+import { MaterialIcons, AntDesign } from "react-native-vector-icons";
+import { useAuthCookRegisterMutation } from "../../../../app/services/authApi";
 import AppImages from "../../../../constants/Images";
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { Routes } from "../../../../constants/routes";
-import theme from "../../../../theme/AppTheme";
+import theme, { colors } from "../../../../theme/AppTheme";
 import StyledTextField from "../../../../theme/uiSinppets/StyledTextField";
 import { Button } from "react-native-paper";
-import PrimaryBtn from "../../../../theme/uiSinppets/PrimaryBtn";
-import { useDispatch } from "react-redux";
 import { useLayoutEffect } from "react";
-import { loading } from "../../../../app/slices/authSlice";
+import { object, string } from "yup";
+import PrimaryBtn from "../../../../theme/uiSinppets/PrimaryBtn";
+import AutocompletePlaces from "../../../../components/AutocompletePlaces";
+
+import SelectField from "../../../../components/SelectField";
+
 // Colors
 const { primary, darkLight, darkgray, black } = theme.colors;
 
 const CookRegister = ({ navigation, route }) => {
 	const [hidePass, setHidePass] = useState(true);
-	const dispatch = useDispatch();
+	const [value, setValue] = useState(null);
+	const [isFocus, setIsFocus] = useState(false);
 
 	// authLogin RTK Query
-	const [authCookRegister, { data, isLoading, isError, error, isSuccess }] = authCookRegister();
+	const [authCookRegister, { data, isLoading, isError, error, isSuccess }] = useAuthCookRegisterMutation();
 
 	if (!isLoading && isSuccess) {
 		navigation.navigate(Routes.auth.customerLogin);
 	}
 
-	const handleLocalLogin = (credential, setSubmitting) => {
-		dispatch(loading());
+	const handleCookRegistration = (credential, setSubmitting) => {
 		authCookRegister(credential);
 		setSubmitting(false);
 	};
@@ -55,6 +60,50 @@ const CookRegister = ({ navigation, route }) => {
 		});
 	}, []);
 
+	// Form Validation using `formik`
+	const formik = useFormik({
+		initialValues: {
+			name: "",
+			kitchen_name: "",
+			mobile: "",
+			email: "",
+			radius: "",
+			password: "",
+		},
+		onSubmit: (values, { setSubmitting }) => {
+			handleCookRegistration(values, setSubmitting);
+		},
+		validationSchema: object({
+			name: string().required("Enter Name"),
+			kitchen_name: string().required("Enter Kitchen Name"),
+			mobile: string().min(10, "Enter Valid Mobile Number!").required("Enter Mobile Number"),
+			email: string().email("Invalid Email!").required("Enter Email ID"),
+			radius: string().required("Enter Radius"),
+			password: string().min(6, "Too Short!").required("Enter Password"),
+		}),
+	});
+
+	useEffect(() => {
+		// Checking server validation and displaying errors
+		if (!isLoading && isError) {
+			error.data.error.map((item) => formik.setErrors({ [Object.keys(item)[0]]: item[Object.keys(item)[0]][0] }));
+		}
+
+		// if success navigate to login screen and reset form
+		if (!isLoading && isSuccess) {
+			formik.resetForm();
+			navigation.navigate(Routes.auth.customerLogin, {
+				isRegistration: true,
+			});
+		}
+	}, [isError, isSuccess]);
+
+	// Customer Registration handler
+	const handleCustomerRegistration = (credential, setSubmitting) => {
+		authCustomerRegister(credential);
+		setSubmitting(false);
+	};
+
 	return (
 		<ScrollView>
 			<StyledContainer>
@@ -63,6 +112,18 @@ const CookRegister = ({ navigation, route }) => {
 					{isLoading && <ActivityIndicator size={"large"} color="primary" />}
 					<PageLogo resizeMode="cover" source={AppImages.LogoDark} />
 					<SubTitle>Register As</SubTitle>
+					{isError && error?.data?.error && (
+						<View style={[GlobalStyles.flexRowCenter, { padding: 10, backgroundColor: `${primary}15`, marginBottom: 10 }]}>
+							<MaterialIcons name="error" size={25} color={primary} style={{ marginRight: 10 }} />
+							<Text
+								style={{
+									color: primary,
+								}}
+							>
+								Please verify form values!
+							</Text>
+						</View>
+					)}
 					<View
 						style={{
 							flexDirection: "row",
@@ -70,8 +131,15 @@ const CookRegister = ({ navigation, route }) => {
 							justifyContent: "center",
 						}}
 					>
-						<Button style={{ width: theme.SIZES.width / 2.5 }} mode="text" color={black} onPress={handleRoleChange}>
-							customer
+						<Button
+							style={{
+								width: theme.SIZES.width / 2.5,
+							}}
+							mode="text"
+							color={black}
+							onPress={handleRoleChange}
+						>
+							Customer
 						</Button>
 						<Button
 							mode="outlined"
@@ -85,85 +153,117 @@ const CookRegister = ({ navigation, route }) => {
 								width: theme.SIZES.width / 2.5,
 							}}
 						>
-							cook
+							Cook
 						</Button>
 					</View>
 
-					<Formik
-						initialValues={{ name: "", phone: "", email: "", password: "" }}
-						onSubmit={(values, { setSubmitting }) => {
-							if (values.email == "" || values.password == "" || values.name == "" || values.phone == "") {
-								setSubmitting(false);
-							} else {
-								handleLocalLogin(values, setSubmitting);
-							}
-						}}
-					>
-						{({ handleChange, handleBlur, handleSubmit, values, isSubmitting }) => (
-							<StyledFormArea>
-								<StyledTextField
-									label="Name"
-									icon="person"
-									placeholder="Enter Name"
-									mode="outlined"
-									onChangeText={handleChange("name")}
-									onBlur={handleBlur("name")}
-									value={values.name}
-								/>
-								<StyledTextField
-									label="Mobile Number"
-									icon="contact"
-									placeholder="Enter Mobile Number"
-									keyboardType="keypad"
-									mode="outlined"
-									onChangeText={handleChange("phone")}
-									onBlur={handleBlur("phone")}
-									value={values.phone}
-								/>
-								<StyledTextField
-									label="Email"
-									icon="mail-outline"
-									placeholder="Enter Email Address"
-									keyboardType="email-address"
-									mode="outlined"
-									onChangeText={handleChange("email")}
-									onBlur={handleBlur("email")}
-									value={values.email}
-								/>
-								<StyledTextField
-									label={"Password"}
-									icon="lock-closed-outline"
-									placeholder="* * * * * * * *"
-									onChangeText={handleChange("password")}
-									onBlur={handleBlur("password")}
-									value={values.password}
-									isPassword={true}
-									secureTextEntry={hidePass}
-									setHidePass={setHidePass}
-									mode="outlined"
-									right={<TextInput.Icon name="eye" color={darkgray} onPress={() => setHidePass((hidePass) => !hidePass)} />}
-								/>
+					<View style={GlobalStyles.formContainer}>
+						<StyledTextField
+							label="Name"
+							name="name"
+							icon="person"
+							placeholder="Enter Name"
+							mode="outlined"
+							onChangeText={formik.handleChange("name")}
+							onBlur={formik.handleBlur("name")}
+							value={formik.values.name}
+							error={Boolean(formik.errors.name) && Boolean(formik.touched.name)}
+							helperText={Boolean(formik.touched.name) && formik.errors.name}
+						/>
+						<StyledTextField
+							label="Kitchen Name"
+							name="kitchen_name"
+							icon="person"
+							placeholder="Enter Kitchen Name"
+							mode="outlined"
+							onChangeText={formik.handleChange("kitchen_name")}
+							onBlur={formik.handleBlur("kitchen_name")}
+							value={formik.values.kitchen_name}
+							error={Boolean(formik.errors.kitchen_name) && Boolean(formik.touched.kitchen_name)}
+							helperText={Boolean(formik.touched.kitchen_name) && formik.errors.kitchen_name}
+						/>
+						<StyledTextField
+							label="Mobile Number"
+							name="mobile"
+							icon="contact"
+							placeholder="Enter Mobile Number"
+							keyboardType="numeric"
+							mode="outlined"
+							onChangeText={formik.handleChange("mobile")}
+							onBlur={formik.handleBlur("mobile")}
+							value={formik.values.mobile}
+							error={Boolean(formik.errors.mobile) && Boolean(formik.touched.mobile)}
+							helperText={Boolean(formik.touched.mobile) && formik.errors.mobile}
+						/>
+						<StyledTextField
+							label="Email"
+							name="email"
+							icon="mail-outline"
+							placeholder="Enter Email Address"
+							keyboardType="email-address"
+							mode="outlined"
+							onChangeText={formik.handleChange("email")}
+							onBlur={formik.handleBlur("email")}
+							value={formik.values.email}
+							error={Boolean(formik.errors.email) && Boolean(formik.touched.email)}
+							helperText={Boolean(formik.touched.email) && formik.errors.email}
+						/>
+						<StyledTextField
+							label={"Password"}
+							name="password"
+							icon="lock-closed-outline"
+							placeholder="* * * * * * * *"
+							onChangeText={formik.handleChange("password")}
+							onBlur={formik.handleBlur("password")}
+							value={formik.values.password}
+							error={Boolean(formik.errors.password) && Boolean(formik.touched.password)}
+							helperText={Boolean(formik.touched.password) && formik.errors.password}
+							isPassword={true}
+							secureTextEntry={hidePass}
+							setHidePass={setHidePass}
+							mode="outlined"
+							right={<TextInput.Icon name="eye" color={darkgray} onPress={() => setHidePass((hidePass) => !hidePass)} />}
+						/>
 
-								<PrimaryBtn isLoading={isSubmitting} mode="contained" onPress={handleSubmit} title="Register">
-									Register
-								</PrimaryBtn>
+						<SelectField
+							label="Select Radius"
+							value={value}
+							onChange={(item) => {
+								setValue(item.value);
+								setIsFocus(false);
+							}}
+							onFocus={() => setIsFocus(true)}
+							onBlur={() => setIsFocus(false)}
+							data={lists}
+							isFocus={isFocus}
+						/>
 
-								<ExtraView>
-									<ExtraText>Already have an account?</ExtraText>
-									<Button
-										mode="text"
-										onPress={() =>
-											navigation.navigate(Routes.auth.cookLogin, {
-												animate: "pop",
-											})
-										}
-									>
-										Login
-									</Button>
-								</ExtraView>
-							</StyledFormArea>
-						)}
-					</Formik>
+						<AutocompletePlaces radius={value} />
+
+						<PrimaryBtn
+							isLoading={isLoading}
+							mode="contained"
+							onPress={formik.handleSubmit}
+							title="Register"
+							disabled={!formik.isValid}
+						>
+							Register
+						</PrimaryBtn>
+
+						<ExtraView>
+							<ExtraText>Already have an account?</ExtraText>
+							<Button
+								mode="text"
+								onPress={() =>
+									navigation.navigate(Routes.auth.cookLogin, {
+										animate: "pop",
+									})
+								}
+							>
+								Login
+							</Button>
+						</ExtraView>
+					</View>
 				</InnerContainer>
 			</StyledContainer>
 		</ScrollView>
@@ -171,3 +271,26 @@ const CookRegister = ({ navigation, route }) => {
 };
 
 export default CookRegister;
+
+const styles = StyleSheet.create({
+	mapView: {
+		width: "100%",
+		flex: 1,
+		minHeight: 360,
+		backgroundColor: colors.lightGray,
+		marginBottom: 20,
+	},
+});
+
+const lists = [
+	{ label: "5", value: "5" },
+	{ label: "10", value: "10" },
+	{ label: "15", value: "15" },
+	{ label: "20", value: "20" },
+	{ label: "25", value: "25" },
+	{ label: "30", value: "30" },
+	{ label: "35", value: "35" },
+	{ label: "40", value: "40" },
+	{ label: "45", value: "45" },
+	{ label: "50", value: "50" },
+];
