@@ -9,20 +9,23 @@ import { Provider as PaperProvider } from "react-native-paper";
 import theme from "./theme/AppTheme";
 
 export default function App() {
-  return (
-    <>
-      <StatusBar style="auto" />
-      {/* Redux data provider from "Store" data */}
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <PaperProvider theme={theme}>
-            <SafeAreaView style={{ flex: 1 }}>
-              <RootNavigation />
-            </SafeAreaView>
-          </PaperProvider>
-          {/* Mobile StatusBar config */}
-        </PersistGate>
-      </Provider>
-    </>
-  );
+	return (
+		<>
+			{/* Mobile StatusBar config */}
+			<StatusBar style="auto" />
+			{/* Redux data provider from "Store" data */}
+			<Provider store={store}>
+				{/* redux persist wrapper for using stored data in asyncStorage */}
+				<PersistGate loading={null} persistor={persistor}>
+					{/* Theme provider for react-native-paper components */}
+					<PaperProvider theme={theme}>
+						{/* Wrapper to avoid notches and bottom menus across devices */}
+						<SafeAreaView style={{ flex: 1 }}>
+							<RootNavigation />
+						</SafeAreaView>
+					</PaperProvider>
+				</PersistGate>
+			</Provider>
+		</>
+	);
 }

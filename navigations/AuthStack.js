@@ -12,20 +12,20 @@ import OnboardScreen from "../screens/welcome/Onboard";
 const AuthStack = createNativeStackNavigator();
 const AuthStackScreen = () => (
   <AuthStack.Navigator initialRouteName="Welcome">
-    <AuthStack.Screen
+    {/* <AuthStack.Screen
       name={"Welcome"}
       component={OnboardScreen}
       options={{ headerShown: false }}
-    />
+    /> */}
     {/* Customer auth*/}
-    <AuthStack.Screen
+    {/* <AuthStack.Screen
       name={Routes.auth.customerLogin}
       component={CustomerLogin}
     />
     <AuthStack.Screen
       name={Routes.auth.customerRegister}
       component={CustomerRegister}
-    />
+    /> */}
     {/* Cook auth*/}
     <AuthStack.Screen name={Routes.auth.cookLogin} component={CookLogin} />
     <AuthStack.Screen

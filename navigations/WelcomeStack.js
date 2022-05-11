@@ -5,12 +5,9 @@ import OnboardScreen from "../screens/welcome/Onboard";
 
 const WelcomeStack = createNativeStackNavigator();
 const WelcomeStackScreen = () => (
-  <WelcomeStack.Navigator
-    screenOption={{ headerShown: "none" }}
-    initialRouteName="Welcome"
-  >
-    <WelcomeStack.Screen name="Welcome" component={OnboardScreen} />
-  </WelcomeStack.Navigator>
+	<WelcomeStack.Navigator screenOption={{ headerShown: "none" }} initialRouteName="Welcome">
+		<WelcomeStack.Screen name="Welcome" component={OnboardScreen} />
+	</WelcomeStack.Navigator>
 );
 
 export default WelcomeStackScreen;

@@ -1,100 +1,97 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, StyleSheet, Image } from "react-native";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { authReset } from "../../../app/slices/authSlice";
 import StyledBtn from "../../../theme/uiSinppets/StyledBtn";
-import styled from "styled-components";
 import { clearCart } from "../../../app/slices/cartSlice";
 import { resetUser } from "../../../app/slices/userSlice";
-import { clearFood } from "../../../app/slices/foodSlice";
+import { clearFood, closeKitchen, removeCategory } from "../../../app/slices/foodSlice";
 import { Routes } from "../../../constants/routes";
 import theme from "../../../theme/AppTheme";
+import { GlobalStyles } from "../../../theme/Styles";
+import { Divider } from "react-native-paper";
+import AppImages from "../../../constants/Images";
 
 const { colors } = theme;
 
 const Profile = ({ navigation }) => {
-  const dispatch = useDispatch();
+	const dispatch = useDispatch();
 
-  const { authToken } = useSelector((state) => state.auth);
+	const { authToken } = useSelector((state) => state.auth);
+	const { profile } = useSelector((state) => state.user);
 
-  const handleLogin = () => {
-    navigation.navigate(Routes.auth.customerLogin);
-  };
+	const handleLogin = () => {
+		navigation.navigate(Routes.auth.customerLogin);
+	};
 
-  const handleRegister = () => {
-    navigation.navigate(Routes.auth.customerRegister);
-  };
+	const handleRegister = () => {
+		navigation.navigate(Routes.auth.customerRegister);
+	};
 
-  const handleLogout = () => {
-    dispatch(clearCart());
-    dispatch(authReset());
-    dispatch(resetUser());
-    dispatch(clearFood());
-  };
-  return (
-    <Root>
-      <Text>Profile</Text>
-      {authToken ? (
-        <StyledBtn title="logout" onPress={handleLogout} />
-      ) : (
-        <View style={{ flexDirection: "row" }}>
-          <Pressable
-            style={{
-              flex: 1,
-              paddingVertical: 8,
-              paddingHorizontal: 30,
-              borderRadius: 5,
-              margin: 1,
-              borderColor: colors.primary,
-              borderWidth: 0.5,
-              backgroundColor: "#fff",
-              justifyContent: "center",
-              alignContent: "center",
-              elevation: 4,
-            }}
-            onPress={handleLogin}
-            android_ripple={{ color: "#ccc" }}
-          >
-            <Text
-              style={{
-                color: colors.primary,
-                textAlign: "center",
-                fontSize: 16,
-              }}
-            >
-              Login
-            </Text>
-          </Pressable>
-          <Pressable
-            style={{
-              flex: 1,
-              paddingVertical: 8,
-              paddingHorizontal: 30,
-              borderRadius: 5,
-              margin: 1,
-              backgroundColor: colors.primary,
-              justifyContent: "center",
-              alignContent: "center",
-              elevation: 4,
-            }}
-            onPress={handleRegister}
-            android_ripple={{ color: "#ccc" }}
-          >
-            <Text style={{ color: "#fff", textAlign: "center", fontSize: 16 }}>
-              Register
-            </Text>
-          </Pressable>
-        </View>
-      )}
-    </Root>
-  );
+	const handleLogout = () => {
+		dispatch(clearCart());
+		dispatch(authReset());
+		dispatch(resetUser());
+		dispatch(clearFood());
+		dispatch(closeKitchen());
+		dispatch(removeCategory());
+	};
+	return (
+		<View style={[GlobalStyles.flexColumnCenter, GlobalStyles.container]}>
+			<Text style={GlobalStyles.screenTitle}>Profile</Text>
+			<Divider style={GlobalStyles.divider} />
+
+			{authToken && (
+				<>
+					{profile.image ? (
+						<Image style={styles.image} source={{ uri: profile.image }} />
+					) : (
+						<Image style={styles.image} source={AppImages.Avatar} />
+					)}
+					<Text style={styles.label}>Name</Text>
+					<Text style={styles.title}>{profile.name}</Text>
+					<Text style={styles.label}>Email ID</Text>
+					<Text style={styles.title}>{profile.email}</Text>
+				</>
+			)}
+
+			{authToken ? (
+				<View style={{ flex: 1, width: "100%" }}>
+					<StyledBtn title="logout" onPress={handleLogout} />
+				</View>
+			) : (
+				<View style={{ flexDirection: "row" }}>
+					<View style={{ flex: 1, width: "100%" }}>
+						<StyledBtn title="Login" type={"outlined"} onPress={handleLogin} />
+					</View>
+					<View style={{ flex: 1, width: "100%" }}>
+						<StyledBtn title="Register" onPress={handleRegister} />
+					</View>
+				</View>
+			)}
+		</View>
+	);
 };
 
 export default Profile;
 
-const Root = styled.View`
-  flex: 1;
-  padding: 16px;
-  justify-content: center;
-  align-items: center;
-`;
+const styles = StyleSheet.create({
+	label: {
+		fontSize: 14,
+		color: colors.gray,
+		fontWeight: "bold",
+	},
+	title: {
+		fontSize: 18,
+		color: colors.black,
+		marginBottom: 20,
+	},
+	image: {
+		width: 100,
+		height: 100,
+		borderRadius: 50,
+		backgroundColor: colors.primary,
+		resizeMode: "cover",
+		marginBottom: 20,
+	},
+});

@@ -11,58 +11,46 @@ import { Routes } from "../constants/routes";
 const cookDrawer = createDrawerNavigator();
 
 export const CookDrawerScreen = () => (
-  <cookDrawer.Navigator>
-    <cookDrawer.Screen
-      name="Tabs"
-      component={CookTabsScreen}
-      options={{ drawerLabel: "Home" }}
-    />
-    <cookDrawer.Screen name={Routes.cook.settings} component={Settings} />
-  </cookDrawer.Navigator>
+	<cookDrawer.Navigator>
+		<cookDrawer.Screen name="Tabs" component={CookTabsScreen} options={{ drawerLabel: "Home" }} />
+		<cookDrawer.Screen name={Routes.cook.settings} component={Settings} />
+	</cookDrawer.Navigator>
 );
 
 // Bottom Tabs Navigation
 
 const cookTabs = createBottomTabNavigator();
 export const CookTabsScreen = () => {
-  return (
-    <cookTabs.Navigator screenOptions={{ headerShown: false }}>
-      <cookTabs.Screen
-        name={Routes.cook.dashboard}
-        component={Home}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
-          ),
-        }}
-      />
-      <cookTabs.Screen
-        name={Routes.cook.food}
-        component={Home}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
-          ),
-        }}
-      />
-      <cookTabs.Screen
-        name={Routes.cook.orders}
-        component={Home}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
-          ),
-        }}
-      />
-      <cookTabs.Screen
-        name={Routes.cook.profile}
-        component={Profile}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
-          ),
-        }}
-      />
-    </cookTabs.Navigator>
-  );
+	return (
+		<cookTabs.Navigator screenOptions={{ headerShown: false }}>
+			<cookTabs.Screen
+				name={Routes.cook.dashboard}
+				component={Home}
+				options={{
+					tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />,
+				}}
+			/>
+			<cookTabs.Screen
+				name={Routes.cook.food}
+				component={Home}
+				options={{
+					tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />,
+				}}
+			/>
+			<cookTabs.Screen
+				name={Routes.cook.orders}
+				component={Home}
+				options={{
+					tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />,
+				}}
+			/>
+			<cookTabs.Screen
+				name={Routes.cook.profile}
+				component={Profile}
+				options={{
+					tabBarIcon: ({ color, size }) => <Ionicons name="person" size={size} color={color} />,
+				}}
+			/>
+		</cookTabs.Navigator>
+	);
 };
