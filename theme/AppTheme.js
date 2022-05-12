@@ -11,7 +11,7 @@ export const colors = {
 	darkLight: "#9CA3AF",
 	brand: "#6D28D9",
 	green: "#6D28D9",
-	red: "#6D28D9",
+	red: "#d32f2f",
 
 	// colors
 	black: "#1E1F20",
@@ -107,7 +107,7 @@ const theme = {
 		darkLight: "#9CA3AF",
 		brand: "#6D28D9",
 		green: "#1b5e20",
-		red: "#6D28D9",
+		red: "#d32f2f",
 		gray: "#5e5f61",
 
 		text: "#454546",

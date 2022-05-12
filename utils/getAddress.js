@@ -1,3 +1,5 @@
+import { GOOGLE_MAPS_API_KEY } from "../constants";
+
 // get current address based on lat and lon
 export const getAddress = async (lat, lon) => {
 	try {
@@ -15,8 +17,8 @@ export const getAddress = async (lat, lon) => {
 			.then((response) => response.json())
 			.then((responseJson) => {
 				let address = responseJson?.results[0]?.formatted_address;
-				console.log(address);
-				setSelectedAddress(address);
+				console.log(address, "address");
+				return address;
 			});
 	} catch (e) {
 		console.log("errors:", e);

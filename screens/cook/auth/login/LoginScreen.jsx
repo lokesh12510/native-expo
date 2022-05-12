@@ -24,7 +24,7 @@ import { useLayoutEffect } from "react";
 import { object, string } from "yup";
 
 // Colors
-const { primary, darkgray, black } = theme.colors;
+const { primary, darkgray, black, green } = theme.colors;
 
 const CookLogin = ({ navigation, route }) => {
 	const [hidePass, setHidePass] = useState(true);
@@ -64,12 +64,13 @@ const CookLogin = ({ navigation, route }) => {
 	};
 	// Hook used to render simultaneously when page loads to configure page header without flickering
 	useLayoutEffect(() => {
+		console.log(route.params);
 		navigation.setOptions({
 			animation: route.params?.animate,
 			title: "Cook Login",
 		});
 		formik.resetForm();
-	}, []);
+	}, [route]);
 
 	return (
 		<ScrollView style={{ flex: 1, backgroundColor: "#fff" }}>

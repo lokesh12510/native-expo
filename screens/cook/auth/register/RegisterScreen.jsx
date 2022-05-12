@@ -36,17 +36,23 @@ const CookRegister = ({ navigation, route }) => {
 	const [value, setValue] = useState(null);
 	const [isFocus, setIsFocus] = useState(false);
 
+	const [address, setAddress] = useState("");
+	const [coords, setCoords] = useState({});
+
+	const handleAddress = (text) => {
+		setAddress(text);
+	};
+
+	const handleCoords = (lat, long) => {
+		setCoords({ latitude: lat, longitude: long });
+	};
+
 	// authLogin RTK Query
 	const [authCookRegister, { data, isLoading, isError, error, isSuccess }] = useAuthCookRegisterMutation();
 
 	if (!isLoading && isSuccess) {
 		navigation.navigate(Routes.auth.customerLogin);
 	}
-
-	const handleCookRegistration = (credential, setSubmitting) => {
-		authCookRegister(credential);
-		setSubmitting(false);
-	};
 
 	const handleRoleChange = () => {
 		navigation.navigate(Routes.auth.customerRegister, {
@@ -67,10 +73,12 @@ const CookRegister = ({ navigation, route }) => {
 			kitchen_name: "",
 			mobile: "",
 			email: "",
-			radius: "",
 			password: "",
+			radius: "",
+			city: "",
 		},
 		onSubmit: (values, { setSubmitting }) => {
+			console.log("form");
 			handleCookRegistration(values, setSubmitting);
 		},
 		validationSchema: object({
@@ -78,10 +86,33 @@ const CookRegister = ({ navigation, route }) => {
 			kitchen_name: string().required("Enter Kitchen Name"),
 			mobile: string().min(10, "Enter Valid Mobile Number!").required("Enter Mobile Number"),
 			email: string().email("Invalid Email!").required("Enter Email ID"),
-			radius: string().required("Enter Radius"),
 			password: string().min(6, "Too Short!").required("Enter Password"),
+			radius: string().required("Select your delivery radius"),
+			city: string().required("Enter City Name"),
 		}),
 	});
+
+	// Cook Registration handler
+	const handleCookRegistration = (credential, setSubmitting) => {
+		let formData = new FormData();
+
+		formData.append("name", credential.name);
+		formData.append("kitchen_name", credential.kitchen_name);
+		formData.append("mobile", credential.mobile);
+		formData.append("email", credential.email);
+		formData.append("password", credential.password);
+		formData.append("radius_in_km", credential.radius);
+		formData.append("city", credential.city);
+		formData.append("address", JSON.stringify(address));
+		formData.append("description", "");
+		formData.append("profile", "");
+		formData.append("profile_file", "");
+		formData.append("latitude", JSON.stringify(coords.latitude));
+		formData.append("longitude", JSON.stringify(coords.longitude));
+
+		authCookRegister(formData);
+		setSubmitting(false);
+	};
 
 	useEffect(() => {
 		// Checking server validation and displaying errors
@@ -92,17 +123,11 @@ const CookRegister = ({ navigation, route }) => {
 		// if success navigate to login screen and reset form
 		if (!isLoading && isSuccess) {
 			formik.resetForm();
-			navigation.navigate(Routes.auth.customerLogin, {
+			navigation.navigate(Routes.auth.cookLogin, {
 				isRegistration: true,
 			});
 		}
 	}, [isError, isSuccess]);
-
-	// Customer Registration handler
-	const handleCustomerRegistration = (credential, setSubmitting) => {
-		authCustomerRegister(credential);
-		setSubmitting(false);
-	};
 
 	return (
 		<ScrollView>
@@ -196,6 +221,18 @@ const CookRegister = ({ navigation, route }) => {
 							helperText={Boolean(formik.touched.mobile) && formik.errors.mobile}
 						/>
 						<StyledTextField
+							label="City"
+							name="city"
+							icon="contact"
+							placeholder="Enter City Name"
+							mode="outlined"
+							onChangeText={formik.handleChange("city")}
+							onBlur={formik.handleBlur("city")}
+							value={formik.values.city}
+							error={Boolean(formik.errors.city) && Boolean(formik.touched.city)}
+							helperText={Boolean(formik.touched.city) && formik.errors.city}
+						/>
+						<StyledTextField
 							label="Email"
 							name="email"
 							icon="mail-outline"
@@ -228,17 +265,26 @@ const CookRegister = ({ navigation, route }) => {
 						<SelectField
 							label="Select Radius"
 							value={value}
+							name="radius"
+							error={Boolean(formik.errors.radius) && Boolean(formik.touched.radius)}
+							helperText={Boolean(formik.touched.radius) && formik.errors.radius}
 							onChange={(item) => {
+								formik.setFieldValue("radius", item.value);
 								setValue(item.value);
 								setIsFocus(false);
 							}}
-							onFocus={() => setIsFocus(true)}
-							onBlur={() => setIsFocus(false)}
+							onFocus={() => {
+								setIsFocus(true);
+							}}
+							onBlur={() => {
+								formik.handleBlur("radius");
+								setIsFocus(false);
+							}}
 							data={lists}
 							isFocus={isFocus}
 						/>
 
-						<AutocompletePlaces radius={value} />
+						<AutocompletePlaces radius={value} handleAddress={handleAddress} handleCoords={handleCoords} />
 
 						<PrimaryBtn
 							isLoading={isLoading}

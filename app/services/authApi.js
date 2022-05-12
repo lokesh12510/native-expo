@@ -7,7 +7,6 @@ export const authApi = createApi({
 	endpoints: (builder) => ({
 		authCustomerLogin: builder.mutation({
 			query: (body) => {
-				console.log(body);
 				return {
 					url: "auth/login",
 					method: "POST",
@@ -35,11 +34,11 @@ export const authApi = createApi({
 			},
 		}),
 		authCookRegister: builder.mutation({
-			query: ({ email, name, password, phone }) => {
+			query: (body) => {
 				return {
-					url: "auth/customersignup",
+					url: "auth/cooksignup",
 					method: "POST",
-					body: { email, name, password, contact_number: phone },
+					body,
 				};
 			},
 		}),

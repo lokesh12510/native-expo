@@ -14,7 +14,7 @@ const Dashboard = ({ navigation }) => {
 	return (
 		<SafeAreaView style={[GlobalStyles.flexColumnCenter, GlobalStyles.container]}>
 			<Text>Dashboard</Text>
-			<Button title="Settings" onPress={() => navigation.navigate(Routes.cook.settings)} />
+			{/* <Button title="Settings" onPress={() => navigation.navigate(Routes.cook.settings)} /> */}
 		</SafeAreaView>
 	);
 };

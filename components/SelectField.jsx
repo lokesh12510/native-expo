@@ -14,22 +14,27 @@ const SelectField = (props) => {
 		return null;
 	};
 
+	console.log(props.error, props.helperText);
+
 	return (
-		<View style={styles.container}>
-			{renderLabel()}
-			<Dropdown
-				style={[styles.dropdown, props.isFocus && { borderColor: colors.primary }]}
-				placeholderStyle={styles.placeholderStyle}
-				selectedTextStyle={styles.selectedTextStyle}
-				iconStyle={styles.iconStyle}
-				data={props.data}
-				maxHeight={300}
-				labelField="label"
-				valueField="value"
-				placeholder={!props.isFocus ? props.label : "..."}
-				{...props}
-				// renderLeftIcon={() => <AntDesign style={styles.icon} color={isFocus ? "blue" : "black"} name="Safety" size={20} />}
-			/>
+		<View style={styles.selectContainer}>
+			<View style={styles.container}>
+				{renderLabel()}
+				<Dropdown
+					style={[styles.dropdown, props.isFocus && { borderColor: colors.primary }, props.error && { borderColor: colors.red }]}
+					placeholderStyle={[styles.placeholderStyle, props.error && { color: colors.red }]}
+					selectedTextStyle={styles.selectedTextStyle}
+					iconStyle={styles.iconStyle}
+					data={props.data}
+					maxHeight={300}
+					labelField="label"
+					valueField="value"
+					placeholder={!props.isFocus ? props.label : "..."}
+					{...props}
+					// renderLeftIcon={() => <AntDesign style={styles.icon} color={isFocus ? "blue" : "black"} name="Safety" size={20} />}
+				/>
+			</View>
+			{props.error && <Text style={styles.helperText}>{props.helperText}</Text>}
 		</View>
 	);
 };
@@ -38,8 +43,11 @@ export default SelectField;
 
 const styles = StyleSheet.create({
 	container: {
-		backgroundColor: "#f1f1f1",
-		marginBottom: 16,
+		backgroundColor: colors.lightGray,
+	},
+	selectContainer: {
+		marginBottom: 20,
+		marginTop: 5,
 	},
 	dropdown: {
 		height: 55,
@@ -58,8 +66,9 @@ const styles = StyleSheet.create({
 		top: -8,
 		zIndex: 999,
 		paddingHorizontal: 8,
-		fontSize: 13,
-		color: colors.gray,
+		fontSize: 12,
+		fontWeight: "200",
+		color: "#72777c",
 	},
 	placeholderStyle: {
 		fontSize: 16,
@@ -76,6 +85,10 @@ const styles = StyleSheet.create({
 	inputSearchStyle: {
 		height: 40,
 		fontSize: 16,
+	},
+	helperText: {
+		marginVertical: 10,
+		color: colors.primary,
 	},
 });
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
@@ -50,21 +50,27 @@ export const CookStackScreen = () => {
 
 // Bottom Tabs Navigation
 
-const cookTabs = createMaterialBottomTabNavigator();
+const cookTabs = createBottomTabNavigator();
 export const CookTabsScreen = () => {
 	return (
 		<cookTabs.Navigator
-			options={{ headerShown: true }}
-			barStyle={{
-				backgroundColor: colors.secondary,
-				paddingVertical: 5,
-				elevation: 5,
-				shadowOffset: { width: 5, height: 10 },
-				shadowRadius: 1,
+			screenOptions={{
+				tabBarActiveTintColor: colors.black,
+				tabBarInactiveTintColor: colors.lightGray,
+				tabBarAllowFontScaling: true,
+				tabBarStyle: {
+					backgroundColor: colors.secondary,
+					paddingVertical: 5,
+					paddingBottom: 10,
+					elevation: 5,
+					shadowOffset: { width: 5, height: 10 },
+					shadowRadius: 1,
+					height: 60,
+				},
 			}}
 		>
 			<cookTabs.Screen
-				name={Routes.cook.dashboard}
+				name="Dashboard"
 				component={Dashboard}
 				options={{
 					tabBarIcon: ({ color, size }) => <Ionicons name="home" size={20} color={color} />,

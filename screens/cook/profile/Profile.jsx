@@ -39,7 +39,7 @@ const CookProfile = ({ navigation }) => {
 
 			{authToken && (
 				<>
-					{profile.image ? (
+					{profile.image && profile.image !== 1 ? (
 						<Image style={styles.image} source={{ uri: profile.image }} />
 					) : (
 						<Image style={styles.image} source={AppImages.Avatar} />
