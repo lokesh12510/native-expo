@@ -55,6 +55,7 @@ export const CookTabsScreen = () => {
 	return (
 		<cookTabs.Navigator
 			screenOptions={{
+				tabBarHideOnKeyboard: true,
 				tabBarActiveTintColor: colors.black,
 				tabBarInactiveTintColor: colors.lightGray,
 				tabBarAllowFontScaling: true,

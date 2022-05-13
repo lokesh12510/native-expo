@@ -28,7 +28,6 @@ const FoodSlice = createSlice({
 	},
 	reducers: {
 		selectKitchen: (state, { payload }) => {
-			console.log(payload.kitchen.id);
 			return {
 				...state,
 				kitchen: {
@@ -90,23 +89,41 @@ const FoodSlice = createSlice({
 			return {
 				...state,
 				food: {
-					foodList: [],
+					// foodList: [],
 					currentPage: 1,
 					perPage: 6,
-					hasMore: false,
+					endReached: false,
 				},
 			};
+		},
+		deleteFoodItem: (state, { payload }) => {
+			state.food.foodList = state.food.foodList.filter((item) => item.id !== payload.id);
 		},
 	},
 	extraReducers: (builder) => {
 		builder.addMatcher(api.endpoints.getFoodList.matchFulfilled, (state, { payload }) => {
-			state.food.foodList.push(...payload.list);
-			state.food.hasMore = payload.list.length > 0 ? true : false;
+			manageFoodList(state, payload);
+		});
+		builder.addMatcher(api.endpoints.getFoodByKitchenId.matchFulfilled, (state, { payload }) => {
+			manageFoodList(state, payload);
 		});
 	},
 });
 
-export const { selectKitchen, closeKitchen, selectCategory, removeCategory, setCurrentPage, setPerPage, clearFood } =
-	FoodSlice.actions;
+export const {
+	selectKitchen,
+	closeKitchen,
+	selectCategory,
+	removeCategory,
+	setCurrentPage,
+	setPerPage,
+	clearFood,
+	deleteFoodItem,
+} = FoodSlice.actions;
 
 export default FoodSlice.reducer;
+
+const manageFoodList = (state, payload) => {
+	state.food.currentPage > 1 ? state.food.foodList.push(...payload.list) : (state.food.foodList = payload.list);
+	state.food.endReached = payload.list.length === 0 ? true : false;
+};

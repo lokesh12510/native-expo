@@ -10,6 +10,7 @@ import { Divider } from "react-native-paper";
 import StyledBtn from "../../../theme/uiSinppets/StyledBtn";
 import theme from "../../../theme/AppTheme";
 import AppImages from "../../../constants/Images";
+import { clearFood } from "../../../app/slices/foodSlice";
 
 const { colors } = theme;
 
@@ -30,6 +31,7 @@ const CookProfile = ({ navigation }) => {
 	const handleLogout = () => {
 		dispatch(authReset());
 		dispatch(resetUser());
+		dispatch(clearFood());
 	};
 
 	return (

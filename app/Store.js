@@ -10,39 +10,39 @@ import { api } from "./services/api";
 import userReducer from "./slices/userSlice";
 import foodSlice from "./slices/foodSlice";
 import ordersReducer from "./slices/ordersSlice";
+import snackbarReducer from "./slices/snackbarSlice";
 
 const reducers = combineReducers({
-  auth: authReducer,
-  cart: cartReducer,
-  food: foodReducer,
-  user: userReducer,
-  [authApi.reducerPath]: authApi.reducer,
-  [api.reducerPath]: api.reducer,
+	auth: authReducer,
+	cart: cartReducer,
+	food: foodReducer,
+	orders: ordersReducer,
+	user: userReducer,
+	snackbar: snackbarReducer,
+	[authApi.reducerPath]: authApi.reducer,
+	[api.reducerPath]: api.reducer,
 });
 
 const persistConfig = {
-  key: "root",
-  storage: AsyncStorage,
-  whitelist: ["auth", "user"],
+	key: "root",
+	storage: AsyncStorage,
+	whitelist: ["auth", "user"],
 };
 
 const RootReducer = (state, action) => {
-  if (action.type === "auth/logout") {
-    state = undefined;
-  }
-  return reducers(state, action);
+	if (action.type === "auth/logout") {
+		state = undefined;
+	}
+	return reducers(state, action);
 };
 
 const _persistedReducer = persistReducer(persistConfig, RootReducer);
 
 export const store = configureStore({
-  devTools: __DEV__,
-  reducer: _persistedReducer,
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({ serializableCheck: false }).concat(
-      authApi.middleware,
-      api.middleware
-    ),
+	devTools: __DEV__,
+	reducer: _persistedReducer,
+	middleware: (getDefaultMiddleware) =>
+		getDefaultMiddleware({ serializableCheck: false }).concat(authApi.middleware, api.middleware),
 });
 export const persistor = persistStore(store);
 

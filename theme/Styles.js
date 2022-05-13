@@ -136,6 +136,11 @@ export const GlobalStyles = StyleSheet.create({
 		alignItems: "center",
 		flexDirection: "row",
 	},
+	flexRowJustify: {
+		justifyContent: "space-between",
+		alignItems: "center",
+		flexDirection: "row",
+	},
 	flexColumnStart: {
 		justifyContent: "flex-start",
 		alignItems: "center",
@@ -158,8 +163,5 @@ export const GlobalStyles = StyleSheet.create({
 	},
 	divider: {
 		marginVertical: 7,
-		borderColor: colors.black,
-		height: 5,
-		backgroundColor: colors.black,
 	},
 });
