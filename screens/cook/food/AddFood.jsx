@@ -97,8 +97,8 @@ const AddFood = () => {
 		console.log(credential, "********");
 		let formData = new FormData();
 
-		const response = await fetch(image.uri);
-		const blob = await response.blob();
+		// const response = await fetch(image.uri);
+		// const blob = await response.blob();
 
 		formData.append("food_name", credential.foodName);
 		formData.append("food_type_id", credential.foodType);
@@ -106,7 +106,7 @@ const AddFood = () => {
 		formData.append("price", credential.price);
 		formData.append("status", JSON.stringify(isSwitchOn));
 		if (image) {
-			formData.append("image_url", blob);
+			formData.append("image_url", image.uri);
 			formData.append("image_file", image);
 		}
 		if (ingredients.length > 0) {

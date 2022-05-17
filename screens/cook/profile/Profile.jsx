@@ -11,6 +11,7 @@ import StyledBtn from "../../../theme/uiSinppets/StyledBtn";
 import theme from "../../../theme/AppTheme";
 import AppImages from "../../../constants/Images";
 import { clearFood } from "../../../app/slices/foodSlice";
+import { clearOrders } from "../../../app/slices/ordersSlice";
 
 const { colors } = theme;
 
@@ -32,6 +33,7 @@ const CookProfile = ({ navigation }) => {
 		dispatch(authReset());
 		dispatch(resetUser());
 		dispatch(clearFood());
+		dispatch(clearOrders());
 	};
 
 	return (

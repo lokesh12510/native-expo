@@ -51,9 +51,7 @@ const CookLogin = ({ navigation, route }) => {
 	};
 
 	useEffect(() => {
-		console.log("useEffect...", isLoading, isSuccess);
 		if (!isLoading && isSuccess) {
-			console.log("success");
 			navigation.navigate("Index");
 			formik.resetForm();
 		}
@@ -64,13 +62,12 @@ const CookLogin = ({ navigation, route }) => {
 	};
 	// Hook used to render simultaneously when page loads to configure page header without flickering
 	useLayoutEffect(() => {
-		console.log(route.params);
 		navigation.setOptions({
-			animation: route.params?.animate,
+			animation: route?.params?.animate,
 			title: "Cook Login",
 		});
 		formik.resetForm();
-	}, [route]);
+	}, [navigation]);
 
 	return (
 		<ScrollView style={{ flex: 1, backgroundColor: "#fff" }}>

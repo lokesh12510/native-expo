@@ -26,7 +26,7 @@ const catImages = [salad, BreakFast, Lunch, Snacks, Dinner];
 
 const FoodITem = ({ item, navigation }) => {
 	const [visible, setVisible] = React.useState(false);
-	const [isSwitchOn, setIsSwitchOn] = React.useState(false);
+	const [isSwitchOn, setIsSwitchOn] = React.useState(item.status);
 	const openMenu = () => setVisible(true);
 
 	const dispatch = useDispatch();
@@ -53,9 +53,9 @@ const FoodITem = ({ item, navigation }) => {
 		closeMenu();
 	};
 
-	useLayoutEffect(() => {
-		setIsSwitchOn(item.status);
-	}, [isSwitchOn]);
+	// useLayoutEffect(() => {
+	// 	setIsSwitchOn(item.status);
+	// }, [isSwitchOn]);
 
 	useEffect(() => {
 		console.log(isDeleteSuccess);

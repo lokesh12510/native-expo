@@ -8,6 +8,7 @@ import MapView, { Callout, Circle, Marker } from "react-native-maps";
 import { ActivityIndicator, TextInput } from "react-native-paper";
 import { MaterialCommunityIcons } from "react-native-vector-icons";
 import { GlobalStyles } from "../theme/Styles";
+import * as Location from "expo-location";
 
 const AutocompletePlaces = ({ radius, handleAddress, handleCoords }) => {
 	const ref = useRef();
@@ -73,6 +74,8 @@ const AutocompletePlaces = ({ radius, handleAddress, handleCoords }) => {
 		// Access location
 		let location = await Location.getCurrentPositionAsync({});
 		setLocations(location);
+
+		console.log(location, "LOC");
 
 		// set lat long
 		setLatLang({

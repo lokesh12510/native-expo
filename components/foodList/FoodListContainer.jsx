@@ -105,7 +105,7 @@ const FoodList = () => {
 						!isLoading && <Text style={{ textAlign: "center" }}>No Data Found!</Text>
 					)}
 					<View style={{ marginVertical: 15, padding: 8 }}>
-						{endReached ? (
+						{!endReached ? (
 							isLoading ? (
 								<View>
 									<ActivityIndicator size={"small"} color={colors.primary} />

@@ -61,11 +61,11 @@ const CustomerLogin = ({ navigation, route }) => {
 	// Hook used to render simultaneously when page loads to configure page header without flickering
 	useLayoutEffect(() => {
 		navigation.setOptions({
-			animation: route.params?.animate,
+			animation: route?.params?.animate,
 			title: "Customer Login",
 		});
 		formik.resetForm();
-	}, []);
+	}, [navigation]);
 
 	return (
 		<ScrollView style={{ flex: 1, backgroundColor: "#fff" }}>

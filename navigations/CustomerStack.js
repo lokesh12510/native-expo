@@ -228,28 +228,20 @@ export const CustomerStackScreen = () => {
 						</CustomerStack.Group>
 					)}
 					{/* Screens for Authenticated Customers */}
-
-					{/* Auth Screens for Customers */}
-					<CustomerStack.Group>
-						{/* Customer auth*/}
-						<CustomerStack.Screen name={Routes.auth.customerLogin} component={CustomerLogin} />
-						<CustomerStack.Screen name={Routes.auth.customerRegister} component={CustomerRegister} />
-						{/* Cook auth*/}
-						<CustomerStack.Screen name={Routes.auth.cookLogin} component={CookLogin} />
-						<CustomerStack.Screen name={Routes.auth.cookRegister} component={CookRegister} />
-					</CustomerStack.Group>
-					{/* Auth Screens for Customers */}
 				</>
 			) : (
 				// Starter Screens for Guest users when user location is not added
 				<CustomerStack.Group>
-					<CustomerStack.Screen
-						name="Welcome"
-						component={OnboardScreen}
-						options={{
-							headerShown: false,
-						}}
-					/>
+					{!authToken && (
+						<CustomerStack.Screen
+							name="Welcome"
+							component={OnboardScreen}
+							options={{
+								headerShown: false,
+							}}
+						/>
+					)}
+
 					<CustomerStack.Screen
 						name={Routes.customer.location}
 						options={{
@@ -258,6 +250,16 @@ export const CustomerStackScreen = () => {
 						}}
 						component={LocationScreen}
 					/>
+				</CustomerStack.Group>
+			)}
+			{!authToken && (
+				<CustomerStack.Group>
+					{/* Customer auth*/}
+					<CustomerStack.Screen name={Routes.auth.customerLogin} component={CustomerLogin} />
+					<CustomerStack.Screen name={Routes.auth.customerRegister} component={CustomerRegister} />
+					{/* Cook auth*/}
+					<CustomerStack.Screen name={Routes.auth.cookLogin} component={CookLogin} />
+					<CustomerStack.Screen name={Routes.auth.cookRegister} component={CookRegister} />
 				</CustomerStack.Group>
 			)}
 		</CustomerStack.Navigator>

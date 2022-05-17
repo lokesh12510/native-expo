@@ -48,14 +48,14 @@ export const foodListApi = api.injectEndpoints({
 				method: "POST",
 				body,
 			}),
-			providesTags: ["FoodList"],
+			invalidatesTags: ["FoodList"],
 		}),
 		editFood: build.query({
 			query: ({ id }) => ({
 				url: `/admin/food/show/${id}`,
 				method: "POST",
 			}),
-			invalidatesTags: ["FoodList"],
+			providesTags: ["FoodList"],
 		}),
 	}),
 	overrideExisting: false,

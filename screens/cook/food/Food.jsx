@@ -28,11 +28,11 @@ const Food = ({ navigation }) => {
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerRightContainerStyle: { padding: 10 },
-			headerRight: () => (
-				<IconBtn onPress={() => navigation.navigate(Routes.cook.addFood)}>
-					<MaterialIcons name="add" size={30} color={theme.colors.black} />
-				</IconBtn>
-			),
+			// headerRight: () => (
+			// 	<IconBtn onPress={() => navigation.navigate(Routes.cook.addFood)}>
+			// 		<MaterialIcons name="add" size={30} color={theme.colors.black} />
+			// 	</IconBtn>
+			// ),
 		});
 	}, []);
 
