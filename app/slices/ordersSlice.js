@@ -28,7 +28,7 @@ const OrdersSlice = createSlice({
 		},
 	},
 	extraReducers: (builder) => {
-		builder.addMatcher(api.endpoints.getOrders.matchFulfilled, (state, { payload }) => {
+		builder.addMatcher(api.endpoints.getCookOrders.matchFulfilled, (state, { payload }) => {
 			manageOrderList(state, payload);
 		});
 	},

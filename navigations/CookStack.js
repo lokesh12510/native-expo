@@ -17,6 +17,8 @@ import CustomerLogin from "../screens/customer/auth/login/LoginScreen";
 import CustomerRegister from "../screens/customer/auth/register/RegisterScreen";
 import CookLogin from "../screens/cook/auth/login/LoginScreen";
 import CookRegister from "../screens/cook/auth/register/RegisterScreen";
+import AddFood from "../screens/cook/food/AddFood";
+import EditFood from "../screens/cook/food/EditFood";
 
 const { colors } = theme;
 
@@ -33,6 +35,8 @@ export const CookStackScreen = () => {
 				<CookStack.Group>
 					<CookStack.Screen name="Index" component={CookTabsScreen} options={{ headerShown: false }} />
 					<CookStack.Screen name={Routes.cook.settings} component={Settings} />
+					<CookStack.Screen name={Routes.cook.addFood} component={AddFood} options={{ presentation: "fullScreenModal" }} />
+					<CookStack.Screen name={Routes.cook.editFood} component={EditFood} options={{ presentation: "fullScreenModal" }} />
 				</CookStack.Group>
 			) : (
 				<CookStack.Group>

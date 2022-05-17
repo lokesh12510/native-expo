@@ -1,4 +1,4 @@
-import { View, Text, Button, FlatList, StyleSheet } from "react-native";
+import { View, Text, Button, FlatList, StyleSheet, ScrollView } from "react-native";
 import React, { useCallback, useLayoutEffect, useState } from "react";
 import { GlobalStyles } from "../../../theme/Styles";
 import { Routes } from "../../../constants/routes";
@@ -7,14 +7,15 @@ import SelectField from "../../../components/SelectField";
 import Snackbar from "../../../components/Snackbar";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
-import { useGetOrdersMutation } from "../../../app/services/ordersApi";
+import { useGetCookOrdersMutation, useGetOrdersMutation } from "../../../app/services/ordersApi";
 import { setCurrentPage } from "../../../app/slices/ordersSlice";
 import theme from "../../../theme/AppTheme";
+import OrderItem from "./OrderItem";
 
 const { colors } = theme;
 
 const Orders = ({ navigation }) => {
-	const [getOrders, { isLoading, isSuccess, isError }] = useGetOrdersMutation();
+	const [getCookOrders, { isLoading, isSuccess, isError }] = useGetCookOrdersMutation();
 	const { ordersList = [], currentPage, perPage, endReached } = useSelector((state) => state.orders);
 	const { profile } = useSelector((state) => state.user);
 
@@ -24,7 +25,7 @@ const Orders = ({ navigation }) => {
 	const dispatch = useDispatch();
 	useFocusEffect(
 		useCallback(() => {
-			getOrders({ page: currentPage, perPage: perPage, filter_text: search, chef_id: profile.id });
+			getCookOrders({ page: currentPage, perPage: perPage, filter_text: search, chef_id: profile.id });
 		}, [currentPage, perPage, profile.id, search])
 	);
 
@@ -40,15 +41,11 @@ const Orders = ({ navigation }) => {
 	};
 
 	return (
-		<View style={{ flex: 1 }}>
-			<View>
-				<SelectField />
-			</View>
-
+		<View contentContainerStyle={{ flex: 1 }}>
 			<FlatList
 				contentContainerStyle={GlobalStyles.container}
 				data={ordersList}
-				renderItem={({ item }) => <FoodITem item={item} />}
+				renderItem={({ item }) => <OrderItem item={item} />}
 				keyExtractor={(item) => item.id}
 				onEndReachedThreshold={0.5}
 				initialNumToRender={perPage}
@@ -56,7 +53,7 @@ const Orders = ({ navigation }) => {
 				refreshing={refreshing}
 				onRefresh={onRefresh}
 				ListFooterComponent={() => (
-					<View style={[{ paddingBottom: 40 }, GlobalStyles.flexRowCenter]}>
+					<View style={[{ paddingVertical: 20 }, GlobalStyles.flexRowCenter]}>
 						{endReached && <Text> You have Reached the end!</Text>}
 					</View>
 				)}
@@ -81,12 +78,6 @@ const Orders = ({ navigation }) => {
 export default Orders;
 
 const styles = StyleSheet.create({
-	header: {
-		padding: 5,
-	},
-	container: {
-		padding: 16,
-	},
 	foodSkeleton: {
 		backgroundColor: colors.white,
 		borderRadius: 7,

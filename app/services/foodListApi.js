@@ -42,6 +42,21 @@ export const foodListApi = api.injectEndpoints({
 			}),
 			invalidatesTags: ["FoodList"],
 		}),
+		addFood: build.mutation({
+			query: (body) => ({
+				url: `/admin/food/store`,
+				method: "POST",
+				body,
+			}),
+			providesTags: ["FoodList"],
+		}),
+		editFood: build.query({
+			query: ({ id }) => ({
+				url: `/admin/food/show/${id}`,
+				method: "POST",
+			}),
+			invalidatesTags: ["FoodList"],
+		}),
 	}),
 	overrideExisting: false,
 });
@@ -51,4 +66,6 @@ export const {
 	useGetFoodByKitchenIdMutation,
 	useSetFoodStatusMutation,
 	useDeleteFoodMutation,
+	useAddFoodMutation,
+	useEditFoodQuery,
 } = foodListApi;

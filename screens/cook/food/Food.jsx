@@ -29,7 +29,7 @@ const Food = ({ navigation }) => {
 		navigation.setOptions({
 			headerRightContainerStyle: { padding: 10 },
 			headerRight: () => (
-				<IconBtn>
+				<IconBtn onPress={() => navigation.navigate(Routes.cook.addFood)}>
 					<MaterialIcons name="add" size={30} color={theme.colors.black} />
 				</IconBtn>
 			),
@@ -67,7 +67,7 @@ const Food = ({ navigation }) => {
 			<FlatList
 				contentContainerStyle={styles.container}
 				data={foodList}
-				renderItem={({ item }) => <FoodITem item={item} />}
+				renderItem={({ item }) => <FoodITem item={item} navigation={navigation} />}
 				keyExtractor={(item) => item.id}
 				onEndReachedThreshold={0.5}
 				initialNumToRender={perPage}

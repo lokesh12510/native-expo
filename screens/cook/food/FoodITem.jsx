@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Image, Pressable } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import theme from "../../../theme/AppTheme";
 import moment from "moment";
 import { Button, Divider, IconButton, Menu, Switch } from "react-native-paper";
@@ -19,12 +19,14 @@ import { useDeleteFoodMutation, useSetFoodStatusMutation } from "../../../app/se
 import { useDispatch } from "react-redux";
 import { deleteFoodItem } from "../../../app/slices/foodSlice";
 import { showSnackbar } from "../../../app/slices/snackbarSlice";
+import AppImages from "../../../constants/Images";
+import { Routes } from "../../../constants/routes";
 
 const catImages = [salad, BreakFast, Lunch, Snacks, Dinner];
 
-const FoodITem = ({ item }) => {
+const FoodITem = ({ item, navigation }) => {
 	const [visible, setVisible] = React.useState(false);
-	const [isSwitchOn, setIsSwitchOn] = React.useState(item.status);
+	const [isSwitchOn, setIsSwitchOn] = React.useState(false);
 	const openMenu = () => setVisible(true);
 
 	const dispatch = useDispatch();
@@ -46,6 +48,15 @@ const FoodITem = ({ item }) => {
 		closeMenu();
 	};
 
+	const handleEdit = () => {
+		navigation.navigate(Routes.cook.editFood, { id: item.id });
+		closeMenu();
+	};
+
+	useLayoutEffect(() => {
+		setIsSwitchOn(item.status);
+	}, [isSwitchOn]);
+
 	useEffect(() => {
 		console.log(isDeleteSuccess);
 		if (isDeleteSuccess) {
@@ -57,9 +68,16 @@ const FoodITem = ({ item }) => {
 		}
 	}, [isDeleteSuccess]);
 
+	console.log(item.status);
+
 	return (
 		<View style={styles.foodITem}>
-			<Image style={styles.image} source={{ uri: `${BASE_URL}${item.image_url}` }} />
+			{item.image_url ? (
+				<Image style={styles.image} source={{ uri: `${BASE_URL}${item.image_url}` }} />
+			) : (
+				<Image style={styles.image} source={AppImages.NoImage} />
+			)}
+
 			<View style={[styles.content, { flexDirection: "column" }]}>
 				<View style={[styles.content, { padding: 0 }]}>
 					<View style={{ flex: 2 }}>
@@ -79,8 +97,8 @@ const FoodITem = ({ item }) => {
 						}
 						contentStyle={styles.menuContent}
 					>
-						<Menu.Item icon="square-edit-outline" titleStyle={styles.menuTitle} onPress={closeMenu} title="Edit" />
-						<Divider />
+						{/* <Menu.Item icon="square-edit-outline" titleStyle={styles.menuTitle} onPress={handleEdit} title="Edit" />
+						<Divider /> */}
 						<Menu.Item icon="delete-outline" titleStyle={styles.menuTitle} onPress={handleDelete} title="Delete" />
 					</Menu>
 				</View>
