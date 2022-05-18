@@ -8,11 +8,23 @@ import StyledBtn from "../../../theme/uiSinppets/StyledBtn";
 import theme from "../../../theme/AppTheme";
 import AppImages from "../../../constants/Images";
 import { Routes } from "../../../constants/routes";
+import { useLayoutEffect } from "react";
+import { MaterialIcons } from "react-native-vector-icons";
+import { Button } from "react-native-paper";
 
 const Cart = ({ navigation }) => {
 	const { cartItems, cartItemsCount, cartTotalAmount } = useSelector((state) => state.cart);
 	// select Auth]
 	const { authToken } = useSelector((state) => state.auth);
+
+	useLayoutEffect(() => {
+		navigation.setOptions({
+			headerLeft: () => (
+				<MaterialIcons name="arrow-back" size={30} onPress={() => navigation.navigate(Routes.customer.home)} />
+			),
+			headerLeftContainerStyle: { marginLeft: 15 },
+		});
+	}, []);
 
 	return (
 		<>
@@ -33,6 +45,9 @@ const Cart = ({ navigation }) => {
 				<View style={styles.emptyContainer}>
 					<Image style={styles.image} source={AppImages.EmptyCart} />
 					<Text style={styles.text}>Your Cart is empty!</Text>
+					<Button mode="contained" color={theme.colors.primary}>
+						Go To Home
+					</Button>
 				</View>
 			) : (
 				<>

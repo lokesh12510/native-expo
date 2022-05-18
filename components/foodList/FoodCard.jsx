@@ -7,6 +7,7 @@ import { addItem, removeItem } from "../../app/slices/cartSlice";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback } from "react";
 import { GlobalStyles } from "../../theme/Styles";
+import { useEffect } from "react";
 
 const { colors, SIZES } = theme;
 
@@ -15,7 +16,7 @@ const FoodCard = ({ item }) => {
 
 	const dispatch = useDispatch();
 
-	const { cartItems } = useSelector((state) => state.cart);
+	const { cartItems, cartItemsCount } = useSelector((state) => state.cart);
 
 	// const [itemCount, setItemCount] = useState(0);
 
@@ -30,11 +31,12 @@ const FoodCard = ({ item }) => {
 	};
 
 	// // * This hook is called when user focus or return to this screen
-	useFocusEffect(
-		useCallback(() => {
-			cartItems.map((food) => food.id === item.id && setIsAdded(true));
-		}, [isAdded])
-	);
+
+	useEffect(() => {
+		setIsAdded(false);
+		console.log(isAdded);
+		cartItems.map((food) => food.id === item.id && setIsAdded(true));
+	}, [isAdded, cartItems, cartItemsCount]);
 
 	return (
 		<View>
@@ -65,7 +67,7 @@ const FoodCard = ({ item }) => {
 					</View>
 				</View>
 				<View style={styles.foodImageContainer}>
-					<View style={styles.imageWrapper}>
+					<View style={[styles.imageWrapper, isAdded && { borderColor: colors.green, borderWidth: 1 }]}>
 						<Image
 							style={styles.foodImage}
 							source={{
@@ -84,7 +86,7 @@ const FoodCard = ({ item }) => {
 										justifyContent: "center",
 									}}
 								>
-									<Ionicons name="ios-checkmark-circle-sharp" size={20} color={colors.primary} />
+									<Ionicons name="ios-checkmark-circle-sharp" size={20} color={colors.white} />
 									<Text style={[styles.itemCountOutline]}>Added</Text>
 								</Pressable>
 							</>
@@ -171,8 +173,8 @@ const styles = StyleSheet.create({
 	},
 	actionBtnOutline: {
 		flexDirection: "row",
-		backgroundColor: colors.white,
-		borderColor: colors.primary,
+		backgroundColor: colors.green,
+		borderColor: colors.green,
 		borderWidth: 1,
 		bottom: 20,
 		left: 0,
@@ -192,7 +194,7 @@ const styles = StyleSheet.create({
 	},
 	itemCountOutline: {
 		fontSize: 16,
-		color: colors.primary,
+		color: colors.white,
 		paddingHorizontal: 6,
 	},
 	foodType: {

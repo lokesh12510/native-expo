@@ -100,7 +100,7 @@ const FoodList = ({ refreshState }) => {
 				</Text>
 
 				<View style={{ flex: 1 }}>
-					{foodList?.length === 0 ? (
+					{isLoading && foodList?.length === 0 ? (
 						<FoodListSkeleton />
 					) : foodList && foodList?.length > 0 ? (
 						foodList.map((item, index) => {
