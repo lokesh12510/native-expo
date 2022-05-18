@@ -8,6 +8,7 @@ import KitchenList from "../../../components/Kitchen/KitchenList";
 import FoodCategory from "../../../components/foodCategory/FoodCategory";
 import FoodList from "../../../components/foodList/FoodListContainer";
 import { useEffect } from "react";
+import { useNetInfo } from "@react-native-community/netinfo";
 
 const { colors } = theme;
 
@@ -16,20 +17,21 @@ const wait = (timeout) => {
 };
 
 const Home = () => {
+	const netInfo = useNetInfo();
 	const { cartItemsCount } = useSelector((state) => state.cart);
 	const { profile } = useSelector((state) => state.user);
 
 	const [refreshing, setRefreshing] = useState(false);
 	const [refreshState, setRefreshState] = useState(false);
 
-	useEffect(() => {}, [refreshState]);
+	useEffect(() => {}, [refreshState, netInfo.isConnected]);
 
 	const onRefresh = useCallback(() => {
 		setRefreshing((t) => !t);
 		setRefreshState((t) => !t);
 
 		wait(1000).then(() => setRefreshing((t) => !t));
-	}, []);
+	}, [netInfo.isConnected]);
 
 	return (
 		<SafeAreaView style={styles.root}>
@@ -50,11 +52,11 @@ const Home = () => {
 				<KitchenList refreshState={refreshState} />
 				{/* Kitchen Slider  */}
 				{/* Food Category Container */}
-				<FoodCategory />
+				<FoodCategory refreshState={refreshState} />
 				{/* Food Category Container */}
 
 				{/* Food Items Container */}
-				<FoodList />
+				<FoodList refreshState={refreshState} />
 				{/* Food Items Container */}
 			</ScrollView>
 			{/* Floating Cart View */}

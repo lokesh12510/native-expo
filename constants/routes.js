@@ -16,6 +16,7 @@ export const Routes = {
 		location: "Location",
 		changeLocation: "ChangeLocation",
 		success: "Success",
+		welcome: "Welcome",
 	},
 	cook: {
 		dashboard: "Dashboard",

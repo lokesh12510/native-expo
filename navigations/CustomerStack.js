@@ -74,7 +74,7 @@ const CustomDrawerContent = (props) => {
 				</View>
 				<View>
 					<Text style={styles.profileTitle}>{(profile.name && profile.name) || "Guest"}</Text>
-					<Text style={styles.profileSubTitle}>Customer</Text>
+					<Text style={styles.profileSubTitle}>{(profile.email && profile.email) || "Customer"}</Text>
 				</View>
 			</View>
 			<Divider
@@ -123,6 +123,8 @@ export const CustomerDrawerScreen = () => {
 	const navigation = useNavigation();
 	// select Auth]
 	const { profile } = useSelector((state) => state.user);
+	// select Auth]
+	const { authToken } = useSelector((state) => state.auth);
 	return (
 		<>
 			<customerDrawer.Navigator
@@ -162,13 +164,24 @@ export const CustomerDrawerScreen = () => {
 					}}
 				/>
 				<customerDrawer.Screen name={Routes.customer.cart} component={Cart} />
-				<customerDrawer.Screen
-					options={{
-						drawerLabel: "My Orders",
-					}}
-					name={Routes.customer.myOrders}
-					component={Orders}
-				/>
+				{authToken ? (
+					<customerDrawer.Screen
+						options={{
+							drawerLabel: "My Orders",
+						}}
+						name={Routes.customer.myOrders}
+						component={Orders}
+					/>
+				) : (
+					<customerDrawer.Screen
+						options={{
+							drawerLabel: "My Orders",
+							headerLeftContainerStyle: { marginLeft: 15 },
+						}}
+						name={Routes.auth.customerLogin}
+						component={CustomerLogin}
+					/>
+				)}
 			</customerDrawer.Navigator>
 		</>
 	);

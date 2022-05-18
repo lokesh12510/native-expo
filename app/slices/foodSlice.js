@@ -21,7 +21,7 @@ const FoodSlice = createSlice({
 		food: {
 			foodList: [],
 			currentPage: 1,
-			perPage: 6,
+			perPage: 10,
 			endReached: false,
 		},
 		isLoading: false,
@@ -91,7 +91,7 @@ const FoodSlice = createSlice({
 				food: {
 					// foodList: [],
 					currentPage: 1,
-					perPage: 6,
+					perPage: 10,
 					endReached: false,
 				},
 			};
@@ -125,5 +125,6 @@ export default FoodSlice.reducer;
 
 const manageFoodList = (state, payload) => {
 	state.food.currentPage > 1 ? state.food.foodList.push(...payload.list) : (state.food.foodList = payload.list);
-	state.food.endReached = payload.list.length === 0 ? true : false;
+	console.log(payload.list.length, state.food.perPage);
+	state.food.endReached = payload.list.length === 0 || payload.list.length < state.food.perPage ? true : false;
 };

@@ -11,7 +11,7 @@ import {
 } from "../../../../theme/Styles";
 import { StatusBar } from "expo-status-bar";
 import { useFormik } from "formik";
-import { ActivityIndicator, ScrollView, StyleSheet, View, Text } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, View, Text, BackHandler } from "react-native";
 import { TextInput } from "react-native-paper";
 import { MaterialIcons, AntDesign } from "react-native-vector-icons";
 import { useAuthCookRegisterMutation } from "../../../../app/services/authApi";
@@ -25,19 +25,23 @@ import { useLayoutEffect } from "react";
 import { object, string } from "yup";
 import PrimaryBtn from "../../../../theme/uiSinppets/PrimaryBtn";
 import AutocompletePlaces from "../../../../components/AutocompletePlaces";
-
+import { useDispatch, useSelector } from "react-redux";
 import SelectField from "../../../../components/SelectField";
+import { showSnackbar } from "../../../../app/slices/snackbarSlice";
 
 // Colors
 const { primary, darkLight, darkgray, black } = theme.colors;
 
-const CookRegister = ({ navigation, route }) => {
+const CookRegister = ({ navigation }) => {
+	const { isLocated } = useSelector((state) => state.user);
 	const [hidePass, setHidePass] = useState(true);
 	const [value, setValue] = useState(null);
 	const [isFocus, setIsFocus] = useState(false);
 
 	const [address, setAddress] = useState("");
 	const [coords, setCoords] = useState({});
+
+	const dispatch = useDispatch();
 
 	const handleAddress = (text) => {
 		setAddress(text);
@@ -55,14 +59,17 @@ const CookRegister = ({ navigation, route }) => {
 	}
 
 	const handleRoleChange = () => {
-		navigation.navigate(Routes.auth.customerRegister, {
-			animate: "slide_from_left",
-		});
+		navigation.navigate(Routes.auth.customerRegister);
 	};
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			title: "Cook Registration",
-			animation: route.params?.animate,
+			headerLeft: () =>
+				isLocated ? (
+					<MaterialIcons name="arrow-back" size={30} onPress={() => navigation.navigate(Routes.customer.home)} />
+				) : (
+					<MaterialIcons name="arrow-back" size={30} onPress={() => navigation.navigate(Routes.customer.welcome)} />
+				),
 		});
 	}, []);
 
@@ -123,10 +130,18 @@ const CookRegister = ({ navigation, route }) => {
 		// if success navigate to login screen and reset form
 		if (!isLoading && isSuccess) {
 			formik.resetForm();
-			navigation.navigate(Routes.auth.cookLogin, {
-				isRegistration: true,
-			});
+			dispatch(showSnackbar({ title: "Registration Successfull!", type: "success" }));
+			navigation.navigate(Routes.auth.cookLogin);
 		}
+		// back handler
+		const backAction = () => {
+			{
+				isLocated ? navigation.navigate(Routes.customer.profile) : navigation.navigate(Routes.customer.welcome);
+			}
+			return true;
+		};
+		const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+		return () => backHandler.remove();
 	}, [isError, isSuccess]);
 
 	return (
@@ -298,14 +313,7 @@ const CookRegister = ({ navigation, route }) => {
 
 						<ExtraView>
 							<ExtraText>Already have an account?</ExtraText>
-							<Button
-								mode="text"
-								onPress={() =>
-									navigation.navigate(Routes.auth.cookLogin, {
-										animate: "pop",
-									})
-								}
-							>
+							<Button mode="text" onPress={() => navigation.navigate(Routes.auth.cookLogin)}>
 								Login
 							</Button>
 						</ExtraView>

@@ -20,10 +20,12 @@ import { useGetFoodListMutation } from "../../app/services/foodListApi";
 import FoodListSkeleton from "./FoodListSkeleton";
 import SearchField from "../SearchField";
 import StyledBtn from "../../theme/uiSinppets/StyledBtn";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
 
 const { colors, SIZES } = theme;
 
-const FoodList = () => {
+const FoodList = ({ refreshState }) => {
 	const dispatch = useDispatch();
 
 	const { isKitchen, kitchenInfo, kitchenId } = useSelector((state) => state.food.kitchen);
@@ -40,17 +42,20 @@ const FoodList = () => {
 		dispatch(clearFood());
 	};
 
-	useEffect(() => {
-		getFoodList({
-			page: currentPage,
-			perPage: perPage,
-			latitude: latitude,
-			longitude: longitude,
-			cook: kitchenId || "",
-			food_type: categoryInfo.id || "",
-			food_name: search,
-		});
-	}, [currentPage, perPage, longitude, latitude, kitchenId, categoryInfo.id, search]);
+	// * This hook is called when user focus or return to this screen
+	useFocusEffect(
+		useCallback(() => {
+			getFoodList({
+				page: currentPage,
+				perPage: perPage,
+				latitude: latitude,
+				longitude: longitude,
+				cook: kitchenId || "",
+				food_type: categoryInfo.id || "",
+				food_name: search,
+			});
+		}, [currentPage, perPage, longitude, latitude, kitchenId, categoryInfo.id, search, refreshState])
+	);
 
 	const handleClose = () => {
 		dispatch(clearFood());
@@ -95,7 +100,7 @@ const FoodList = () => {
 				</Text>
 
 				<View style={{ flex: 1 }}>
-					{isLoading ? (
+					{foodList?.length === 0 ? (
 						<FoodListSkeleton />
 					) : foodList && foodList?.length > 0 ? (
 						foodList.map((item, index) => {

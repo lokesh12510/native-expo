@@ -10,7 +10,7 @@ import {
 } from "../../../../theme/Styles";
 import { StatusBar } from "expo-status-bar";
 import { useFormik } from "formik";
-import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, ScrollView, Text, View, BackHandler } from "react-native";
 import { TextInput } from "react-native-paper";
 import { MaterialIcons } from "react-native-vector-icons";
 import { useAuthCustomerRegisterMutation } from "../../../../app/services/authApi";
@@ -22,24 +22,31 @@ import { Button } from "react-native-paper";
 import { useLayoutEffect } from "react";
 import { object, string } from "yup";
 import PrimaryBtn from "../../../../theme/uiSinppets/PrimaryBtn";
+import { useDispatch, useSelector } from "react-redux";
+import { showSnackbar } from "../../../../app/slices/snackbarSlice";
 // Colors
 const { primary, darkLight, darkgray, black } = theme.colors;
 
 const CustomerRegister = ({ navigation, route }) => {
+	const { isLocated } = useSelector((state) => state.user);
+	const dispatch = useDispatch();
 	const [hidePass, setHidePass] = useState(true);
 	// authLogin RTK Query
 	const [authCustomerRegister, { data, isLoading, isError, error, isSuccess }] = useAuthCustomerRegisterMutation();
 
 	const handleRoleChange = () => {
-		navigation.navigate(Routes.auth.cookRegister, {
-			animate: "slide_from_right",
-		});
+		navigation.navigate(Routes.auth.cookRegister);
 	};
 
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			title: "Customer Registration",
-			animation: route.params?.animate,
+			headerLeft: () =>
+				isLocated ? (
+					<MaterialIcons name="arrow-back" size={30} onPress={() => navigation.navigate(Routes.customer.home)} />
+				) : (
+					<MaterialIcons name="arrow-back" size={30} onPress={() => navigation.navigate(Routes.customer.welcome)} />
+				),
 		});
 	}, []);
 
@@ -71,10 +78,18 @@ const CustomerRegister = ({ navigation, route }) => {
 		// if success navigate to login screen and reset form
 		if (!isLoading && isSuccess) {
 			formik.resetForm();
-			navigation.navigate(Routes.auth.customerLogin, {
-				isRegistration: true,
-			});
+			navigation.navigate(Routes.auth.customerLogin);
+			dispatch(showSnackbar({ title: "Registration Successfull!", type: "success" }));
 		}
+		// back handler
+		const backAction = () => {
+			{
+				isLocated ? navigation.navigate(Routes.customer.profile) : navigation.navigate(Routes.customer.welcome);
+			}
+			return true;
+		};
+		const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+		return () => backHandler.remove();
 	}, [isError, isSuccess]);
 
 	// Customer Registration handler
@@ -204,14 +219,7 @@ const CustomerRegister = ({ navigation, route }) => {
 
 						<ExtraView>
 							<ExtraText>Already have an account?</ExtraText>
-							<Button
-								mode="text"
-								onPress={() =>
-									navigation.navigate(Routes.auth.customerLogin, {
-										animate: "pop",
-									})
-								}
-							>
+							<Button mode="text" onPress={() => navigation.navigate(Routes.auth.customerLogin)}>
 								Login
 							</Button>
 						</ExtraView>
