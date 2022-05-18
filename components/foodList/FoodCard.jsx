@@ -67,7 +67,7 @@ const FoodCard = ({ item }) => {
 					</View>
 				</View>
 				<View style={styles.foodImageContainer}>
-					<View style={[styles.imageWrapper, isAdded && { borderColor: colors.green, borderWidth: 1 }]}>
+					<View style={[styles.imageWrapper, isAdded && { borderColor: colors.green, borderWidth: 2 }]}>
 						<Image
 							style={styles.foodImage}
 							source={{
